@@ -1,0 +1,3 @@
+/home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/photonear.dir
+/home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/rebuild_cache.dir
