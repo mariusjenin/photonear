@@ -417,3 +417,67 @@ Parsed CXX implicit link information from above output:
   implicit fwks: []
 
 
+Determining if the include file pthread.h exists passed with the following output:
+Change Dir: /home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/snap/clion/209/bin/ninja/linux/ninja cmTC_d5bba && [1/2] Building C object CMakeFiles/cmTC_d5bba.dir/CheckIncludeFile.c.o
+[2/2] Linking C executable cmTC_d5bba
+
+
+
+Determining if the function pthread_create exists in the pthread passed with the following output:
+Change Dir: /home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/snap/clion/209/bin/ninja/linux/ninja cmTC_b8fc3 && [1/2] Building C object CMakeFiles/cmTC_b8fc3.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_b8fc3
+
+
+
+Determining if the function XOpenDisplay exists in the /usr/lib/x86_64-linux-gnu/libX11.so;/usr/lib/x86_64-linux-gnu/libXext.so passed with the following output:
+Change Dir: /home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/snap/clion/209/bin/ninja/linux/ninja cmTC_7ba64 && [1/2] Building C object CMakeFiles/cmTC_7ba64.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_7ba64
+
+
+
+Determining if the function gethostbyname exists passed with the following output:
+Change Dir: /home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/snap/clion/209/bin/ninja/linux/ninja cmTC_786e3 && [1/2] Building C object CMakeFiles/cmTC_786e3.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_786e3
+
+
+
+Determining if the function connect exists passed with the following output:
+Change Dir: /home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/snap/clion/209/bin/ninja/linux/ninja cmTC_a321b && [1/2] Building C object CMakeFiles/cmTC_a321b.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_a321b
+
+
+
+Determining if the function remove exists passed with the following output:
+Change Dir: /home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/snap/clion/209/bin/ninja/linux/ninja cmTC_c7fad && [1/2] Building C object CMakeFiles/cmTC_c7fad.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_c7fad
+
+
+
+Determining if the function shmat exists passed with the following output:
+Change Dir: /home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/snap/clion/209/bin/ninja/linux/ninja cmTC_fa2ca && [1/2] Building C object CMakeFiles/cmTC_fa2ca.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_fa2ca
+
+
+
+Determining if the function IceConnectionNumber exists in the ICE passed with the following output:
+Change Dir: /home/mariusjenin/Documents/Master/GIT/photonear/cmake-build-debug/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/snap/clion/209/bin/ninja/linux/ninja cmTC_65d5a && [1/2] Building C object CMakeFiles/cmTC_65d5a.dir/CheckFunctionExists.c.o
+[2/2] Linking C executable cmTC_65d5a
+
+
+
