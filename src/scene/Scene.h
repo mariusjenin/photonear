@@ -2,24 +2,33 @@
 // Created by mariusjenin on 21/11/22.
 //
 
-#ifndef PHOTONEAR_SCENE_H
-#define PHOTONEAR_SCENE_H
+#ifndef PHOTONEAR_SCENEENVIRONMENT_H
+#define PHOTONEAR_SCENEENVIRONMENT_H
 
 #include "memory"
-#include "RootNode.h"
+#include "Scene.h"
+#include "VertFragShaders.h"
+#include "Material.h"
+#include "Shape.h"
 
-using namespace scene::node;
+using namespace shader_manager;
+using namespace component;
 
 namespace scene {
-    class Scene {
+    class SceneEnvironment {
     private:
-        std::shared_ptr<RootNode> m_root_node;
+        GLFWwindow *m_window;
+        std::shared_ptr<VertFragShaders> m_shaders;
+        std::shared_ptr<Scene> m_scene;
+
+//        void load_lights(); TODO
 
     public:
-        explicit Scene(std::shared_ptr<RootNode> rn);
+        SceneEnvironment(GLFWwindow *window,
+                         const std::string &vertex_shader_path, const std::string &fragment_shader_path,
+                         std::shared_ptr<Scene> scene, vec3 clear_color = {0,0,0});
 
-        std::shared_ptr<RootNode> get_root_node();
+        void draw();
     };
 }
-
-#endif //PHOTONEAR_SCENE_H
+#endif //PHOTONEAR_SCENEENVIRONMENT_H

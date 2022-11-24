@@ -4,12 +4,15 @@
 
 #include "Sphere.h"
 
-using namespace component;
+using namespace component::shape;
 
-Sphere::Sphere(glm::vec3 center, float radius, int slices, int stacks) {
+
+Sphere::Sphere(bool both_face_visible, float radius, int slices, int stacks, point center) : Shape(
+        both_face_visible) {
     m_center = center;
     m_radius = radius;
-    assign_mesh_sphere(radius,slices,stacks);
+    assign_mesh_sphere(radius, slices, stacks);
+    load_mesh_in_vao();
 }
 
 void Sphere::assign_mesh_sphere(float radius, int slices, int stacks) {

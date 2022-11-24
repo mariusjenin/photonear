@@ -3,16 +3,18 @@
 //
 
 #include "Hittable.h"
+#include "printer.h"
 
 using namespace component;
 using namespace shader_manager;
 
-Hittable::Hittable() {
+Hittable::Hittable(bool both_face_visible) {
     m_up_to_date = false;
     m_vertex_positions = {};
     m_triangle_indices = {};
     m_vertex_tex_coords = {};
     m_vertex_normals = {};
+    m_both_face_visible = both_face_visible;
 }
 
 void Hittable::load_mesh_in_vao() {
@@ -63,4 +65,12 @@ std::vector<unsigned short int> Hittable::get_triangle_indices() {
 
 ComponentType Hittable::get_type() {
     return typeid(this);
+}
+
+bool Hittable::is_both_face_visible() const {
+    return m_both_face_visible;
+}
+
+void Hittable::set_both_face_visible(bool both_face_visible){
+    m_both_face_visible = both_face_visible;
 }
