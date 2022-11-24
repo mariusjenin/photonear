@@ -13,7 +13,6 @@ using namespace scene::node;
 AbstractNode::AbstractNode() {
     m_children = {};
     m_children_dirty = true;
-    m_trsf = new Transform();
 }
 
 void AbstractNode::add_child(std::shared_ptr<Node> node) {
@@ -29,25 +28,9 @@ void AbstractNode::add_child(std::shared_ptr<Node> node) {
 
 AbstractNode::~AbstractNode() {
     m_children.clear();
-    delete m_trsf;
 }
 
-void AbstractNode::compute_trsf_scene_graph() {
-    m_trsf->compute();
-    for (auto child: m_children) {
-        child->compute_trsf_scene_graph();
-    }
-}
-
-Transform *AbstractNode::get_trsf() {
-    return m_trsf;
-}
-
-bool AbstractNode::is_node_game() {
-    return false;
-}
-
-std::vector<std::shared_ptr<Node>> AbstractNode::get_children() {
+std::vector<std::shared_ptr<Node>> AbstractNode::get_children() const{
     return m_children;
 }
 

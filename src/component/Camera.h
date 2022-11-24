@@ -19,16 +19,18 @@ namespace component {
 
     private:
         int m_priority;
+        float m_fovy;
+        float m_z_near;
+        float m_z_far;
+
     public:
-        Camera(int priority = 0);
+        explicit Camera(int priority = 0, float fovy = 45.0f, float z_near = 0.1f, float z_far = 10000.0f);
 
         ComponentType get_type() override;
 
         int get_priority() const;
 
-        static void update_view_mat(Transform trsf, std::shared_ptr<VertFragShaders> shaders);
-
-        static void update_view_pos(Transform trsf, std::shared_ptr<VertFragShaders> shaders);
+        void load_in_shaders(GLFWwindow *window, const std::shared_ptr<VertFragShaders>& shaders);
     };
 }
 

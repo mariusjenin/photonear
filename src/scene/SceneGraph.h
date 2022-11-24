@@ -2,8 +2,8 @@
 // Created by mariusjenin on 21/11/22.
 //
 
-#ifndef PHOTONEAR_SCENE_H
-#define PHOTONEAR_SCENE_H
+#ifndef PHOTONEAR_SCENEGRAPH_H
+#define PHOTONEAR_SCENEGRAPH_H
 
 #include "memory"
 #include "RootNode.h"
@@ -11,12 +11,12 @@
 using namespace scene::node;
 
 namespace scene {
-    class Scene {
+    class SceneGraph {
     private:
         std::shared_ptr<RootNode> m_root_node;
 
     public:
-        explicit Scene(std::shared_ptr<RootNode> rn);
+        explicit SceneGraph(std::shared_ptr<RootNode> rn);
 
         std::shared_ptr<RootNode> get_root_node();
 
@@ -24,4 +24,4 @@ namespace scene {
     };
 }
 
-#endif //PHOTONEAR_SCENE_H
+#endif //PHOTONEAR_SCENEGRAPH_H

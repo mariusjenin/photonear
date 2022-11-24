@@ -17,9 +17,6 @@ namespace scene {
         class Node : public AbstractNode {
         private:
             std::shared_ptr<AbstractNode> m_parent;
-        protected:
-
-            Transform *m_local_trsf;
         public:
             /**
              * Constructor of the Node
@@ -34,22 +31,6 @@ namespace scene {
             void load_model_matrices(Shaders *shaders);
 
             /**
-             * Getter of the local transformation matrix of the Node
-             * @return trsf
-             */
-            Transform *get_local_trsf();
-
-
-            glm::mat4 get_matrix_recursive(bool inverse) override;
-
-
-            glm::mat4 get_matrix_recursive_local(bool inverse) override;
-
-
-            void compute_trsf_scene_graph() override;
-
-
-            /**
              * Compute the position in the world of the Node
              * @param v
              * @return position
@@ -62,7 +43,7 @@ namespace scene {
              */
             void set_parent(std::shared_ptr<AbstractNode> parent);
 
-            ~Node() override;
+            std::shared_ptr<AbstractNode> get_parent() const override;
         };
     }
 }

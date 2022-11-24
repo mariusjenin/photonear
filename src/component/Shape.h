@@ -2,19 +2,20 @@
 // Created by mariusjenin on 19/11/22.
 //
 
-#ifndef PHOTONEAR_HITTABLE_H
-#define PHOTONEAR_HITTABLE_H
+#ifndef PHOTONEAR_SHAPE_H
+#define PHOTONEAR_SHAPE_H
 
 #include "glm/glm.hpp"
 #include "GL/glew.h"
 #include "vector"
 #include "Component.h"
-#include "ShadersBufferManager.h"
+#include "Shaders.h"
 
+using namespace shader_manager;
 
 namespace component {
-    /// Shape hittable by a ray
-    class Hittable : public Component {
+    /// Shape shape by a ray
+    class Shape : public Component {
     protected:
         bool m_up_to_date;
 
@@ -30,7 +31,7 @@ namespace component {
 
         bool m_both_face_visible;
 
-        explicit Hittable(bool both_face_visible = false);
+        explicit Shape(bool both_face_visible = false);
 
     public:
         void load_mesh_in_vao();
@@ -47,8 +48,10 @@ namespace component {
 
         void set_both_face_visible(bool both_face_visible);
 
-        ~Hittable();
+        void draw(const std::shared_ptr<Shaders>& shaders);
+
+        ~Shape();
     };
 }
 
-#endif //PHOTONEAR_HITTABLE_H
+#endif //PHOTONEAR_SHAPE_H

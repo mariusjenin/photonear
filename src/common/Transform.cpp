@@ -6,6 +6,8 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <cmath>
 
+using namespace common;
+
 Transform::Transform(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, int order_rotation) {
     init(translation, rotation, scale, order_rotation);
 }
@@ -127,15 +129,21 @@ Transform::local_get_matrix_with_values(const glm::vec3 tr, const glm::vec3 rot,
     return res_mat;
 }
 
-glm::mat4 Transform::local_get_matrix() {
-    return local_get_matrix_with_values(m_translate, m_rot, m_scale, m_order_rotation);
-}
-
-void Transform::compute() {
-    if (!m_up_to_date) {
-        m_matrix = local_get_matrix();
-        m_up_to_date = true;
+void Transform::compute(TransformComputing computing) {
+    bool is_both_computing = computing == Both;
+    if(computing == Classic || is_both_computing){
+        if (!m_up_to_date) {
+            m_matrix = local_get_matrix_with_values(m_translate, m_rot, m_scale, m_order_rotation, false);
+            m_up_to_date = true;
+        }
     }
+    if(computing == Inverse || is_both_computing){
+        if (!m_inverse_up_to_date) {
+            m_inverse_matrix = local_get_matrix_with_values(m_translate, m_rot, m_scale, m_order_rotation, true);
+            m_inverse_up_to_date = true;
+        }
+    }
+
 }
 
 const glm::vec3 &Transform::get_translation() {
@@ -151,71 +159,77 @@ const glm::vec3 &Transform::get_scale() {
 }
 
 
-const glm::mat4 &Transform::get_matrix() {
-    return m_matrix;
+const glm::mat4 &Transform::get_matrix(bool inverse) {
+    return inverse? m_inverse_matrix :m_matrix;
 }
 
-bool Transform::is_up_to_date() const {
+bool Transform::is_up_to_date(bool inverse) const {
     return m_up_to_date;
 }
 
 void Transform::set_translation(const glm::vec3 &new_translation) {
-    m_up_to_date = m_up_to_date && new_translation == m_translate;
+    bool same_translation = new_translation == m_translate;
+    m_up_to_date = m_up_to_date && same_translation;
+    m_inverse_up_to_date = m_inverse_up_to_date && same_translation;
     m_translate = new_translation;
 }
 
 void Transform::set_rotation(const glm::vec3 &new_rotation) {
-    m_up_to_date = m_up_to_date && new_rotation == m_rot;
+    bool same_rotation = new_rotation == m_rot;
+    m_up_to_date = m_up_to_date && same_rotation;
+    m_inverse_up_to_date = m_inverse_up_to_date && same_rotation;
     m_rot = new_rotation;
 }
 
 void Transform::set_scale(const glm::vec3 &new_scale) {
-    m_up_to_date = m_up_to_date && new_scale == m_scale;
+    bool same_scale = new_scale == m_scale;
+    m_up_to_date = m_up_to_date && same_scale;
+    m_inverse_up_to_date = m_inverse_up_to_date && same_scale;
     m_scale = new_scale;
 }
 
 void Transform::set_uniform_scale(float scale) {
     glm::vec3 new_scale = {scale, scale, scale};
-    m_up_to_date = m_up_to_date && new_scale == m_scale;
-    m_scale = new_scale;
+    set_scale(new_scale);
 }
 
-glm::vec3 Transform::apply_to_vec3(glm::vec3 &v, bool with_translation, bool with_normalization) {
+glm::vec3 Transform::apply_to_vec3(glm::vec3 &v, bool with_translation, bool with_normalization, bool inverse) {
+    mat4 matrix = inverse ? m_inverse_matrix: m_matrix;
     float w = with_translation ? 1.f : 0.f;
-    glm::vec3 u = glm::vec3(m_matrix * glm::vec4(v, w));
+    glm::vec3 u = glm::vec3(matrix * glm::vec4(v, w));
     if (with_normalization) glm::normalize(u);
     return u;
 }
 
-glm::vec3 Transform::apply_to_point(glm::vec3 &v) {
-    return apply_to_vec3(v, true, false);
+glm::vec3 Transform::apply_to_point(glm::vec3 &v, bool inverse) {
+    return apply_to_vec3(v, true, false, inverse);
 }
 
-glm::vec3 Transform::apply_to_vector(glm::vec3 &v) {
-    return apply_to_vec3(v, false, false);
+glm::vec3 Transform::apply_to_vector(glm::vec3 &v, bool inverse) {
+    return apply_to_vec3(v, false, false, inverse);
 }
 
-glm::vec3 Transform::apply_to_versor(glm::vec3 &v) {
-    return apply_to_vec3(v, false, true);
+glm::vec3 Transform::apply_to_versor(glm::vec3 &v, bool inverse) {
+    return apply_to_vec3(v, false, true, inverse);
 }
 
-void Transform::apply_to_vec3_list(std::vector<glm::vec3> *vects, bool with_translation, bool with_normalization) {
+void Transform::apply_to_vec3_list(std::vector<glm::vec3> *vects, bool with_translation, bool with_normalization, bool inverse) {
     int size_vector = (int)vects->size();
     for (int i = 0; i < size_vector; i++) {
-        vects->at(i) = apply_to_vec3(vects->at(i), with_translation, with_normalization);
+        vects->at(i) = apply_to_vec3(vects->at(i), with_translation, with_normalization,inverse);
     }
 }
 
-void Transform::apply_point_list(std::vector<glm::vec3> *points) {
-    apply_to_vec3_list(points, true, false);
+void Transform::apply_point_list(std::vector<glm::vec3> *points, bool inverse) {
+    apply_to_vec3_list(points, true, false,inverse);
 }
 
-void Transform::apply_vector_list(std::vector<glm::vec3> *vectors) {
-    apply_to_vec3_list(vectors, false, false);
+void Transform::apply_vector_list(std::vector<glm::vec3> *vectors, bool inverse) {
+    apply_to_vec3_list(vectors, false, false,inverse);
 }
 
-void Transform::apply_versor_list(std::vector<glm::vec3> *versors) {
-    apply_to_vec3_list(versors, false, true);
+void Transform::apply_versor_list(std::vector<glm::vec3> *versors, bool inverse) {
+    apply_to_vec3_list(versors, false, true,inverse);
 }
 
 void Transform::init(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, int order_rotation) {
@@ -223,34 +237,27 @@ void Transform::init(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale,
     m_rot = rotation;
     m_scale = scale;
     m_matrix = glm::mat4(1.0f);
+    m_inverse_matrix = glm::mat4(1.0f);
     m_up_to_date = false;
+    m_inverse_up_to_date = false;
     m_order_rotation = order_rotation;
 }
 
-
-bool operator==(const Transform &trsf1, const Transform &trsf2) {
-    return trsf1.m_translate == trsf2.m_translate &&
-           trsf1.m_rot == trsf2.m_rot &&
-           trsf1.m_scale == trsf2.m_scale &&
-           trsf1.m_matrix == trsf2.m_matrix &&
-           trsf1.m_up_to_date == trsf2.m_up_to_date;
+void Transform::set_matrix(const glm::mat4 &new_matrix, bool inverse) {
+    if(inverse){
+        m_inverse_matrix = new_matrix;
+        m_inverse_up_to_date = m_inverse_up_to_date && new_matrix == m_inverse_matrix;
+    }else {
+        m_matrix = new_matrix;
+        m_up_to_date = m_up_to_date && new_matrix == m_matrix;
+    }
 }
 
-bool operator!=(const Transform &trsf1, const Transform &trsf2) {
-    return !(trsf1 == trsf2);
-}
-
-void Transform::set_matrix(const glm::mat4 &new_matrix) {
-    m_up_to_date = m_up_to_date && new_matrix == m_matrix;
-    m_matrix = new_matrix;
-}
 
 void Transform::set_order_rotation(int order_rotation) {
-    m_up_to_date = m_up_to_date && order_rotation == m_order_rotation;
+    bool same_order = order_rotation == m_order_rotation;
+    m_up_to_date = m_up_to_date && same_order;
+    m_inverse_up_to_date = m_inverse_up_to_date && same_order;
     m_order_rotation = order_rotation;
-}
-
-glm::mat4 Transform::get_inverse() {
-    return local_get_matrix_with_values(m_translate, m_rot, m_scale, m_order_rotation, true);
 }
 

@@ -19,18 +19,18 @@ uniform bool debug_rendering;
 
 void main(){
     vec4 vertex_world_position;
-    mat4 vp = projection_mat * view_mat ;
-    if(debug_rendering){
-        vertex_world_position = vec4(vertex_position,1);
+    mat4 vp = projection_mat * view_mat;
+    if (debug_rendering){
+        vertex_world_position = vec4(vertex_position, 1);
     } else {
         uv = vertex_uv;
-        normal = normalize(vec3(normal_model_mat*vec4(vertex_normal,0)));
+        normal = normalize(vec3(normal_model_mat*vec4(vertex_normal, 0)));
 
 
-        vertex_world_position = model_mat * vec4(vertex_position,1);
+        vertex_world_position = model_mat * vec4(vertex_position, 1);
 
         fragment_pos = vec3(vertex_world_position);
     }
-    gl_Position = vp* vertex_world_position;
+    gl_Position = vp * vertex_world_position;
 }
 

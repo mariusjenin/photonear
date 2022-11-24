@@ -2,13 +2,15 @@
 // Created by mariusjenin on 19/11/22.
 //
 
-#include "Hittable.h"
+#include "Shape.h"
 #include "printer.h"
+#include "ShadersBufferManager.h"
+#include "TransformComponent.h"
 
 using namespace component;
 using namespace shader_manager;
 
-Hittable::Hittable(bool both_face_visible) {
+Shape::Shape(bool both_face_visible) {
     m_up_to_date = false;
     m_vertex_positions = {};
     m_triangle_indices = {};
@@ -17,7 +19,7 @@ Hittable::Hittable(bool both_face_visible) {
     m_both_face_visible = both_face_visible;
 }
 
-void Hittable::load_mesh_in_vao() {
+void Shape::load_mesh_in_vao() {
     //Generating VAO for this "Mesh" and binding it
     ShadersBufferManager::generate_vao(&m_vao_id);
     ShadersBufferManager::bind_vao(m_vao_id);
@@ -38,7 +40,7 @@ void Hittable::load_mesh_in_vao() {
     m_loaded_vao = true;
 }
 
-Hittable::~Hittable() {
+Shape::~Shape() {
     if (m_loaded_vao) {
         ShadersBufferManager::disable_attrib_vbo(ShadersBufferManager::ID_VERTEX_BUFFER);
         ShadersBufferManager::disable_attrib_vbo(ShadersBufferManager::ID_UV_BUFFER);
@@ -51,26 +53,48 @@ Hittable::~Hittable() {
     }
 }
 
-GLuint Hittable::get_vao_id() const {
+GLuint Shape::get_vao_id() const {
     return m_vao_id;
 }
 
-GLuint Hittable::get_ebo_triangle_indices_id() const {
+GLuint Shape::get_ebo_triangle_indices_id() const {
     return m_ebo_triangle_indices_id;
 }
 
-std::vector<unsigned short int> Hittable::get_triangle_indices() {
+std::vector<unsigned short int> Shape::get_triangle_indices() {
     return m_triangle_indices;
 }
 
-ComponentType Hittable::get_type() {
+ComponentType Shape::get_type() {
     return typeid(this);
 }
 
-bool Hittable::is_both_face_visible() const {
+bool Shape::is_both_face_visible() const {
     return m_both_face_visible;
 }
 
-void Hittable::set_both_face_visible(bool both_face_visible){
+void Shape::set_both_face_visible(bool both_face_visible){
     m_both_face_visible = both_face_visible;
+}
+
+void Shape::draw(const std::shared_ptr<Shaders>& shaders) {
+    ShadersDataManager *shader_data_manager= shader_data_manager = shaders->get_shader_data_manager();
+
+    auto node = Component::get_node(this);
+    auto trsf_comp = Component::get_component<TransformComponent>(&*node);
+    if(trsf_comp == nullptr){
+        trsf_comp = Component::get_parent_component_recursive<TransformComponent>(&*node);
+    }
+    trsf_comp->load_in_shaders(shaders);
+
+    if (m_both_face_visible) {
+        glDisable(GL_CULL_FACE);
+    } else {
+        glEnable(GL_CULL_FACE);
+    }
+
+//    material->load_in_shader(m_shaders); TODO MATERIAL
+
+    ShadersBufferManager::bind_vao(m_vao_id);
+    ShadersBufferManager::draw(m_ebo_triangle_indices_id, (long) m_triangle_indices.size());
 }

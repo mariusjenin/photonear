@@ -63,7 +63,7 @@ gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
 
   glNormal3f(0.f, 0.f, 1.f);
 
-  /* render front face */
+  /* draw front face */
   glBegin(GL_QUAD_STRIP);
   for (i = 0; i <= teeth; i++) {
     angle = i * 2.f * (float) M_PI / teeth;
@@ -76,7 +76,7 @@ gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
   }
   glEnd();
 
-  /* render front sides of teeth */
+  /* draw front sides of teeth */
   glBegin(GL_QUADS);
   da = 2.f * (float) M_PI / teeth / 4.f;
   for (i = 0; i < teeth; i++) {
@@ -91,7 +91,7 @@ gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
 
   glNormal3f(0.0, 0.0, -1.0);
 
-  /* render back face */
+  /* draw back face */
   glBegin(GL_QUAD_STRIP);
   for (i = 0; i <= teeth; i++) {
     angle = i * 2.f * (float) M_PI / teeth;
@@ -104,7 +104,7 @@ gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
   }
   glEnd();
 
-  /* render back sides of teeth */
+  /* draw back sides of teeth */
   glBegin(GL_QUADS);
   da = 2.f * (float) M_PI / teeth / 4.f;
   for (i = 0; i < teeth; i++) {
@@ -117,7 +117,7 @@ gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
   }
   glEnd();
 
-  /* render outward faces of teeth */
+  /* draw outward faces of teeth */
   glBegin(GL_QUAD_STRIP);
   for (i = 0; i < teeth; i++) {
     angle = i * 2.f * (float) M_PI / teeth;
@@ -150,7 +150,7 @@ gear(GLfloat inner_radius, GLfloat outer_radius, GLfloat width,
 
   glShadeModel(GL_SMOOTH);
 
-  /* render inside radius cylinder */
+  /* draw inside radius cylinder */
   glBegin(GL_QUAD_STRIP);
   for (i = 0; i <= teeth; i++) {
     angle = i * 2.f * (float) M_PI / teeth;
@@ -167,7 +167,7 @@ static GLfloat view_rotx = 20.f, view_roty = 30.f, view_rotz = 0.f;
 static GLint gear1, gear2, gear3;
 static GLfloat angle = 0.f;
 
-/* OpenGL render function & timing */
+/* OpenGL draw function & timing */
 static void draw(void)
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

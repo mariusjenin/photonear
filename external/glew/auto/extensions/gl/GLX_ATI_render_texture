@@ -38,4 +38,4 @@ GLX_ATI_render_texture
 	GLX_BIND_TO_TEXTURE_INTENSITY_ATI   0x9822
 	void glXBindTexImageATI (Display *dpy, GLXPbuffer pbuf, int buffer)
 	void glXReleaseTexImageATI (Display *dpy, GLXPbuffer pbuf, int buffer)
-	void glXDrawableAttribATI (Display *dpy, GLXDrawable render, const int *attrib_list)
+	void glXDrawableAttribATI (Display *dpy, GLXDrawable draw, const int *attrib_list)

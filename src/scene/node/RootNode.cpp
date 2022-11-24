@@ -4,17 +4,22 @@
 
 #include "RootNode.h"
 
+#include <utility>
+#include "Component.h"
+
 
 using namespace scene::node;
+using namespace component;
 
-glm::mat4 RootNode::get_matrix_recursive(bool inverse) {
-    if(inverse) {
-        return m_trsf->get_inverse();
-    }else{
-        return m_trsf->get_matrix();
-    }
+
+std::shared_ptr<AbstractNode> RootNode::get_parent() const {
+    return nullptr;
 }
 
-glm::mat4 RootNode::get_matrix_recursive_local(bool inverse) {
-    return get_matrix_recursive(inverse);
+void RootNode::set_trsf_comp(std::shared_ptr<TransformComponent> trsf_comp) {
+    m_trsf_comp = std::move(trsf_comp);
+}
+
+std::shared_ptr<TransformComponent> RootNode::get_trsf_comp() const {
+    return m_trsf_comp;
 }

@@ -41,19 +41,31 @@ include_directories(
         external/glm/
         external/glew/include/
         external/glfw/include/
+        external/stbi/
         src/
-        src/common
+        src/common/
+        src/utils/
+        src/texture/
         src/scene/
-        src/scene/node
+        src/scene/node/
         src/component/
-        src/component/hittable/
+        src/component/shape/
         src/shader_manager/
         src/shader/
         .
 )
 add_executable(main main.cpp
+        # stbi
+        external/stbi/stb_image.h external/stbi/stb_image_write.h external/stbi/include_stbi.h
+        # utils
+        src/utils/printer.h src/utils/printer.cpp
         # common
         src/common/Transform.cpp src/common/Transform.h
+        src/common/Ray.cpp src/common/Ray.h
+        # texture
+        src/texture/Texture.cpp src/texture/Texture.h
+        src/texture/TextureColor.cpp src/texture/TextureColor.h
+        src/texture/TextureImage.cpp src/texture/TextureImage.h
         # shader
         src/shader/vertex_shader.glsl src/shader/fragment_shader.glsl
         src/shader/depth_vertex_shader.glsl src/shader/depth_fragment_shader.glsl
@@ -70,12 +82,19 @@ add_executable(main main.cpp
         src/scene/node/Node.cpp src/scene/node/Node.h
         src/scene/node/NodeFactory.cpp src/scene/node/NodeFactory.h
         # component
+        src/component/ComponentFactory.cpp src/component/ComponentFactory.h
         src/component/Component.cpp src/component/Component.h
-        src/component/Hittable.cpp src/component/Hittable.h src/component/ComponentFactory.cpp src/component/ComponentFactory.h src/component/Material.cpp src/component/Material.h src/common/Ray.cpp src/common/Ray.h src/scene/Scene.cpp src/scene/Scene.h src/component/hittable/Sphere.cpp src/component/hittable/Sphere.h
+        src/component/TransformComponent.cpp src/component/TransformComponent.h
+        src/component/Material.cpp src/component/Material.h
+        src/component/Camera.cpp src/component/Camera.h
+        # shape
+        src/component/Shape.cpp src/component/Shape.h
+        src/component/shape/Sphere.cpp src/component/shape/Sphere.h
+        src/component/shape/Triangle.cpp src/component/shape/Triangle.h
         # scene
-        src/scene/Scene.cpp src/scene/Scene.h
-        src/scene/SceneEnvironment.cpp src/scene/SceneEnvironment.h
-        src/component/Camera.cpp src/component/Camera.h)
+        src/scene/SceneGraph.cpp src/scene/SceneGraph.h
+        src/scene/Scene.cpp src/scene/Scene.h)
+
 target_link_libraries(main
         ${ALL_LIBS}
         )

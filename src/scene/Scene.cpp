@@ -2,7 +2,7 @@
 // Created by mariusjenin on 21/11/22.
 //
 
-#include "SceneEnvironment.h"
+#include "Scene.h"
 
 #include <utility>
 #include "memory"
@@ -13,18 +13,18 @@
 using namespace scene;
 using namespace component;
 
-SceneEnvironment::SceneEnvironment(GLFWwindow* window,
-                                          const std::string &vertex_shader_path,
-                                          const std::string &fragment_shader_path,
-                                          std::shared_ptr<Scene> scene, vec3 clear_color){
+Scene::Scene(GLFWwindow* window,
+             const std::string &vertex_shader_path,
+             const std::string &fragment_shader_path,
+             std::shared_ptr<SceneGraph> scene, vec3 clear_color){
     m_window = window;
     m_shaders = std::make_shared<VertFragShaders>(vertex_shader_path.c_str(), fragment_shader_path.c_str());
 
     GLuint program_id = m_shaders->get_program_id();
     m_shaders->use();
 
-    m_scene = std::move(scene);
-    m_scene->compute_scene_graph();
+    m_scene_graph = std::move(scene);
+    m_scene_graph->compute_scene_graph();
 
     ShadowMapShaders* shadow_map_shaders = m_shaders->get_shadow_map_shaders();
 
@@ -41,7 +41,7 @@ SceneEnvironment::SceneEnvironment(GLFWwindow* window,
     glClearColor(clear_color.x,clear_color.y,clear_color.z,0);
 }
 
-void SceneEnvironment::draw() {
+void Scene::draw() {
     //CAMERA
     auto cams = Component::get_components<Camera>();
     std::shared_ptr<Camera> camera = nullptr;
@@ -66,7 +66,7 @@ void SceneEnvironment::draw() {
 }
 
 
-//void SceneEnvironment::load_lights(){
+//void Scene::load_lights(){
 //    ShadowMapShaders* shadow_map_shaders = m_shaders->get_shadow_map_shaders();
 //
 //    size_t size_lights = m_lights.size();

@@ -6,8 +6,8 @@
 #include "Node.h"
 #include "NodeFactory.h"
 #include "ComponentFactory.h"
-#include "Hittable.h"
-#include "SceneEnvironment.h"
+#include "Shape.h"
+#include "Scene.h"
 #include "Component.h"
 
 using namespace scene;
@@ -95,18 +95,28 @@ int main() {
     //CREATE THE SCENE
     auto root = NodeFactory::create_root_node();
     auto camera_node = NodeFactory::create_node(root);
-    auto hittable_node = NodeFactory::create_node(root);
+    auto triangle_node = NodeFactory::create_node(root);
+    auto sphere_node = NodeFactory::create_node(triangle_node);
+
     auto camera = ComponentFactory::create_camera();
-    auto hittable = ComponentFactory::create_sphere();
-    Component::add_component_to_node<Hittable>(hittable, hittable_node);
+    auto sphere = ComponentFactory::create_sphere(true);
+    Component::add_component_to_node<Shape>(sphere, triangle_node);
     Component::add_component_to_node<Camera>(camera, camera_node);
 
 
-    auto scene = std::make_shared<Scene>(root);
-    auto se = SceneEnvironment(
+    auto trsf_camera = Component::get_component<TransformComponent>(&*camera_node)->get_transform();
+    trsf_camera->set_translation({0,0,5});
+
+    auto trsf_shape = Component::get_component<TransformComponent>(&*triangle_node)->get_transform();
+    trsf_shape->set_translation({0, 0, 0});
+
+
+    auto scene_graph = std::make_shared<SceneGraph>(root);
+    auto scene = Scene(
             window,
             "../src/shader/vertex_shader.glsl",
-            "../src/shader/fragment_shader.glsl",scene,
+            "../src/shader/fragment_shader.glsl",
+            scene_graph,
             {0.1f,0.1f,0.1f});
 
     do {
@@ -119,7 +129,7 @@ int main() {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             //RENDER SCENE
-            se.render();
+            scene.draw();
 
             // Swap buffers
             glfwSwapBuffers(window);

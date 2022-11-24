@@ -39,7 +39,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 set(GLEW_SOURCE
 	glew/src/glew.c
-)
+        stbi/include_stbi.h)
 
 set(GLEW_HEADERS
 )

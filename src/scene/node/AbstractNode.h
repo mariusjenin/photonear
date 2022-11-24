@@ -11,9 +11,8 @@
 #include <memory>
 #include "GL/glew.h"
 #include "Transform.h"
-//#include "Component.h"
 
-//using namespace component;
+using namespace common;
 
 namespace scene {
     namespace node {
@@ -23,18 +22,9 @@ namespace scene {
         class AbstractNode {
         protected:
             /// Transformation applied to the AbstractNode and all the children
-            Transform *m_trsf;
             std::vector<std::shared_ptr<Node>> m_children{};
             bool m_children_dirty;
-//            std::map<ComponentType, std::vector<std::shared_ptr<Component>>> m_components;
-
         public :
-
-            /**
-             * Getter of whether or not the AbstractNode is a node of the scene graph that is usable like a node of the game (NodeGameSG)
-             * @return is_node_game
-             */
-            virtual bool is_node_game();
 
             /**
              * Add a child to the AbstractNode
@@ -47,18 +37,18 @@ namespace scene {
              */
             explicit AbstractNode();
 
-            /**
-             * Getter of the transformation matrix of the AbstractNode
-             * @return trsf
-             */
-            Transform *get_trsf();
-
 
             /**
              * Getter of all the children Node
              * @return children
              */
-            std::vector<std::shared_ptr<Node>> get_children();
+            std::vector<std::shared_ptr<Node>> get_children() const;
+
+            /**
+             * Getter of the parent AbstractNode
+             * @return parent
+             */
+            virtual std::shared_ptr<AbstractNode> get_parent() const = 0;
 
             /**
              * Remove a child from the list of Node at a given position
@@ -77,23 +67,7 @@ namespace scene {
              */
             bool has_children() const;
 
-            /**
-             * Give the matrix for an extern object (like a child) (recursive function)
-             * @return matrix
-             */
-            virtual glm::mat4 get_matrix_recursive(bool inverse) = 0;
-
-            /**
-             * Give the matrix for the Node (recursive function)
-             * @return matrix
-             */
-            virtual glm::mat4 get_matrix_recursive_local(bool inverse) = 0;
-
-
-            /// Compute all the Transform list (itself and children)
-            virtual void compute_trsf_scene_graph();
-
-//        /**
+//        /** TODO remove
 //         * Draw recursively the graph of the scene
 //         * @param shaders
 //         * @param pos_camera

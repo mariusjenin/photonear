@@ -6,8 +6,6 @@
 #define PHOTONEAR_NODEFACTORY_H
 
 #include "memory"
-//#include "AbstractNode.h"
-//#include "RootNode.h"
 
 namespace scene{
     namespace node{
@@ -17,7 +15,7 @@ namespace scene{
         class NodeFactory {
         public:
             static std::shared_ptr<RootNode> create_root_node();
-            static std::shared_ptr<Node> create_node(std::shared_ptr<AbstractNode> parent);
+            static std::shared_ptr<Node> create_node(const std::shared_ptr<AbstractNode>& parent, bool with_transform_compnent = true);
         };
 
     }

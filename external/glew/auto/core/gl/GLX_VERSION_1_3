@@ -67,13 +67,13 @@ GLX_VERSION_1_3
 	void glXDestroyPixmap (Display *dpy, GLXPixmap pixmap)
 	GLXPbuffer glXCreatePbuffer (Display *dpy, GLXFBConfig config, const int *attrib_list)
 	void glXDestroyPbuffer (Display *dpy, GLXPbuffer pbuf)
-	void glXQueryDrawable (Display *dpy, GLXDrawable render, int attribute, unsigned int *value)
+	void glXQueryDrawable (Display *dpy, GLXDrawable draw, int attribute, unsigned int *value)
 	GLXContext glXCreateNewContext (Display *dpy, GLXFBConfig config, int render_type, GLXContext share_list, Bool direct)
-	Bool glXMakeContextCurrent (Display *display, GLXDrawable render, GLXDrawable read, GLXContext ctx)
+	Bool glXMakeContextCurrent (Display *display, GLXDrawable draw, GLXDrawable read, GLXContext ctx)
 	GLXDrawable glXGetCurrentReadDrawable (void)
 	int glXQueryContext (Display *dpy, GLXContext ctx, int attribute, int *value)
-	void glXSelectEvent (Display *dpy, GLXDrawable render, unsigned long event_mask)
-	void glXGetSelectedEvent (Display *dpy, GLXDrawable render, unsigned long *event_mask)
+	void glXSelectEvent (Display *dpy, GLXDrawable draw, unsigned long event_mask)
+	void glXGetSelectedEvent (Display *dpy, GLXDrawable draw, unsigned long *event_mask)
 	typedef XID GLXWindow
 	typedef XID GLXPbuffer
 	typedef XID GLXFBConfigID
