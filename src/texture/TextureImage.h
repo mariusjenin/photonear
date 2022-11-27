@@ -24,10 +24,6 @@ namespace texture {
         explicit TextureImage(const char *filename);
 
         color value(float u, float v, point p) const override;
-
-        ~TextureImage() {
-            delete m_data;
-        }
     };
 }
 

@@ -7,5 +7,5 @@ WGL_ARB_buffer_region
 	WGL_STENCIL_BUFFER_BIT_ARB 0x00000008
 	HANDLE wglCreateBufferRegionARB (HDC hDC, int iLayerPlane, UINT uType)
 	VOID wglDeleteBufferRegionARB (HANDLE hRegion)
-	BOOL wglRestoreBufferRegionARB (HANDLE hRegion, int x, int y, int m_width, int m_height, int xSrc, int ySrc)
-	BOOL wglSaveBufferRegionARB (HANDLE hRegion, int x, int y, int m_width, int m_height)
+	BOOL wglRestoreBufferRegionARB (HANDLE hRegion, int x, int y, int m_width_viewer, int m_height_viewer, int xSrc, int ySrc)
+	BOOL wglSaveBufferRegionARB (HANDLE hRegion, int x, int y, int m_width_viewer, int m_height_viewer)

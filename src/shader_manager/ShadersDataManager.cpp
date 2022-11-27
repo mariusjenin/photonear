@@ -3,13 +3,10 @@
 //
 
 #include "ShadersDataManager.h"
-//#include <src/material/Material.hpp>
-//#include <src/light/Light.hpp>
-//#include <src/shader_manager/ShadowMapShaders.hpp>
+#include "LightMaterial.h"
 
 using namespace shader_manager;
-//using namespace material;
-//using namespace light;
+using namespace component::material;
 
 GLint ShadersDataManager::get_location(const std::string &name) {
     return m_locations[name];
@@ -32,66 +29,51 @@ void ShadersDataManager::load_lights_locations(GLuint program_id) {
                                                                          BLOCK_INDEX_LIGHTS_LOC_NAME);
 }
 
-void ShadersDataManager::load_node_on_top_locations(GLuint program_id) {
-    m_locations[IS_NODE_ON_TOP_LOC_NAME] = glGetUniformLocation(program_id, IS_NODE_ON_TOP_LOC_NAME);
-    m_locations[ON_TOP_POSITION_LOC_NAME] = glGetUniformLocation(program_id, ON_TOP_POSITION_LOC_NAME);
-    m_locations[ON_TOP_NORMAL_LOC_NAME] = glGetUniformLocation(program_id, ON_TOP_NORMAL_LOC_NAME);
-    m_locations[ON_TOP_UV_LOC_NAME] = glGetUniformLocation(program_id, ON_TOP_UV_LOC_NAME);
-    m_locations[ON_TOP_MODEL_LOC_NAME] = glGetUniformLocation(program_id, ON_TOP_MODEL_LOC_NAME);
-    m_locations[ON_TOP_HEIGHT_ADJUSTMENT_LOC_NAME] = glGetUniformLocation(program_id,
-                                                                          ON_TOP_HEIGHT_ADJUSTMENT_LOC_NAME);
-}
-
 void ShadersDataManager::load_material_const(GLuint program_id) {
     m_locations[MATERIAL_TYPE_COLOR_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_TYPE_COLOR_LOC_NAME);
     m_locations[MATERIAL_TYPE_TEXTURE_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_TYPE_TEXTURE_LOC_NAME);
-//    glUniform1i(m_locations[MATERIAL_TYPE_COLOR_LOC_NAME], Material::MATERIAL_TYPE_COLOR);
-//    glUniform1i(m_locations[MATERIAL_TYPE_TEXTURE_LOC_NAME], Material::MATERIAL_TYPE_TEXTURE);
+    glUniform1i(m_locations[MATERIAL_TYPE_COLOR_LOC_NAME], Material::MATERIAL_TYPE_COLOR);
+    glUniform1i(m_locations[MATERIAL_TYPE_TEXTURE_LOC_NAME], Material::MATERIAL_TYPE_TEXTURE);
 }
 
 void ShadersDataManager::load_material_locations(GLuint program_id) {
     m_locations[MATERIAL_TYPE_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_TYPE_LOC_NAME);
-    m_locations[MATERIAL_SHININESS_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_SHININESS_LOC_NAME);
-    m_locations[MATERIAL_AMBIENT_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_AMBIENT_LOC_NAME);
-    m_locations[MATERIAL_DIFFUSE_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_DIFFUSE_LOC_NAME);
-    m_locations[MATERIAL_SPECULAR_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_SPECULAR_LOC_NAME);
-    m_locations[MATERIAL_DIFFUSE_TEXTURE_LOC_NAME] = glGetUniformLocation(program_id,
-                                                                          MATERIAL_DIFFUSE_TEXTURE_LOC_NAME);
-    m_locations[MATERIAL_SPECULAR_TEXTURE_LOC_NAME] = glGetUniformLocation(program_id,
-                                                                           MATERIAL_SPECULAR_TEXTURE_LOC_NAME);
+    m_locations[MATERIAL_ALBEDO_COLOR_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_ALBEDO_COLOR_LOC_NAME);
+    m_locations[MATERIAL_ALBEDO_TEXTURE_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_ALBEDO_TEXTURE_LOC_NAME);
+    m_locations[MATERIAL_EMISSIVE_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_EMISSIVE_LOC_NAME);
 }
 
 void ShadersDataManager::load_lights_const(GLuint program_id) {
     m_locations[LIGHT_TYPE_DIRECTIONAL_LOC_NAME] = glGetUniformLocation(program_id, LIGHT_TYPE_DIRECTIONAL_LOC_NAME);
     m_locations[LIGHT_TYPE_POINT_LOC_NAME] = glGetUniformLocation(program_id, LIGHT_TYPE_POINT_LOC_NAME);
     m_locations[LIGHT_TYPE_SPOT_LOC_NAME] = glGetUniformLocation(program_id, LIGHT_TYPE_SPOT_LOC_NAME);
-//    glUniform1i(m_locations[LIGHT_TYPE_DIRECTIONAL_LOC_NAME], Light::LIGHT_TYPE_DIRECTIONAL);
-//    glUniform1i(m_locations[LIGHT_TYPE_POINT_LOC_NAME], Light::LIGHT_TYPE_POINT);
-//    glUniform1i(m_locations[LIGHT_TYPE_SPOT_LOC_NAME], Light::LIGHT_TYPE_SPOT);
+    glUniform1i(m_locations[LIGHT_TYPE_DIRECTIONAL_LOC_NAME], LightMaterial::LIGHT_TYPE_DIRECTIONAL);
+    glUniform1i(m_locations[LIGHT_TYPE_POINT_LOC_NAME], LightMaterial::LIGHT_TYPE_POINT);
+    glUniform1i(m_locations[LIGHT_TYPE_SPOT_LOC_NAME], LightMaterial::LIGHT_TYPE_SPOT);
 }
 
 void ShadersDataManager::load_custom_uniform_location(GLuint program_id, const std::string &name) {
     m_locations[name] = glGetUniformLocation(program_id, name.c_str());
 }
 
-//void ShadersDataManager::load_lights(GLuint program_id, LightShader lights_shader[], int size_lights) {
-//
-//    //NB LIGHTS
-//    GLint nb_lights_location = get_location(ShadersDataManager::NB_LIGTHS_LOC_NAME);
-//    glUniform1i(nb_lights_location, (int) size_lights);
-//
-//    //LIGHTS BUFFER
-//    GLuint block_index = get_location(ShadersDataManager::BLOCK_INDEX_LIGHTS_LOC_NAME);
-//    GLuint ssbo_binding_point_index = 3;
-//    glShaderStorageBlockBinding(program_id, block_index, ssbo_binding_point_index);
-//
-//    GLuint ssbo;
-//    glGenBuffers(1, &ssbo);
-//    glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-//    glBufferData(GL_SHADER_STORAGE_BUFFER, (int) sizeof(LightShader) * size_lights, &lights_shader[0], GL_STATIC_READ);
-//    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-//    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssbo_binding_point_index, ssbo);
-//}
+void ShadersDataManager::load_lights(GLuint program_id, LightShader lights_shader[], int size_lights) {
+
+    //NB LIGHTS
+    GLint nb_lights_location = get_location(ShadersDataManager::NB_LIGTHS_LOC_NAME);
+    glUniform1i(nb_lights_location, (int) size_lights);
+
+    //LIGHTS BUFFER
+    GLuint block_index = get_location(ShadersDataManager::BLOCK_INDEX_LIGHTS_LOC_NAME);
+    GLuint ssbo_binding_point_index = 3;
+    glShaderStorageBlockBinding(program_id, block_index, ssbo_binding_point_index);
+
+    GLuint ssbo;
+    glGenBuffers(1, &ssbo);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, (int) sizeof(LightShader) * size_lights, &lights_shader[0], GL_STATIC_READ);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssbo_binding_point_index, ssbo);
+}
 
 void ShadersDataManager::load_debug_const(GLuint program_id) {
     m_locations[DEBUG_RENDERING_LOC_NAME] = glGetUniformLocation(program_id, DEBUG_RENDERING_LOC_NAME);

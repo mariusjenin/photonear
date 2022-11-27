@@ -19,7 +19,7 @@ GL_ARB_viewport_array
 	void glGetDoublei_v (GLenum target, GLuint index, GLdouble* data)
 	void glGetFloati_v (GLenum target, GLuint index, GLfloat* data)
 	void glScissorArrayv (GLuint first, GLsizei count, const GLint * v)
-	void glScissorIndexed (GLuint index, GLint left, GLint bottom, GLsizei m_width, GLsizei m_height)
+	void glScissorIndexed (GLuint index, GLint left, GLint bottom, GLsizei m_width_viewer, GLsizei m_height_viewer)
 	void glScissorIndexedv (GLuint index, const GLint * v)
 	void glViewportArrayv (GLuint first, GLsizei count, const GLfloat * v)
 	void glViewportIndexedf (GLuint index, GLfloat x, GLfloat y, GLfloat w, GLfloat h)

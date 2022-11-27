@@ -26,10 +26,10 @@ GLX_SGIX_pbuffer
 	GLX_WINDOW_SGIX 0x8022
 	GLX_PBUFFER_SGIX 0x8023
 	GLX_BUFFER_CLOBBER_MASK_SGIX 0x08000000
-	GLXPbuffer glXCreateGLXPbufferSGIX (Display* dpy, GLXFBConfig config, unsigned int m_width, unsigned int m_height, int *attrib_list)
+	GLXPbuffer glXCreateGLXPbufferSGIX (Display* dpy, GLXFBConfig config, unsigned int m_width_viewer, unsigned int m_height_viewer, int *attrib_list)
 	void glXDestroyGLXPbufferSGIX (Display* dpy, GLXPbuffer pbuf)
 	void glXGetSelectedEventSGIX (Display* dpy, GLXDrawable drawable, unsigned long *mask)
 	void glXQueryGLXPbufferSGIX (Display* dpy, GLXPbuffer pbuf, int attribute, unsigned int *value)
 	void glXSelectEventSGIX (Display* dpy, GLXDrawable drawable, unsigned long mask)
 	typedef XID GLXPbufferSGIX
-	typedef struct { int type; unsigned long serial; Bool send_event; Display *display; GLXDrawable drawable; int event_type; int draw_type; unsigned int mask; int x, y; int m_width, m_height; int count; } GLXBufferClobberEventSGIX
+	typedef struct { int type; unsigned long serial; Bool send_event; Display *display; GLXDrawable drawable; int event_type; int draw_type; unsigned int mask; int x, y; int m_width_viewer, m_height_viewer; int count; } GLXBufferClobberEventSGIX

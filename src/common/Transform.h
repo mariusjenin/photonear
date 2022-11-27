@@ -5,7 +5,6 @@
 #ifndef PHOTONEAR_TRANSFORM_H
 #define PHOTONEAR_TRANSFORM_H
 
-// Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>

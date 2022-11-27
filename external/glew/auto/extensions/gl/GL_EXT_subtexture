@@ -1,6 +1,6 @@
 GL_EXT_subtexture
 http://www.opengl.org/registry/specs/EXT/subtexture.txt
 GL_EXT_subtexture
-	void glTexSubImage1DEXT (GLenum target, GLint level, GLint xoffset, GLsizei m_width, GLenum format, GLenum type, const void *pixels)
-	void glTexSubImage2DEXT (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei m_width, GLsizei m_height, GLenum format, GLenum type, const void *pixels)
-	void glTexSubImage3DEXT (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei m_width, GLsizei m_height, GLsizei depth, GLenum format, GLenum type, const void *pixels)
+	void glTexSubImage1DEXT (GLenum target, GLint level, GLint xoffset, GLsizei m_width_viewer, GLenum format, GLenum type, const void *pixels)
+	void glTexSubImage2DEXT (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei m_width_viewer, GLsizei m_height_viewer, GLenum format, GLenum type, const void *pixels)
+	void glTexSubImage3DEXT (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLenum format, GLenum type, const void *pixels)

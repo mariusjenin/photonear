@@ -41,20 +41,38 @@ include_directories(
         external/glm/
         external/glew/include/
         external/glfw/include/
+        external/imgui/
         external/stbi/
         src/
         src/common/
         src/utils/
         src/texture/
         src/scene/
+        src/scene/example/
         src/scene/node/
         src/component/
         src/component/shape/
+        src/component/material/
         src/shader_manager/
         src/shader/
         .
 )
 add_executable(main main.cpp
+        src/Photonear.cpp src/Photonear.h
+        # imgui
+        external/imgui/imconfig.h
+        external/imgui/imgui.cpp external/imgui/imgui.h
+        external/imgui/imgui_demo.cpp
+        external/imgui/imgui_draw.cpp
+        external/imgui/imgui_impl_glfw.cpp external/imgui/imgui_impl_glfw.h
+        external/imgui/imgui_impl_opengl3.cpp external/imgui/imgui_impl_opengl3.h
+        external/imgui/imgui_impl_opengl3_loader.h
+        external/imgui/imgui_internal.h
+        external/imgui/imgui_tables.cpp
+        external/imgui/imgui_widgets.cpp
+        external/imgui/imstb_rectpack.h
+        external/imgui/imstb_textedit.h
+        external/imgui/imstb_truetype.h
         # stbi
         external/stbi/stb_image.h external/stbi/stb_image_write.h external/stbi/include_stbi.h
         # utils
@@ -76,24 +94,33 @@ add_executable(main main.cpp
         src/shader_manager/ShadersDataManager.cpp src/shader_manager/ShadersDataManager.h
         src/shader_manager/ShadowMap.cpp src/shader_manager/ShadowMap.h
         src/shader_manager/ShadowMapShaders.cpp src/shader_manager/ShadowMapShaders.h
+        src/shader_manager/Light.cpp src/shader_manager/Light.h
+        src/shader_manager/TextureManager.cpp src/shader_manager/TextureManager.h
         # node
         src/scene/node/AbstractNode.cpp src/scene/node/AbstractNode.h
         src/scene/node/RootNode.cpp src/scene/node/RootNode.h
         src/scene/node/Node.cpp src/scene/node/Node.h
         src/scene/node/NodeFactory.cpp src/scene/node/NodeFactory.h
         # component
-        src/component/ComponentFactory.cpp src/component/ComponentFactory.h
         src/component/Component.cpp src/component/Component.h
         src/component/TransformComponent.cpp src/component/TransformComponent.h
-        src/component/Material.cpp src/component/Material.h
         src/component/Camera.cpp src/component/Camera.h
         # shape
-        src/component/Shape.cpp src/component/Shape.h
+        src/component/shape/Shape.cpp src/component/shape/Shape.h
         src/component/shape/Sphere.cpp src/component/shape/Sphere.h
-        src/component/shape/Triangle.cpp src/component/shape/Triangle.h
+        src/component/shape/Quad.cpp src/component/shape/Quad.h
+        # material
+        src/component/material/Material.cpp src/component/material/Material.h
+        src/component/material/LightMaterial.cpp src/component/material/LightMaterial.h
+        src/component/material/DiffuseMaterial.cpp src/component/material/DiffuseMaterial.h
+        src/component/material/DirectedLightMaterial.cpp src/component/material/DirectedLightMaterial.h
+        src/component/material/PositionnedLightMaterial.cpp src/component/material/PositionnedLightMaterial.h
+        src/component/material/SpotLightMaterial.cpp src/component/material/SpotLightMaterial.h
         # scene
         src/scene/SceneGraph.cpp src/scene/SceneGraph.h
-        src/scene/Scene.cpp src/scene/Scene.h)
+        src/scene/Scene.cpp src/scene/Scene.h
+        src/scene/example/CornellBox.cpp src/scene/example/CornellBox.h
+        )
 
 target_link_libraries(main
         ${ALL_LIBS}

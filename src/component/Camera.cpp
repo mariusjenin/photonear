@@ -9,17 +9,12 @@
 using namespace component;
 using namespace shader_manager;
 
-void Camera::load_in_shaders(GLFWwindow *window, const std::shared_ptr<VertFragShaders>& shaders) {
+void Camera::load_in_shaders(const std::shared_ptr<Shaders>& shaders, int width, int height) {
     auto node_camera = Component::get_node(this);
     auto trsf_comp_camera = Component::get_component<TransformComponent>(&*node_camera);
     Transform trsf = Transform(trsf_comp_camera->get_matrix_as_end_node());
 
     //PROJECTION
-    int width,height;
-    glfwGetWindowSize(window, &width, &height);
-
-//    std::cout << width<< " " << height <<" "<<m_fovy <<" "<<m_z_near <<" "<<m_z_far << std::endl;
-
     mat4 projection_mat = perspective(radians(m_fovy), (float)width/(float)height, m_z_near, m_z_far);
     glUniformMatrix4fv(shaders->get_shader_data_manager()->get_location(ShadersDataManager::PROJ_MAT_LOC_NAME), 1,
                        GL_FALSE, &projection_mat[0][0]);

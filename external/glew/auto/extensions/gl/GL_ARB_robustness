@@ -27,4 +27,4 @@ GL_ARB_robustness
 	void glGetnUniformfvARB (GLuint program, GLint location, GLsizei bufSize, GLfloat* params)
 	void glGetnUniformivARB (GLuint program, GLint location, GLsizei bufSize, GLint* params)
 	void glGetnUniformuivARB (GLuint program, GLint location, GLsizei bufSize, GLuint* params)
-	void glReadnPixelsARB (GLint x, GLint y, GLsizei m_width, GLsizei m_height, GLenum format, GLenum type, GLsizei bufSize, void* data)
+	void glReadnPixelsARB (GLint x, GLint y, GLsizei m_width_viewer, GLsizei m_height_viewer, GLenum format, GLenum type, GLsizei bufSize, void* data)

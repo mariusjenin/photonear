@@ -44,6 +44,6 @@ http://www.opengl.org/documentation/specs/version1.2/opengl1.2.1.pdf
 	GL_MAX_ELEMENTS_VERTICES 0x80E8
 	GL_MAX_ELEMENTS_INDICES 0x80E9
 	void glDrawRangeElements (GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const void *indices)
-	void glTexImage3D (GLenum target, GLint level, GLint internalFormat, GLsizei m_width, GLsizei m_height, GLsizei depth, GLint border, GLenum format, GLenum type, const void *pixels)
-	void glTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei m_width, GLsizei m_height, GLsizei depth, GLenum format, GLenum type, const void *pixels)
-	void glCopyTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei m_width, GLsizei m_height)
+	void glTexImage3D (GLenum target, GLint level, GLint internalFormat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLint border, GLenum format, GLenum type, const void *pixels)
+	void glTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLenum format, GLenum type, const void *pixels)
+	void glCopyTexSubImage3D (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei m_width_viewer, GLsizei m_height_viewer)

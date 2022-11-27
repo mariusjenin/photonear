@@ -24,5 +24,5 @@ GL_ARB_texture_multisample
 	GL_MAX_INTEGER_SAMPLES 0x9110
 	void glGetMultisamplefv (GLenum pname, GLuint index, GLfloat* val)
 	void glSampleMaski (GLuint index, GLbitfield mask)
-	void glTexImage2DMultisample (GLenum target, GLsizei samples, GLenum internalformat, GLsizei m_width, GLsizei m_height, GLboolean fixedsamplelocations)
-	void glTexImage3DMultisample (GLenum target, GLsizei samples, GLenum internalformat, GLsizei m_width, GLsizei m_height, GLsizei depth, GLboolean fixedsamplelocations)
+	void glTexImage2DMultisample (GLenum target, GLsizei samples, GLenum internalformat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLboolean fixedsamplelocations)
+	void glTexImage3DMultisample (GLenum target, GLsizei samples, GLenum internalformat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLboolean fixedsamplelocations)

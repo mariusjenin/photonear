@@ -30,7 +30,7 @@ namespace component {
 
         int get_priority() const;
 
-        void load_in_shaders(GLFWwindow *window, const std::shared_ptr<VertFragShaders>& shaders);
+        void load_in_shaders(const std::shared_ptr<Shaders>& shaders, int width, int height);
     };
 }
 

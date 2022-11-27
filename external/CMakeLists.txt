@@ -16,8 +16,8 @@ add_definitions(
 add_subdirectory (glfw)
 
 include_directories(
-	glfw/include/GLFW/
-	glew/include/
+		glfw/include/GLFW/
+		glew/include/
 )
 
 if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
@@ -38,8 +38,7 @@ endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 ### GLEW ###
 
 set(GLEW_SOURCE
-	glew/src/glew.c
-        stbi/include_stbi.h)
+	glew/src/glew.c)
 
 set(GLEW_HEADERS
 )

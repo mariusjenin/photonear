@@ -3,9 +3,9 @@ http://www.opengl.org/registry/specs/NV/texture_multisample.txt
 GL_NV_texture_multisample
 	GL_TEXTURE_COVERAGE_SAMPLES_NV 0x9045
 	GL_TEXTURE_COLOR_SAMPLES_NV 0x9046
-	void glTexImage2DMultisampleCoverageNV (GLenum target, GLsizei coverageSamples, GLsizei colorSamples, GLint internalFormat, GLsizei m_width, GLsizei m_height, GLboolean fixedSampleLocations)
-	void glTexImage3DMultisampleCoverageNV (GLenum target, GLsizei coverageSamples, GLsizei colorSamples, GLint internalFormat, GLsizei m_width, GLsizei m_height, GLsizei depth, GLboolean fixedSampleLocations)
-	void glTextureImage2DMultisampleCoverageNV (GLuint texture, GLenum target, GLsizei coverageSamples, GLsizei colorSamples, GLint internalFormat, GLsizei m_width, GLsizei m_height, GLboolean fixedSampleLocations)
-	void glTextureImage2DMultisampleNV (GLuint texture, GLenum target, GLsizei samples, GLint internalFormat, GLsizei m_width, GLsizei m_height, GLboolean fixedSampleLocations)
-	void glTextureImage3DMultisampleCoverageNV (GLuint texture, GLenum target, GLsizei coverageSamples, GLsizei colorSamples, GLint internalFormat, GLsizei m_width, GLsizei m_height, GLsizei depth, GLboolean fixedSampleLocations)
-	void glTextureImage3DMultisampleNV (GLuint texture, GLenum target, GLsizei samples, GLint internalFormat, GLsizei m_width, GLsizei m_height, GLsizei depth, GLboolean fixedSampleLocations)
+	void glTexImage2DMultisampleCoverageNV (GLenum target, GLsizei coverageSamples, GLsizei colorSamples, GLint internalFormat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLboolean fixedSampleLocations)
+	void glTexImage3DMultisampleCoverageNV (GLenum target, GLsizei coverageSamples, GLsizei colorSamples, GLint internalFormat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLboolean fixedSampleLocations)
+	void glTextureImage2DMultisampleCoverageNV (GLuint texture, GLenum target, GLsizei coverageSamples, GLsizei colorSamples, GLint internalFormat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLboolean fixedSampleLocations)
+	void glTextureImage2DMultisampleNV (GLuint texture, GLenum target, GLsizei samples, GLint internalFormat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLboolean fixedSampleLocations)
+	void glTextureImage3DMultisampleCoverageNV (GLuint texture, GLenum target, GLsizei coverageSamples, GLsizei colorSamples, GLint internalFormat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLboolean fixedSampleLocations)
+	void glTextureImage3DMultisampleNV (GLuint texture, GLenum target, GLsizei samples, GLint internalFormat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLboolean fixedSampleLocations)

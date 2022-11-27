@@ -4,4 +4,4 @@ GL_ANGLE_framebuffer_multisample
 	GL_RENDERBUFFER_SAMPLES_ANGLE 0x8CAB
 	GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_ANGLE 0x8D56
 	GL_MAX_SAMPLES_ANGLE 0x8D57
-	void glRenderbufferStorageMultisampleANGLE (GLenum target, GLsizei samples, GLenum internalformat, GLsizei m_width, GLsizei m_height)
+	void glRenderbufferStorageMultisampleANGLE (GLenum target, GLsizei samples, GLenum internalformat, GLsizei m_width_viewer, GLsizei m_height_viewer)

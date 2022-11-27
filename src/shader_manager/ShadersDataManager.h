@@ -17,12 +17,10 @@
 
 #include <map>
 #include <vector>
+#include "Light.h"
 
-//namespace light {
-//    class LightShader;
-//}
-//using namespace light;
 namespace shader_manager {
+    class LightShader;
     /// Manager of the locations in shaders
     class ShadersDataManager {
     private:
@@ -43,23 +41,13 @@ namespace shader_manager {
         static constexpr const char *MATERIAL_TYPE_TEXTURE_LOC_NAME = "MATERIAL_TYPE_TEXTURE";
         //MATERIAL
         static constexpr const char *MATERIAL_TYPE_LOC_NAME = "material.type";
-        static constexpr const char *MATERIAL_SHININESS_LOC_NAME = "material.shininess";
-        static constexpr const char *MATERIAL_AMBIENT_LOC_NAME = "material.ambient";
-        static constexpr const char *MATERIAL_DIFFUSE_LOC_NAME = "material.diffuse";
-        static constexpr const char *MATERIAL_SPECULAR_LOC_NAME = "material.specular";
-        static constexpr const char *MATERIAL_DIFFUSE_TEXTURE_LOC_NAME = "material.diffuse_texture";
-        static constexpr const char *MATERIAL_SPECULAR_TEXTURE_LOC_NAME = "material.specular_texture";
+        static constexpr const char *MATERIAL_ALBEDO_COLOR_LOC_NAME = "material.albedo";
+        static constexpr const char *MATERIAL_ALBEDO_TEXTURE_LOC_NAME = "material.albedo_texture";
+        static constexpr const char *MATERIAL_EMISSIVE_LOC_NAME = "material.emissive";
         //LIGHT TYPE
         static constexpr const char *LIGHT_TYPE_DIRECTIONAL_LOC_NAME = "LIGHT_TYPE_DIRECTIONAL";
         static constexpr const char *LIGHT_TYPE_POINT_LOC_NAME = "LIGHT_TYPE_POINT";
         static constexpr const char *LIGHT_TYPE_SPOT_LOC_NAME = "LIGHT_TYPE_SPOT";
-        //ON TOP
-        static constexpr const char *IS_NODE_ON_TOP_LOC_NAME = "is_node_on_top";
-        static constexpr const char *ON_TOP_POSITION_LOC_NAME = "on_top_position";
-        static constexpr const char *ON_TOP_NORMAL_LOC_NAME = "on_top_normal";
-        static constexpr const char *ON_TOP_UV_LOC_NAME = "on_top_uv";
-        static constexpr const char *ON_TOP_MODEL_LOC_NAME = "on_top_model";
-        static constexpr const char *ON_TOP_HEIGHT_ADJUSTMENT_LOC_NAME = "on_top_height_adjustement";
         //SHADOW MAP
         static constexpr const char *SHADOW_MAP_ARRAY_LOC_NAME = "shadow_maps";
         static constexpr const char *SHADOW_MAP_DEPTH_VP_MAT_LOC_NAME = "depth_vp_mat";
@@ -78,12 +66,6 @@ namespace shader_manager {
          * @param program_id
          */
         void load_view_pos_location(GLuint program_id);
-
-        /**
-         * Load the location of the node on top datas
-         * @param program_id
-         */
-        void load_node_on_top_locations(GLuint program_id);
 
         /**
          * Load the location and the datas of the \link light::Light Light\endlink Type Constants
@@ -130,13 +112,13 @@ namespace shader_manager {
          */
         GLint get_location(const std::string &name);
 
-//        /**
-//         * Load the data of the lights given a list of \link light::LightShader LightShader\endlink
-//         * @param program_id
-//         * @param lights_shader
-//         * @param size_lights
-//         */
-//        void load_lights(GLuint program_id,  LightShader lights_shader[], int size_lights);
+        /**
+         * Load the data of the lights given a list of \link light::LightShader LightShader\endlink
+         * @param program_id
+         * @param lights_shader
+         * @param size_lights
+         */
+        void load_lights(GLuint program_id,  LightShader lights_shader[], int size_lights);
 
         /**
          * Load the location of the matrix of the shadow map

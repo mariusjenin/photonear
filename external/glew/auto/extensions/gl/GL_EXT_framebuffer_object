@@ -68,4 +68,4 @@ GL_EXT_framebuffer_object
 	void glGetRenderbufferParameterivEXT (GLenum target, GLenum pname, GLint* params)
 	GLboolean glIsFramebufferEXT (GLuint framebuffer)
 	GLboolean glIsRenderbufferEXT (GLuint renderbuffer)
-	void glRenderbufferStorageEXT (GLenum target, GLenum internalformat, GLsizei m_width, GLsizei m_height)
+	void glRenderbufferStorageEXT (GLenum target, GLenum internalformat, GLsizei m_width_viewer, GLsizei m_height_viewer)

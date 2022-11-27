@@ -29,10 +29,11 @@
 #include <assert.h>
 #include <stddef.h>
 
-#include <glad/glad.h>
+#include <glad/gl.h>
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
-/* Map m_height updates */
+/* Map height updates */
 #define MAX_CIRCLE_SIZE (5.0f)
 #define MAX_DISPLACEMENT (1.0f)
 #define DISPLACEMENT_SIGN_LIMIT (0.3f)
@@ -48,7 +49,7 @@
 
 
 /**********************************************************************
- * Default shader_manager programs
+ * Default shader programs
  *********************************************************************/
 
 static const char* vertex_shader_text =
@@ -73,7 +74,7 @@ static const char* fragment_shader_text =
 "}\n";
 
 /**********************************************************************
- * Values for shader_manager uniforms
+ * Values for shader uniforms
  *********************************************************************/
 
 /* Frustum configuration */
@@ -107,7 +108,7 @@ static GLuint  map_line_indices[2*MAP_NUM_LINES];
 
 /* Store uniform location for the shaders
  * Those values are setup as part of the process of creating
- * the shader_manager program. They should not be used before creating
+ * the shader program. They should not be used before creating
  * the program.
  */
 static GLuint mesh;
@@ -117,7 +118,7 @@ static GLuint mesh_vbo[4];
  * OpenGL helper functions
  *********************************************************************/
 
-/* Creates a shader_manager object of the specified type using the specified text
+/* Creates a shader object of the specified type using the specified text
  */
 static GLuint make_shader(GLenum type, const char* text)
 {
@@ -134,7 +135,7 @@ static GLuint make_shader(GLenum type, const char* text)
         glGetShaderiv(shader, GL_COMPILE_STATUS, &shader_ok);
         if (shader_ok != GL_TRUE)
         {
-            fprintf(stderr, "ERROR: Failed to compile %s shader_manager\n", (type == GL_FRAGMENT_SHADER) ? "fragment" : "vertex" );
+            fprintf(stderr, "ERROR: Failed to compile %s shader\n", (type == GL_FRAGMENT_SHADER) ? "fragment" : "vertex" );
             glGetShaderInfoLog(shader, 8192, &log_length,info_log);
             fprintf(stderr, "ERROR: \n%s\n\n", info_log);
             glDeleteShader(shader);
@@ -161,11 +162,11 @@ static GLuint make_shader_program(const char* vs_text, const char* fs_text)
         fragment_shader = make_shader(GL_FRAGMENT_SHADER, fs_text);
         if (fragment_shader != 0u)
         {
-            /* make the program that connect the two shader_manager and link it */
+            /* make the program that connect the two shader and link it */
             program = glCreateProgram();
             if (program != 0u)
             {
-                /* attach both shader_manager and link */
+                /* attach both shader and link */
                 glAttachShader(program, vertex_shader);
                 glAttachShader(program, fragment_shader);
                 glLinkProgram(program);
@@ -173,7 +174,7 @@ static GLuint make_shader_program(const char* vs_text, const char* fs_text)
 
                 if (program_ok != GL_TRUE)
                 {
-                    fprintf(stderr, "ERROR, failed to link shader_manager program\n");
+                    fprintf(stderr, "ERROR, failed to link shader program\n");
                     glGetProgramInfoLog(program, 8192, &log_length, info_log);
                     fprintf(stderr, "ERROR: \n%s\n\n", info_log);
                     glDeleteProgram(program);
@@ -185,13 +186,13 @@ static GLuint make_shader_program(const char* vs_text, const char* fs_text)
         }
         else
         {
-            fprintf(stderr, "ERROR: Unable to load fragment shader_manager\n");
+            fprintf(stderr, "ERROR: Unable to load fragment shader\n");
             glDeleteShader(vertex_shader);
         }
     }
     else
     {
-        fprintf(stderr, "ERROR: Unable to load vertex shader_manager\n");
+        fprintf(stderr, "ERROR: Unable to load vertex shader\n");
     }
     return program;
 }
@@ -291,12 +292,12 @@ static void generate_heightmap__circle(float* center_x, float* center_y,
 {
     float sign;
     /* random value for element in between [0-1.0] */
-    *center_x = (MAP_SIZE * rand()) / (1.0f * RAND_MAX);
-    *center_y = (MAP_SIZE * rand()) / (1.0f * RAND_MAX);
-    *size = (MAX_CIRCLE_SIZE * rand()) / (1.0f * RAND_MAX);
-    sign = (1.0f * rand()) / (1.0f * RAND_MAX);
+    *center_x = (MAP_SIZE * rand()) / (float) RAND_MAX;
+    *center_y = (MAP_SIZE * rand()) / (float) RAND_MAX;
+    *size = (MAX_CIRCLE_SIZE * rand()) / (float) RAND_MAX;
+    sign = (1.0f * rand()) / (float) RAND_MAX;
     sign = (sign < DISPLACEMENT_SIGN_LIMIT) ? -1.0f : 1.0f;
-    *displacement = (sign * (MAX_DISPLACEMENT * rand())) / (1.0f * RAND_MAX);
+    *displacement = (sign * (MAX_DISPLACEMENT * rand())) / (float) RAND_MAX;
 }
 
 /* Run the specified number of iterations of the generation process for the
@@ -319,7 +320,7 @@ static void update_map(int num_iter)
         {
             GLfloat dx = center_x - map_vertices[0][ii];
             GLfloat dz = center_z - map_vertices[2][ii];
-            GLfloat pd = (2.0f * sqrtf((dx * dx) + (dz * dz))) / circle_size;
+            GLfloat pd = (2.0f * (float) sqrt((dx * dx) + (dz * dz))) / circle_size;
             if (fabs(pd) <= 1.0f)
             {
                 /* tx,tz is within the circle */
@@ -386,7 +387,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
     {
         case GLFW_KEY_ESCAPE:
             /* Exit program on Escape */
-            glfwSetWindowShouldClose(window, GL_TRUE);
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
             break;
     }
 }
@@ -406,6 +407,7 @@ int main(int argc, char** argv)
     float f;
     GLint uloc_modelview;
     GLint uloc_project;
+    int width, height;
 
     GLuint shader_program;
 
@@ -414,11 +416,11 @@ int main(int argc, char** argv)
     if (!glfwInit())
         exit(EXIT_FAILURE);
 
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
     window = glfwCreateWindow(800, 600, "GLFW OpenGL3 Heightmap demo", NULL, NULL);
     if (! window )
@@ -431,7 +433,7 @@ int main(int argc, char** argv)
     glfwSetKeyCallback(window, key_callback);
 
     glfwMakeContextCurrent(window);
-    gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    gladLoadGL(glfwGetProcAddress);
 
     /* Prepare opengl resources for rendering */
     shader_program = make_shader_program(vertex_shader_text, fragment_shader_text);
@@ -466,10 +468,11 @@ int main(int argc, char** argv)
     make_mesh(shader_program);
 
     /* Create vao + vbo to store the mesh */
-    /* Create the vbo to store all the information for the grid and the m_height */
+    /* Create the vbo to store all the information for the grid and the height */
 
     /* setup the scene ready for rendering */
-    glViewport(0, 0, 800, 600);
+    glfwGetFramebufferSize(window, &width, &height);
+    glViewport(0, 0, width, height);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     /* main loop */
@@ -480,14 +483,14 @@ int main(int argc, char** argv)
     while (!glfwWindowShouldClose(window))
     {
         ++frame;
-        /* resolve the next frame */
+        /* render the next frame */
         glClear(GL_COLOR_BUFFER_BIT);
         glDrawElements(GL_LINES, 2* MAP_NUM_LINES , GL_UNSIGNED_INT, 0);
 
         /* display and process events through callbacks */
         glfwSwapBuffers(window);
         glfwPollEvents();
-        /* Check the frame rate and resolve the heightmap if needed */
+        /* Check the frame rate and update the heightmap if needed */
         dt = glfwGetTime();
         if ((dt - last_update_time) > 0.2)
         {

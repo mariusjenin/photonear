@@ -93,5 +93,5 @@ GL_ARB_framebuffer_object
 	void glGetRenderbufferParameteriv (GLenum target, GLenum pname, GLint* params)
 	GLboolean glIsFramebuffer (GLuint framebuffer)
 	GLboolean glIsRenderbuffer (GLuint renderbuffer)
-	void glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei m_width, GLsizei m_height)
-	void glRenderbufferStorageMultisample (GLenum target, GLsizei samples, GLenum internalformat, GLsizei m_width, GLsizei m_height)
+	void glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei m_width_viewer, GLsizei m_height_viewer)
+	void glRenderbufferStorageMultisample (GLenum target, GLsizei samples, GLenum internalformat, GLsizei m_width_viewer, GLsizei m_height_viewer)

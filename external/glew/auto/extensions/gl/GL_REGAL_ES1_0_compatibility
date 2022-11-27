@@ -14,7 +14,7 @@ GL_REGAL_ES1_0_compatibility
 	void glLightModelxv (GLenum pname, const GLfixed* params)
 	void glLightx (GLenum light, GLenum pname, GLfixed param)
 	void glLightxv (GLenum light, GLenum pname, const GLfixed* params)
-	void glLineWidthx (GLfixed m_width)
+	void glLineWidthx (GLfixed m_width_viewer)
 	void glLoadMatrixx (const GLfixed* m)
 	void glMaterialx (GLenum face, GLenum pname, GLfixed param)
 	void glMaterialxv (GLenum face, GLenum pname, const GLfixed* params)

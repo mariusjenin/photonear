@@ -7,7 +7,7 @@
 using namespace component::shape;
 
 
-Sphere::Sphere(bool both_face_visible, float radius, int slices, int stacks, point center) : Shape(
+Sphere::Sphere(float radius, int slices, int stacks, point center, bool both_face_visible) : Shape(
         both_face_visible) {
     m_center = center;
     m_radius = radius;
@@ -31,9 +31,6 @@ void Sphere::assign_mesh_sphere(float radius, int slices, int stacks) {
         for (j = 0; j <= slices; j++) {
             u = (float) j * du;
             coords = spheric_to_euclidian_coords(u, v);
-//                x = cos(u) * cos(v);
-//                y = sin(u) * cos(v);
-//                z = sin(v);
             m_vertex_positions.emplace_back(radius * coords.x, radius * coords.y, radius * coords.z);
             m_vertex_normals.emplace_back(radius * coords.x, radius * coords.y, radius * coords.z);
             m_vertex_tex_coords.emplace_back((float) j / (float) slices, (float) i / (float) stacks);

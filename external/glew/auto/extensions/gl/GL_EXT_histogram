@@ -20,7 +20,7 @@ GL_EXT_histogram
 	void glGetMinmaxEXT (GLenum target, GLboolean reset, GLenum format, GLenum type, void *values)
 	void glGetMinmaxParameterfvEXT (GLenum target, GLenum pname, GLfloat* params)
 	void glGetMinmaxParameterivEXT (GLenum target, GLenum pname, GLint* params)
-	void glHistogramEXT (GLenum target, GLsizei m_width, GLenum internalformat, GLboolean sink)
+	void glHistogramEXT (GLenum target, GLsizei m_width_viewer, GLenum internalformat, GLboolean sink)
 	void glMinmaxEXT (GLenum target, GLenum internalformat, GLboolean sink)
 	void glResetHistogramEXT (GLenum target)
 	void glResetMinmaxEXT (GLenum target)

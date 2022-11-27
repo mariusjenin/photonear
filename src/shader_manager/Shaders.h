@@ -14,16 +14,16 @@
 #include <algorithm>
 #include <sstream>
 #include "GL/glew.h"
-//#include "TextureManager.hpp"
-
-#include <ShadersDataManager.h>
+#include "glm/glm.hpp"
 
 namespace shader_manager {
+    class TextureManager;
+    class ShadersDataManager;
     /**
      * Vec3 used in shader
      */
     struct alignas(4) glsl_bool {
-        float b;
+        int value;
 
         glsl_bool();
 
@@ -32,21 +32,6 @@ namespace shader_manager {
          * @param boolean
          */
         explicit glsl_bool(bool boolean);
-    };
-
-    /**
-     * Vec3 used in shader
-     */
-    struct alignas(4) glsl_int {
-        float x;
-
-        glsl_int();
-
-        /**
-         * Construct a glsl_int from an int
-         * @param n
-         */
-        explicit glsl_int(int n);
     };
 
     /**
@@ -67,7 +52,7 @@ namespace shader_manager {
     /**
      * Mat4 used in shader
      */
-    struct alignas(64) glsl_mat4 {
+    struct glsl_mat4 {
         float x0, x1, x2, x3, y0, y1, y2, y3, z0, z1, z2, z3, w0, w1, w2, w3;
 
         glsl_mat4();
@@ -84,7 +69,7 @@ namespace shader_manager {
     protected:
         GLuint m_program_id;
         ShadersDataManager *m_shader_data_manager;
-//        TextureManager *m_texture_manager;
+        TextureManager *m_texture_manager;
 
         /**
          * Constructor of the Shaders given paths to the shaders files
@@ -111,11 +96,11 @@ namespace shader_manager {
          */
         ShadersDataManager *get_shader_data_manager();
 
-//        /**
-//         * Getter of the TextureManager
-//         * @return texture_manager
-//         */
-//        TextureManager *get_texture_manager();
+        /**
+         * Getter of the TextureManager
+         * @return texture_manager
+         */
+        TextureManager *get_texture_manager();
 
         /// Load all the locations thanks to the ShadersDataManager
         virtual void load_location() const = 0;
@@ -123,4 +108,4 @@ namespace shader_manager {
     };
 }
 
-#endif //GAME_ENGINE_SHADERS_HPP
+#endif //PHOTONEAR_SHADERS_HPP

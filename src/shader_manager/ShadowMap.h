@@ -5,7 +5,7 @@
 #ifndef PHOTONEAR_SHADOWMAP_H
 #define PHOTONEAR_SHADOWMAP_H
 
-#include "Shaders.h"
+#include "GL/glew.h"
 
 namespace shader_manager{
     ///Represents a Shadow Map

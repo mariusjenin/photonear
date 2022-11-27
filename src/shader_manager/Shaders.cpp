@@ -3,6 +3,8 @@
 //
 
 #include "Shaders.h"
+#include "TextureManager.h"
+#include <ShadersDataManager.h>
 
 using namespace shader_manager;
 
@@ -17,6 +19,15 @@ glsl_vec3::glsl_vec3() {
     y = 0;
     z = 0;
 }
+
+glsl_bool::glsl_bool() {
+    value = 0;
+}
+
+glsl_bool::glsl_bool(bool boolean) {
+    value = boolean?1:0;
+}
+
 
 
 glsl_mat4::glsl_mat4(glm::mat4 m) {
@@ -35,7 +46,7 @@ glsl_mat4::glsl_mat4() {
 
 Shaders::Shaders(const char *vertex_file_path, const char *fragment_file_path) {
     m_shader_data_manager = new ShadersDataManager();
-//    m_texture_manager = new TextureManager(m_shader_data_manager);
+    m_texture_manager = new TextureManager(m_shader_data_manager);
 
     // Create the shaders
     GLuint vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
@@ -138,26 +149,10 @@ ShadersDataManager *Shaders::get_shader_data_manager() {
     return m_shader_data_manager;
 }
 
-//TextureManager *Shaders::get_texture_manager() {
-//    return m_texture_manager;
-//}
+TextureManager *Shaders::get_texture_manager() {
+    return m_texture_manager;
+}
 
 void Shaders::use() const {
     glUseProgram(m_program_id);
-}
-
-glsl_bool::glsl_bool() {
-    b = 0.0f;
-}
-
-glsl_bool::glsl_bool(bool boolean) {
-    b = boolean?1.0f:0.0f;
-}
-
-glsl_int::glsl_int() {
-    x = 0;
-}
-
-glsl_int::glsl_int(int n) {
-    x = (float)n;
 }

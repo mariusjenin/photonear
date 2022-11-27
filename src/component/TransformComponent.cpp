@@ -4,7 +4,7 @@
 #include <utility>
 
 #include "TransformComponent.h"
-#include "printer.h"
+#include <ShadersDataManager.h>
 
 
 using namespace component;
@@ -53,7 +53,7 @@ void TransformComponent::compute_trsf_scene_graph_node(AbstractNode* node) {
 glm::mat4 TransformComponent::get_matrix(bool inverse){
     auto node = Component::get_node(this);
     auto trsf_mat = m_transform->get_matrix(inverse);
-    auto parent_trsf = Component::get_parent_component_recursive<TransformComponent>(&*node);
+    auto parent_trsf = Component::get_nearest_component_upper<TransformComponent>(&*node->get_parent());
     if(parent_trsf == nullptr){
         return trsf_mat;
     }
@@ -69,7 +69,7 @@ glm::mat4 TransformComponent::get_matrix_as_end_node(bool inverse){
     auto node = Component::get_node(this);
     auto trsf_mat = m_transform->get_matrix(inverse);
     auto local_trsf_mat = m_local_transform->get_matrix(inverse);
-    auto parent_trsf = Component::get_parent_component_recursive<TransformComponent>(&*node);
+    auto parent_trsf = Component::get_nearest_component_upper<TransformComponent>(&*node->get_parent());
     if(parent_trsf == nullptr){
         if(inverse){
             return local_trsf_mat * trsf_mat;

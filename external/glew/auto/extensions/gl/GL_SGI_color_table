@@ -19,8 +19,8 @@ GL_SGI_color_table
 	GL_COLOR_TABLE_INTENSITY_SIZE_SGI 0x80DF
 	void glColorTableParameterfvSGI (GLenum target, GLenum pname, const GLfloat* params)
 	void glColorTableParameterivSGI (GLenum target, GLenum pname, const GLint* params)
-	void glColorTableSGI (GLenum target, GLenum internalformat, GLsizei m_width, GLenum format, GLenum type, const void *table)
-	void glCopyColorTableSGI (GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei m_width)
+	void glColorTableSGI (GLenum target, GLenum internalformat, GLsizei m_width_viewer, GLenum format, GLenum type, const void *table)
+	void glCopyColorTableSGI (GLenum target, GLenum internalformat, GLint x, GLint y, GLsizei m_width_viewer)
 	void glGetColorTableParameterfvSGI (GLenum target, GLenum pname, GLfloat* params)
 	void glGetColorTableParameterivSGI (GLenum target, GLenum pname, GLint* params)
 	void glGetColorTableSGI (GLenum target, GLenum format, GLenum type, void *table)

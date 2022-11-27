@@ -4,6 +4,6 @@ GL_ARB_invalidate_subdata
 	void glInvalidateBufferData (GLuint buffer)
 	void glInvalidateBufferSubData (GLuint buffer, GLintptr offset, GLsizeiptr length)
 	void glInvalidateFramebuffer (GLenum target, GLsizei numAttachments, const GLenum* attachments)
-	void glInvalidateSubFramebuffer (GLenum target, GLsizei numAttachments, const GLenum* attachments, GLint x, GLint y, GLsizei m_width, GLsizei m_height)
+	void glInvalidateSubFramebuffer (GLenum target, GLsizei numAttachments, const GLenum* attachments, GLint x, GLint y, GLsizei m_width_viewer, GLsizei m_height_viewer)
 	void glInvalidateTexImage (GLuint texture, GLint level)
-	void glInvalidateTexSubImage (GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei m_width, GLsizei m_height, GLsizei depth)
+	void glInvalidateTexSubImage (GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth)

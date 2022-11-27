@@ -25,8 +25,8 @@ namespace component {
             void assign_mesh_sphere(float radius, int slices, int stacks);
 
         public:
-            explicit Sphere(bool both_face_visible = false, float radius = 1, int slices = 20, int stacks = 20,
-                            point center = {0, 0, 0});
+            explicit Sphere(float radius = 1, int slices = 20, int stacks = 20, point center = {0, 0, 0},
+                            bool both_face_visible = false);
         };
     }
 }

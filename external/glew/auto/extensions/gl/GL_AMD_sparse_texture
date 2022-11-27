@@ -10,5 +10,5 @@ GL_AMD_sparse_texture
 	GL_MAX_SPARSE_ARRAY_TEXTURE_LAYERS 0x919A
 	GL_MIN_SPARSE_LEVEL_AMD 0x919B
 	GL_MIN_LOD_WARNING_AMD 0x919C
-	void glTexStorageSparseAMD (GLenum target, GLenum internalFormat, GLsizei m_width, GLsizei m_height, GLsizei depth, GLsizei layers, GLbitfield flags)
-	void glTextureStorageSparseAMD (GLuint texture, GLenum target, GLenum internalFormat, GLsizei m_width, GLsizei m_height, GLsizei depth, GLsizei layers, GLbitfield flags)
+	void glTexStorageSparseAMD (GLenum target, GLenum internalFormat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLsizei layers, GLbitfield flags)
+	void glTextureStorageSparseAMD (GLuint texture, GLenum target, GLenum internalFormat, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLsizei layers, GLbitfield flags)

@@ -5,13 +5,14 @@
 #ifndef PHOTONEAR_VERTFRAGSHADERS_H
 #define PHOTONEAR_VERTFRAGSHADERS_H
 
+#include <memory>
 #include "Shaders.h"
 #include "ShadowMapShaders.h"
 
 namespace shader_manager{
     class VertFragShaders : public Shaders{
     private:
-        ShadowMapShaders* m_shadow_map_shaders;
+        std::shared_ptr<ShadowMapShaders> m_shadow_map_shaders;
     public:
         /**
          * Constructor of the MainShaders
@@ -26,7 +27,7 @@ namespace shader_manager{
          * Getter of the Shaders of the Shadow Map
          * @return shadow_map_shaders
          */
-        ShadowMapShaders* get_shadow_map_shaders() const;
+        std::shared_ptr<ShadowMapShaders> get_shadow_map_shaders() const;
     };
 }
 

@@ -12,5 +12,5 @@ GL_ARB_sparse_texture
 	GL_NUM_VIRTUAL_PAGE_SIZES_ARB 0x91A8
 	GL_SPARSE_TEXTURE_FULL_ARRAY_CUBE_MIPMAPS_ARB 0x91A9
 	GL_NUM_SPARSE_LEVELS_ARB 0x91AA
-	void glTexPageCommitmentARB (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei m_width, GLsizei m_height, GLsizei depth, GLboolean commit)
-	void glTexturePageCommitmentEXT (GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei m_width, GLsizei m_height, GLsizei depth, GLboolean commit)
+	void glTexPageCommitmentARB (GLenum target, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLboolean commit)
+	void glTexturePageCommitmentEXT (GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLint zoffset, GLsizei m_width_viewer, GLsizei m_height_viewer, GLsizei depth, GLboolean commit)
