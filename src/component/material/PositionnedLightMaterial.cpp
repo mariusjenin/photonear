@@ -2,6 +2,7 @@
 // Created by mariusjenin on 24/11/22.
 //
 
+#include "imgui.h"
 #include <utility>
 
 #include "PositionnedLightMaterial.h"
@@ -11,9 +12,7 @@
 using namespace component;
 using namespace component::material;
 
-PositionnedLightMaterial::PositionnedLightMaterial(std::shared_ptr<TextureColor> albedo, float c_att,
-                                                                        float l_att, float q_att) : LightMaterial(std::move(albedo)){
-    m_constant_attenuation = c_att;
+PositionnedLightMaterial::PositionnedLightMaterial(std::shared_ptr<TextureColor> albedo, float l_att, float q_att) : LightMaterial(std::move(albedo)){
     m_linear_attenuation = l_att;
     m_quadratic_attenuation = q_att;
 }
@@ -28,9 +27,15 @@ Light PositionnedLightMaterial::generate_light() {
 
     Light light = LightMaterial::generate_light();
     light.set_type(LIGHT_TYPE_POINT);
-    light.set_constant_attenuation(m_constant_attenuation);
     light.set_linear_attenuation(m_linear_attenuation);
     light.set_quadratic_attenuation(m_quadratic_attenuation);
     light.set_position(position);
     return light;
+}
+
+void PositionnedLightMaterial::generate_component_editor_ui() {
+    Material::generate_component_editor_ui();
+    ImGui::Separator();
+    ImGui::SliderFloat("Linear Attenuation",&m_linear_attenuation,0,1,"%.3f", ImGuiSliderFlags_Logarithmic);
+    ImGui::SliderFloat("Quadratic Attenuation",&m_quadratic_attenuation,0,1,"%.3f", ImGuiSliderFlags_Logarithmic);
 }

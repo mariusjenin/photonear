@@ -22,6 +22,8 @@ namespace texture {
         virtual color value(float u, float v, point p) const = 0;
 
         virtual void load_in_shaders(const std::shared_ptr<Shaders>& shaders) = 0;
+
+        virtual void generate_ui(const std::string& name) =0;
     };
 }
 

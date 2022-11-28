@@ -29,18 +29,18 @@ void CornellBox::init_scene_graph() {
 
     //CREATE THE SCENE GRAPH
     auto root = NodeFactory::create_root_node();
-    auto camera_node = NodeFactory::create_node(root);
-    auto content_node = NodeFactory::create_node(root);
-    auto light_node = NodeFactory::create_node(root);
+    auto camera_node = NodeFactory::create_node(root,"CameraNode");
+    auto content_node = NodeFactory::create_node(root,"ContentNode");
+    auto light_node = NodeFactory::create_node(root,"LightNode");
 
     // Wall Node
-    auto wall_node = NodeFactory::create_node(root);
-    auto wall_front_node = NodeFactory::create_node(wall_node);
-    auto wall_back_node = NodeFactory::create_node(wall_node);
-    auto wall_right_node = NodeFactory::create_node(wall_node);
-    auto wall_left_node = NodeFactory::create_node(wall_node);
-    auto wall_top_node = NodeFactory::create_node(wall_node);
-    auto wall_bottom_node = NodeFactory::create_node(wall_node);
+    auto wall_node = NodeFactory::create_node(root,"WallNode");
+    auto wall_front_node = NodeFactory::create_node(wall_node,"WallFrontNode");
+    auto wall_back_node = NodeFactory::create_node(wall_node,"WallBackNode");
+    auto wall_right_node = NodeFactory::create_node(wall_node,"WallRightNode");
+    auto wall_left_node = NodeFactory::create_node(wall_node,"WallLeftNode");
+    auto wall_top_node = NodeFactory::create_node(wall_node,"WallTopNode");
+    auto wall_bottom_node = NodeFactory::create_node(wall_node,"WallBottomNode");
 
     // Sphere Node
     auto sphere_1_node = NodeFactory::create_node(content_node);
@@ -53,18 +53,28 @@ void CornellBox::init_scene_graph() {
     auto light_4_node  = NodeFactory::create_node(light_node);
 
     // Wall
-    auto wall_front = make_shared<Quad>(vec3(-4, 8, -4), vec3(-4, 0, -4), vec3(4, 0, -4));
-    auto wall_back = make_shared<Quad>(vec3(4, 8, 4), vec3(4, 0, 4), vec3(-4, 0, 4));
-    auto wall_left = make_shared<Quad>(vec3(-4, 8, 4), vec3(-4, 0, 4), vec3(-4, 0, -4));
-    auto wall_right = make_shared<Quad>(vec3(4, 8, -4), vec3(4, 0, -4), vec3(4, 0, 4));
-    auto wall_top = make_shared<Quad>(vec3(-4, 8, 4), vec3(-4, 8, -4), vec3(4, 8, -4));
-    auto wall_bottom = make_shared<Quad>(vec3(-4, 0, -4), vec3(-4, 0, 4), vec3(4, 0, 4));
+    auto wall_front = make_shared<Quad>(8,8);
+    auto wall_back = make_shared<Quad>(8,8);
+    auto wall_left = make_shared<Quad>(8,8);
+    auto wall_right = make_shared<Quad>(8,8);
+    auto wall_top = make_shared<Quad>(8,8);
+    auto wall_bottom = make_shared<Quad>(8,8);
     Component::add_component_to_node(wall_front, wall_front_node);
     Component::add_component_to_node(wall_back, wall_back_node);
-    Component::add_component_to_node(wall_right, wall_right_node);
     Component::add_component_to_node(wall_left, wall_left_node);
+    Component::add_component_to_node(wall_right, wall_right_node);
     Component::add_component_to_node(wall_top, wall_top_node);
     Component::add_component_to_node(wall_bottom, wall_bottom_node);
+    auto trsf_wall_front = Component::get_component<TransformComponent>(&*wall_front_node)->get_transform();
+    trsf_wall_front->set_translation({0,4,-4}); trsf_wall_front->set_rotation({90,0,0});
+    auto trsf_wall_back = Component::get_component<TransformComponent>(&*wall_back_node)->get_transform();
+    trsf_wall_back->set_translation({0,4,4}); trsf_wall_back->set_rotation({-90,0,0});
+    auto trsf_wall_left = Component::get_component<TransformComponent>(&*wall_left_node)->get_transform();
+    trsf_wall_left->set_translation({-4,4,0}); trsf_wall_left->set_rotation({0,0,-90});
+    auto trsf_wall_right = Component::get_component<TransformComponent>(&*wall_right_node)->get_transform();
+    trsf_wall_right->set_translation({4,4,0}); trsf_wall_right->set_rotation({0,0,90});
+    auto trsf_wall_top = Component::get_component<TransformComponent>(&*wall_top_node)->get_transform();
+    trsf_wall_top->set_translation({0,8,0}); trsf_wall_top->set_rotation({180,0,0});
 
     //Sphere
     auto sphere_1 = make_shared<Sphere>(1,40,20);

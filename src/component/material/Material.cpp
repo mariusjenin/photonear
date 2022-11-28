@@ -2,10 +2,11 @@
 // Created by mariusjenin on 19/11/22.
 //
 
+#include <utility>
+
 #include "Material.h"
 #include "DiffuseMaterial.h"
-
-#include <utility>
+#include "Photonear.h"
 
 using namespace component;
 using namespace component::material;
@@ -35,5 +36,9 @@ void Material::load_in_shaders(const std::shared_ptr<Shaders> &shaders) {
 
 bool Material::is_emissive() const {
     return m_emissive;
+}
+
+void Material::generate_component_editor_ui() {
+    m_albedo->generate_ui("Albedo");
 }
 

@@ -16,12 +16,14 @@ namespace component {
         class Quad : public Shape {
         private:
             glm::vec3 m_normal{};
-            glm::vec3 m_points[4]{};
+            float m_length_x;
+            float m_length_z;
             void assign_mesh_plane();
 
         public:
-            explicit Quad(glm::vec3 top_left_pt = {-1, -1, -1}, glm::vec3 bot_left_pt = {-1, -1, 1},
-                          glm::vec3 bot_right_pt = {1, -1, 1}, bool both_face_visible = false);
+            explicit Quad(float length_x, float length_z, bool both_face_visible = false);
+
+            void generate_component_editor_ui() override;
         };
     }
 }

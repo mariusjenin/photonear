@@ -18,7 +18,6 @@ namespace shader_manager{
         vec3 m_albedo{};
         //Positionned Light
         vec3 m_position{};
-        float m_constant_attenuation{};
         float m_linear_attenuation{};
         float m_quadratic_attenuation{};
         //Directed Light
@@ -42,8 +41,6 @@ namespace shader_manager{
         const vec3 & get_albedo() const;
 
         const vec3 & get_position() const;
-
-        float get_constant_attenuation() const;
 
         float get_linear_attenuation() const;
 
@@ -72,8 +69,6 @@ namespace shader_manager{
         void set_albedo(vec3 albedo);
 
         void set_position(vec3 position);
-
-        void set_constant_attenuation(float c_att);
 
         void set_linear_attenuation(float l_att);
 
@@ -110,7 +105,6 @@ namespace shader_manager{
         glsl_vec3 m_albedo{};
         //Positionned Light
         glsl_vec3 position{};
-        float constant_attenuation{};
         float linear_attenuation{};
         float quadratic_attenuation{};
         //Directed Light

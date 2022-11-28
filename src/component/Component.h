@@ -26,6 +26,7 @@ using namespace scene::node;
 namespace component {
     /// Component addable to a Node in the SceneGraph Graph
     class Component {
+    private:
     protected:
 
         Component() = default;
@@ -83,7 +84,7 @@ namespace component {
         }
 
         /**
-         * Get a list of Component (can be from a specific Node)
+         * Get a list of Component of a specific type (can be from a specific Node)
          * @tparam T
          * @param node
          * @return components
@@ -104,6 +105,13 @@ namespace component {
                 return components;
             }
         }
+
+        /**
+         * Get all the Component of a Node
+         * @param node
+         * @return components
+         */
+        static std::vector<std::shared_ptr<Component>> get_components(AbstractNode *node);
 
         /**
          * Get a list of Component from children of a Node
@@ -173,6 +181,12 @@ namespace component {
          * @return node or nullptr if not found
          */
         static std::shared_ptr<AbstractNode> get_node(Component* component);
+
+        void generate_node_editor_ui();
+
+        virtual void generate_component_editor_ui() = 0;
+
+        std::string get_ui_name();
 
     };
 }

@@ -8,12 +8,12 @@
 
 using namespace common;
 
-Transform::Transform(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, int order_rotation) {
+Transform::Transform(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, OrderRotation order_rotation) {
     init(translation, rotation, scale, order_rotation);
 }
 
 Transform::Transform(glm::mat4 matrix) {
-    init({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, ORDER_YXZ);
+    init({0.0f, 0.0f, 0.0f}, {0.0f, 0.0f, 0.0f}, {1.0f, 1.0f, 1.0f}, OrderYXZ);
     m_matrix = matrix;
 }
 
@@ -54,7 +54,7 @@ void Transform::matrix_to_trs(glm::mat4 matrix_to_decompose, glm::mat4 &t, glm::
 
 glm::mat4
 Transform::local_get_matrix_with_values(const glm::vec3 tr, const glm::vec3 rot, const glm::vec3 sc,
-                                        int order_rotation, bool inverse) {
+                                        OrderRotation order_rotation, bool inverse) {
 
     glm::mat4 res_mat;
     glm::vec3 translate;
@@ -232,7 +232,7 @@ void Transform::apply_versor_list(std::vector<glm::vec3> *versors, bool inverse)
     apply_to_vec3_list(versors, false, true,inverse);
 }
 
-void Transform::init(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, int order_rotation) {
+void Transform::init(glm::vec3 translation, glm::vec3 rotation, glm::vec3 scale, OrderRotation order_rotation) {
     m_translate = translation;
     m_rot = rotation;
     m_scale = scale;
@@ -254,10 +254,14 @@ void Transform::set_matrix(const glm::mat4 &new_matrix, bool inverse) {
 }
 
 
-void Transform::set_order_rotation(int order_rotation) {
+void Transform::set_order_rotation(OrderRotation order_rotation) {
     bool same_order = order_rotation == m_order_rotation;
     m_up_to_date = m_up_to_date && same_order;
     m_inverse_up_to_date = m_inverse_up_to_date && same_order;
     m_order_rotation = order_rotation;
+}
+
+OrderRotation Transform::get_order_rotation() const {
+    return m_order_rotation;
 }
 

@@ -18,19 +18,23 @@ namespace component {
     class Camera : public Component {
 
     private:
-        int m_priority;
+        bool m_active{};
         float m_fovy;
         float m_z_near;
         float m_z_far;
 
     public:
-        explicit Camera(int priority = 0, float fovy = 45.0f, float z_near = 0.1f, float z_far = 10000.0f);
+        explicit Camera(bool active = true, float fovy = 45.0f, float z_near = 0.1f, float z_far = 10000.0f);
 
         ComponentType get_type() override;
 
-        int get_priority() const;
+        int is_active() const;
+
+        void set_active(bool active);
 
         void load_in_shaders(const std::shared_ptr<Shaders>& shaders, int width, int height);
+
+        void generate_component_editor_ui() override;
     };
 }
 

@@ -22,20 +22,7 @@ namespace scene {
              * Constructor of the Node
              * @param parent
              */
-            explicit Node(std::shared_ptr<AbstractNode> parent);
-
-            /**
-             * Load the Model matrices of the Node in the Shaders
-             * @param shaders
-             */
-            void load_model_matrices(Shaders *shaders);
-
-            /**
-             * Compute the position in the world of the Node
-             * @param v
-             * @return position
-             */
-            glm::vec3 get_position_in_world(glm::vec3 v = {0, 0, 0});
+            explicit Node(std::shared_ptr<AbstractNode> parent,std::string name);
 
             /**
              * Setter of the parent AbstractNode

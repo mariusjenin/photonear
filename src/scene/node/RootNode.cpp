@@ -1,15 +1,19 @@
 //
 // Created by mariusjenin on 19/11/22.
 //
+#include <utility>
+#include "imgui.h"
 
 #include "RootNode.h"
 
-#include <utility>
 #include "Component.h"
 
 
 using namespace scene::node;
 using namespace component;
+
+
+RootNode::RootNode(std::string name) : AbstractNode(std::move(name)) {}
 
 
 std::shared_ptr<AbstractNode> RootNode::get_parent() const {

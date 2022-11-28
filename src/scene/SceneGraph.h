@@ -18,7 +18,7 @@ namespace scene {
     public:
         explicit SceneGraph(std::shared_ptr<RootNode> rn);
 
-        std::shared_ptr<RootNode> get_root_node();
+        void generate_scene_graph_ui();
 
         void compute_scene_graph();
     };

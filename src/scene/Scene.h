@@ -57,6 +57,8 @@ namespace scene {
         GLuint get_texture() const;
 
         void set_viewer_size(int width, int height);
+
+        std::shared_ptr<SceneGraph> get_scene_graph();
     };
 }
 #endif //PHOTONEAR_SCENE_H

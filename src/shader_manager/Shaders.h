@@ -70,14 +70,17 @@ namespace shader_manager {
         GLuint m_program_id;
         ShadersDataManager *m_shader_data_manager;
         TextureManager *m_texture_manager;
+        bool m_testing_normal;
 
         /**
          * Constructor of the Shaders given paths to the shaders files
          * @param vertex_file_path
          * @param fragment_file_path
          */
-        Shaders(const char *vertex_file_path, const char *fragment_file_path);
+        Shaders(const char *vertex_file_path, const char *fragment_file_path, bool testing_normal = true);
     public:
+
+        bool is_testing_normal() const;
 
         /**
          * Getter of the program id

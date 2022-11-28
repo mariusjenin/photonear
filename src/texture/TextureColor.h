@@ -16,13 +16,15 @@ namespace texture {
 
         TextureColor(float r, float g, float b);
 
-        TextureColor(float v);
+        explicit TextureColor(float v);
 
         color value(float u, float v, point p) const override;
 
         void load_in_shaders(const std::shared_ptr<Shaders>& shaders) override;
 
         void load_in_light_shaders(Light* light);
+
+        void generate_ui(const std::string& name) override;
 
     private:
         color m_value{};

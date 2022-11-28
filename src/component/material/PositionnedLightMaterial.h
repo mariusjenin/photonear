@@ -12,14 +12,14 @@ namespace component {
     namespace material {
         class PositionnedLightMaterial : public LightMaterial{
         protected:
-            float m_constant_attenuation;
             float m_linear_attenuation;
             float m_quadratic_attenuation;
         public:
-            explicit PositionnedLightMaterial(std::shared_ptr<TextureColor> albedo = std::make_shared<TextureColor>(1.0f),
-                    float c_att = 0.f,float l_att=0.f,float q_att=0.f);
+            explicit PositionnedLightMaterial(std::shared_ptr<TextureColor> albedo = std::make_shared<TextureColor>(1.0f), float l_att=0.f,float q_att=0.f);
 
             Light generate_light() override;
+
+            void generate_component_editor_ui() override;
         };
     }
 }

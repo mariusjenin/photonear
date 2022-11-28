@@ -15,7 +15,6 @@ struct Light {
     vec3 albedo; float pad0;
     //Positionned Light
     vec3  position; float pad1;
-    float constant_attenuation;
     float linear_attenuation;
     float quadratic_attenuation;
     //Directed Light
@@ -97,9 +96,9 @@ vec3 compute_lambert(Light light, sampler2D shadow_map){
     }
 
     // ATTENUATION
-    if(( light.type == LIGHT_TYPE_POINT || light.type == LIGHT_TYPE_SPOT ) && (light.constant_attenuation != 0 || light.linear_attenuation != 0 || light.quadratic_attenuation != 0) ){
+    if(( light.type == LIGHT_TYPE_POINT || light.type == LIGHT_TYPE_SPOT ) && (light.linear_attenuation != 0 || light.quadratic_attenuation != 0) ){
         float distance    = length(light.position - fragment_pos);
-        float attenuation = 1.0f / (light.constant_attenuation + light.linear_attenuation * distance + light.quadratic_attenuation * (distance * distance));
+        float attenuation = 1.0f / (1 + light.linear_attenuation * distance + light.quadratic_attenuation * (distance * distance));
         lambert *= attenuation;
     }
 
@@ -120,7 +119,6 @@ vec3 compute_lambert(Light light, sampler2D shadow_map){
             vec2 texel_size = 1.0 / textureSize(shadow_map, 0);
             //BIAS
             float bias = max(light.bias_depth_map * (1.0 - dot(normal, light_dir)), light.bias_depth_map);
-//            float bias = max(0.1 * (1.0 - dot(normal, light_dir)), 0.0004);
             for(int x = -kernel_bounds; x <= kernel_bounds; ++x)
             {
                 for(int y = -kernel_bounds; y <= kernel_bounds; ++y)

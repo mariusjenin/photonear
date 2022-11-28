@@ -2,6 +2,8 @@
 // Created by mariusjenin on 22/11/22.
 //
 
+#include "imgui.h"
+
 #include "TextureColor.h"
 #include "Material.h"
 
@@ -37,4 +39,8 @@ void TextureColor::load_in_light_shaders(Light* light) {
 
 TextureColor::TextureColor(float v) {
     m_value = {v,v,v};
+}
+
+void TextureColor::generate_ui(const std::string& name) {
+    ImGui::ColorEdit3(name.c_str(),&m_value[0]);
 }

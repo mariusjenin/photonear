@@ -61,7 +61,7 @@ void Scene::update(float delta_time){
     auto cams = Component::get_components<Camera>();
     std::shared_ptr<Camera> camera = nullptr;
     for(const auto& cam : cams){
-        if(camera == nullptr || cam->get_priority() < camera->get_priority()){
+        if(camera == nullptr || cam->is_active()){
             camera = cam;
         }
     }
@@ -243,4 +243,8 @@ void Scene::resize_texture() const {
 
 GLuint Scene::get_texture() const {
     return m_texture;
+}
+
+std::shared_ptr<SceneGraph> Scene::get_scene_graph() {
+    return m_scene_graph;
 }

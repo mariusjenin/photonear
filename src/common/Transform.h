@@ -25,6 +25,15 @@ typedef vec3 versor;
 
 namespace common {
 
+    enum OrderRotation : int {
+        OrderZYX,
+        OrderZXY,
+        OrderYXZ,
+        OrderYZX,
+        OrderXYZ,
+        OrderXZY,
+    };
+
     enum TransformComputing : int {
         Classic,
         Inverse,
@@ -43,7 +52,7 @@ namespace common {
         mat4 m_inverse_matrix{};
         bool m_up_to_date{};
         bool m_inverse_up_to_date{};
-        int m_order_rotation{};
+        OrderRotation m_order_rotation{};
 
         /**
          * Compute a matrix with given values
@@ -54,7 +63,7 @@ namespace common {
          * @return matrix
          */
         static mat4
-        local_get_matrix_with_values(vec3 tr, vec3 rot, vec3 sc, int order_rotation, bool inverse = false);
+        local_get_matrix_with_values(vec3 tr, vec3 rot, vec3 sc, OrderRotation order_rotation, bool inverse = false);
 
         /**
          * Apply the Transform to a vec3 (General method)
@@ -85,7 +94,7 @@ namespace common {
          * @param order_rotation
          */
         explicit Transform(vec3 translation = {0.0f, 0.0f, 0.0f}, vec3 rotation = {0.0f, 0.0f, 0.0f},
-                           vec3 scale = {1.0f, 1.0f, 1.0f}, int order_rotation = ORDER_YXZ);
+                           vec3 scale = {1.0f, 1.0f, 1.0f}, OrderRotation order_rotation = OrderYXZ);
 
         /**
          * Constructor of a temporary Transdform
@@ -110,7 +119,7 @@ namespace common {
          * @param order_rotation
          */
         void init(vec3 translation = {0.0f, 0.0f, 0.0f}, vec3 rotation = {0.0f, 0.0f, 0.0f},
-                  vec3 scale = {1.0f, 1.0f, 1.0f}, int order_rotation = ORDER_YXZ);
+                  vec3 scale = {1.0f, 1.0f, 1.0f}, OrderRotation order_rotation = OrderYXZ);
 
         /// Compute the matrix of the Transform
         void compute(TransformComputing computing = Classic);
@@ -119,7 +128,7 @@ namespace common {
          * Setter of the order of rotation
          * @param order_rotation
          */
-        void set_order_rotation(int order_rotation);
+        void set_order_rotation(OrderRotation order_rotation);
 
         /**
          * Setter of the translation
@@ -156,6 +165,12 @@ namespace common {
          * @return scale
          */
         const vec3 &get_scale();
+
+        /**
+         * Getter of the order
+         * @return scale
+         */
+        OrderRotation get_order_rotation() const;
 
         /**
          * Getter of the rotation

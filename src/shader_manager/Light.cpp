@@ -22,10 +22,6 @@ const vec3 &Light::get_position() const {
     return m_position;
 }
 
-float Light::get_constant_attenuation() const {
-    return m_constant_attenuation;
-}
-
 float Light::get_linear_attenuation() const {
     return m_linear_attenuation;
 }
@@ -81,11 +77,6 @@ void Light::set_albedo(vec3 albedo){
 void Light::set_position(vec3 position){
     m_position = position; ;
 }
-
-void Light::set_constant_attenuation(float c_att){
-    m_constant_attenuation = c_att;
-}
-
 void Light::set_linear_attenuation(float l_att){
     m_linear_attenuation = l_att;
 }
@@ -138,7 +129,6 @@ LightShader::LightShader(const Light& light) {
     type = light.get_type();
     m_albedo = glsl_vec3(light.get_albedo());
     position = glsl_vec3(light.get_position());
-    constant_attenuation = light.get_constant_attenuation();
     linear_attenuation = light.get_linear_attenuation();
     quadratic_attenuation = light.get_quadratic_attenuation();
     //Directed Light

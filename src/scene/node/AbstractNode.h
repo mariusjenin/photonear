@@ -23,18 +23,19 @@ namespace scene {
             /// Transformation applied to the AbstractNode and all the children
             std::vector<std::shared_ptr<Node>> m_children{};
             bool m_children_dirty;
+            std::string m_name;
         public :
 
             /**
              * Add a child to the AbstractNode
              * @param node
              */
-            void add_child(std::shared_ptr<Node> node);
+            void add_child(const std::shared_ptr<Node>& node);
 
             /**
              * Constructor of the AbstractNode
              */
-            explicit AbstractNode();
+            explicit AbstractNode(std::string name);
 
 
             /**
@@ -68,6 +69,10 @@ namespace scene {
 
             /// Destructor of the AbstractNode
             virtual ~AbstractNode();
+
+            void generate_scene_graph_ui();
+
+            std::string get_name() const;
         };
     }
 }

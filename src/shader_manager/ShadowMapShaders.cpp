@@ -7,7 +7,7 @@
 using namespace shader_manager;
 
 ShadowMapShaders::ShadowMapShaders(const char *vertex_file_path, const char *fragment_file_path) : Shaders(
-        vertex_file_path, fragment_file_path) {}
+        vertex_file_path, fragment_file_path, false) {}
 
 void ShadowMapShaders::load_location() const {
     m_shader_data_manager->load_shadow_map_matrix_location(m_program_id);

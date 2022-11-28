@@ -7,7 +7,7 @@
 using namespace shader_manager;
 
 VertFragShaders::VertFragShaders(const char *vertex_file_path, const char *fragment_file_path) : Shaders(
-        vertex_file_path, fragment_file_path) {
+        vertex_file_path, fragment_file_path, true) {
     m_shadow_map_shaders = std::make_shared<ShadowMapShaders>("../src/shader/depth_vertex_shader.glsl","../src/shader/depth_fragment_shader.glsl");
 }
 

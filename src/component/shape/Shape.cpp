@@ -12,7 +12,7 @@ using namespace component::shape;
 using namespace component::material;
 using namespace shader_manager;
 
-Shape::Shape(bool both_face_visible) {
+Shape::Shape(bool both_face_visible) : Component(){
     m_up_to_date = false;
     m_vertex_positions = {};
     m_triangle_indices = {};
@@ -85,7 +85,9 @@ void Shape::draw(const std::shared_ptr<Shaders>& shaders) {
     auto trsf_comp = Component::get_nearest_component_upper<TransformComponent>(&*node);
     trsf_comp->load_in_shaders(shaders);
 
-    if (m_both_face_visible) {
+    auto testing_normal = shaders->is_testing_normal();
+
+    if (m_both_face_visible || !testing_normal) {
         glDisable(GL_CULL_FACE);
     } else {
         glEnable(GL_CULL_FACE);

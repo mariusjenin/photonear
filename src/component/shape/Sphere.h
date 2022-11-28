@@ -17,16 +17,20 @@ namespace component {
         private:
             point m_center{};
             float m_radius;
+            int m_slices;
+            int m_stacks;
 
             static glm::vec3 spheric_to_euclidian_coords(float theta, float phi) {
                 return {cos(theta) * cos(phi), sin(theta) * cos(phi), sin(phi)};
             }
 
-            void assign_mesh_sphere(float radius, int slices, int stacks);
+            void assign_mesh_sphere();
 
         public:
-            explicit Sphere(float radius = 1, int slices = 20, int stacks = 20, point center = {0, 0, 0},
+            explicit Sphere(float radius = 1, int slices = 20, int stacks = 20,
                             bool both_face_visible = false);
+
+            void generate_component_editor_ui() override;
         };
     }
 }

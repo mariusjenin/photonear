@@ -16,6 +16,9 @@ namespace component {
     private:
         std::shared_ptr<Transform> m_transform;
         std::shared_ptr<Transform> m_local_transform;
+
+        static std::string order_to_string(OrderRotation order);
+
     public:
         TransformComponent();
 
@@ -36,6 +39,8 @@ namespace component {
         void load_in_shaders(const std::shared_ptr<Shaders>& shaders);
 
         ComponentType get_type() override;
+
+        void generate_component_editor_ui() override;
     };
 }
 

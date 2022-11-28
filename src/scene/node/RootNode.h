@@ -17,6 +17,13 @@ namespace scene {
         private:
             std::shared_ptr<TransformComponent> m_trsf_comp;
         public:
+
+            /**
+             * Constructor of the RootNode
+             * @param parent
+             */
+            explicit RootNode(std::string name);
+
             std::shared_ptr<AbstractNode> get_parent() const override;
 
             void set_trsf_comp(std::shared_ptr<TransformComponent> trsf_comp);

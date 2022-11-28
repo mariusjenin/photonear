@@ -2,9 +2,11 @@
 // Created by mariusjenin on 21/11/22.
 //
 
+#include <utility>
+#include "imgui.h"
+
 #include "SceneGraph.h"
 
-#include <utility>
 #include "Component.h"
 #include "TransformComponent.h"
 
@@ -18,11 +20,11 @@ SceneGraph::SceneGraph(std::shared_ptr<RootNode> rn) {
     Component::add_component_to_node(trsf_comp_root,m_root_node);
 }
 
-std::shared_ptr<RootNode> SceneGraph::get_root_node() {
-    return m_root_node;
-}
-
 void SceneGraph::compute_scene_graph() {
     auto trsf_comp = m_root_node->get_trsf_comp();
     trsf_comp->compute_trsf_scene_graph();
+}
+
+void SceneGraph::generate_scene_graph_ui() {
+    m_root_node->generate_scene_graph_ui();
 }

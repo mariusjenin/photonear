@@ -13,6 +13,8 @@ namespace component {
         private:
             float m_inner_cutoff;
             float m_outer_cutoff;
+            float m_inner_cutoff_computed;
+            float m_outer_cutoff_computed;
             float m_cut_off_angle;
             float m_bias;
             int m_resolution;
@@ -20,10 +22,11 @@ namespace component {
             std::shared_ptr<ShadowMap> m_shadow_map;
         public:
             explicit SpotLightMaterial( GLuint id_texture_shadow_map, std::shared_ptr<TextureColor> albedo = std::make_shared<TextureColor>(1.0f),
-                                       float in_co=20.f, float out_co = 25.f, int resolution = 1000.f,float bias = 0.001f,
-                                       float c_att=0.f,float l_att=0.f,float q_att=0.f);
+                                       float in_co=20.f, float out_co = 25.f, int resolution = 1000.f,float bias = 0.001f,float l_att=0.f,float q_att=0.f);
 
             Light generate_light() override;
+
+            void generate_component_editor_ui() override;
         };
     }
 }

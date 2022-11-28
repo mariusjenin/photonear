@@ -13,9 +13,11 @@ namespace scene{
         class Node;
         class AbstractNode;
         class NodeFactory {
+        private:
+            static int NodeCount;
         public:
-            static std::shared_ptr<RootNode> create_root_node();
-            static std::shared_ptr<Node> create_node(const std::shared_ptr<AbstractNode>& parent, bool with_transform_compnent = true);
+            static std::shared_ptr<RootNode> create_root_node(const std::string& name = "RootNode");
+            static std::shared_ptr<Node> create_node(const std::shared_ptr<AbstractNode>& parent, std::string name = "", bool with_transform_component = true);
         };
 
     }

@@ -9,15 +9,21 @@
 
 using namespace scene::node;
 
-std::shared_ptr<RootNode> NodeFactory::create_root_node() {
+int NodeFactory::NodeCount = 1;
+
+std::shared_ptr<RootNode> NodeFactory::create_root_node(const std::string& name) {
     // The TransformComponent is creating in the SceneGraph Constructor
-    return std::make_shared<RootNode>();
+    return std::make_shared<RootNode>(name);
 }
 
-std::shared_ptr<Node> NodeFactory::create_node(const std::shared_ptr<AbstractNode>& parent, bool with_transform_compnent) {
-    auto node = std::make_shared<Node>(parent);
+std::shared_ptr<Node> NodeFactory::create_node(const std::shared_ptr<AbstractNode>& parent, std::string name, bool with_transform_component) {
+    if(name.empty()){
+        name = "Node"+std::to_string(NodeCount);
+        NodeCount++;
+    }
+    auto node = std::make_shared<Node>(parent,name);
     parent->add_child(node);
-    if(with_transform_compnent){
+    if(with_transform_component){
         Component::add_component_to_node(std::make_shared<TransformComponent>(),node);
     }
     return node;

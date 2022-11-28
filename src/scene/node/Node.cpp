@@ -9,8 +9,8 @@
 
 using namespace scene::node;
 
-Node::Node(std::shared_ptr<AbstractNode> parent)
-        : AbstractNode() {
+Node::Node(std::shared_ptr<AbstractNode> parent,std::string name)
+        : AbstractNode(std::move(name)) {
     m_parent = std::move(parent);
 }
 

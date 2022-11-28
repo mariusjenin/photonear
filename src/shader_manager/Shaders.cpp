@@ -44,9 +44,10 @@ glsl_mat4::glsl_mat4() {
     w0 = 0; w1 = 0;  w2 = 0; w3 = 0;
 }
 
-Shaders::Shaders(const char *vertex_file_path, const char *fragment_file_path) {
+Shaders::Shaders(const char *vertex_file_path, const char *fragment_file_path, bool testing_normal) {
     m_shader_data_manager = new ShadersDataManager();
     m_texture_manager = new TextureManager(m_shader_data_manager);
+    m_testing_normal = testing_normal;
 
     // Create the shaders
     GLuint vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
@@ -155,4 +156,8 @@ TextureManager *Shaders::get_texture_manager() {
 
 void Shaders::use() const {
     glUseProgram(m_program_id);
+}
+
+bool Shaders::is_testing_normal() const {
+    return m_testing_normal;
 }

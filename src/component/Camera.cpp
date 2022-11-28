@@ -2,9 +2,10 @@
 // Created by mariusjenin on 21/11/22.
 //
 
+#include "imgui.h"
+#include "printer.h"
 #include "Camera.h"
 #include "TransformComponent.h"
-#include "printer.h"
 
 using namespace component;
 using namespace shader_manager;
@@ -42,18 +43,42 @@ void Camera::load_in_shaders(const std::shared_ptr<Shaders>& shaders, int width,
 
 }
 
-Camera::Camera(int priority, float fovy, float z_near, float z_far) {
-    m_priority = priority;
+Camera::Camera(bool active, float fovy, float z_near, float z_far) : Component() {
     m_fovy = fovy;
     m_z_near = z_near;
     m_z_far = z_far;
+    set_active(active);
 }
 
-int Camera::get_priority() const {
-    return m_priority;
-}
 
 ComponentType Camera::get_type() {
     return typeid(&*this);
+}
+
+void Camera::generate_component_editor_ui() {
+    if(ImGui::Button("Set Active")){
+        set_active(true);
+    }
+    ImGui::SameLine();
+    ImGui::Text("%s%s","Active : ",m_active?"Yes":"No");
+    ImGui::DragFloat("FOV Y",&m_fovy,0.1f,0,180);
+    ImGui::DragFloat("Z Near",&m_z_near,0.1f,0,FLT_MAX);
+    ImGui::DragFloat("Z Near",&m_z_far,1.f,0,FLT_MAX);
+}
+
+int Camera::is_active() const {
+    return m_active;
+}
+
+void Camera::set_active(bool active) {
+    if(active){
+        auto cameras = Component::get_components<Camera>();
+        for(const auto& camera : cameras){
+            if(&*camera != this){
+                camera->set_active(false);
+            }
+        }
+    }
+    m_active = active;
 }
 

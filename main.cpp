@@ -60,7 +60,10 @@ int main() {
     // Ensure we can capture the escape key being pressed below
     glfwSetInputMode(window_photonear, GLFW_STICKY_KEYS, GL_TRUE);
 
-    Photonear photonear = Photonear(window_photonear);
+    Photonear* photonear = Photonear::get_instance();
+    photonear->set_window(window_photonear);
+
+    photonear->init();
 
     // For speed computation
     auto last_time = (float) glfwGetTime();
@@ -77,7 +80,7 @@ int main() {
         if (dt_frame_acc > dt_frame_fixed) {
             dt_frame_acc -= dt_frame_fixed;
 
-            photonear.draw(dt_frame_fixed);
+            photonear->draw(dt_frame_fixed);
 
             // Swap buffers
             glfwSwapBuffers(window_photonear);
@@ -86,7 +89,7 @@ int main() {
         last_time = t;
     }
 
-    Photonear::finish();
+    photonear->finish();
 
     // Close OpenGL window and terminate GLFW
     glfwDestroyWindow(window_photonear);
