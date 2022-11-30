@@ -18,8 +18,6 @@ namespace component {
         /// Shape shape by a ray
         class Shape : public Component {
         protected:
-            bool m_up_to_date;
-
             // Shader
             bool m_loaded_vao{};
             GLuint m_vbo_position_id{}, m_vbo_tex_coords_id{}, m_vbo_normals_id{}, m_ebo_triangle_indices_id{};
@@ -39,17 +37,9 @@ namespace component {
 
             ComponentType get_type() override;
 
-            GLuint get_vao_id() const;
-
-            GLuint get_ebo_triangle_indices_id() const;
-
-            std::vector<unsigned short int> get_triangle_indices();
-
-            bool is_both_face_visible() const;
-
-            void set_both_face_visible(bool both_face_visible);
-
             void draw(const std::shared_ptr<Shaders> &shaders);
+
+            void generate_ui_component_editor() override;
 
             ~Shape();
         };

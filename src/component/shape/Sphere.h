@@ -30,7 +30,7 @@ namespace component {
             explicit Sphere(float radius = 1, int slices = 20, int stacks = 20,
                             bool both_face_visible = false);
 
-            void generate_component_editor_ui() override;
+            void generate_ui_component_editor() override;
         };
     }
 }

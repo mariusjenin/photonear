@@ -26,5 +26,5 @@ void SceneGraph::compute_scene_graph() {
 }
 
 void SceneGraph::generate_scene_graph_ui() {
-    m_root_node->generate_scene_graph_ui();
+    m_root_node->generate_ui_scene_graph();
 }

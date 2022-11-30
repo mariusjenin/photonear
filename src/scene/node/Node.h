@@ -31,6 +31,8 @@ namespace scene {
             void set_parent(std::shared_ptr<AbstractNode> parent);
 
             std::shared_ptr<AbstractNode> get_parent() const override;
+
+            bool is_active_recursive() override;
         };
     }
 }

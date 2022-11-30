@@ -5,6 +5,7 @@
 #include "imgui.h"
 
 #include "Quad.h"
+#include "Photonear.h"
 
 using namespace component::shape;
 
@@ -41,8 +42,8 @@ void Quad::assign_mesh_plane() {
     m_triangle_indices.emplace_back(0);
 }
 
-void Quad::generate_component_editor_ui() {
-    ImGui::Checkbox("Both Face Visible",&m_both_face_visible);
+void Quad::generate_ui_component_editor() {
+    Shape::generate_ui_component_editor();
     float length_x = m_length_x;
     float length_z = m_length_z;
     ImGui::DragFloat("Length X",&length_x,0.01f,0,FLT_MAX);
@@ -54,6 +55,7 @@ void Quad::generate_component_editor_ui() {
     if(length_x_changed || length_z_changed){
         assign_mesh_plane();
         load_mesh_in_vao();
+        Photonear::get_instance()->get_scene()->set_scene_modified(true);
     }
 }
 

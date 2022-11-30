@@ -27,3 +27,7 @@ void RootNode::set_trsf_comp(std::shared_ptr<TransformComponent> trsf_comp) {
 std::shared_ptr<TransformComponent> RootNode::get_trsf_comp() const {
     return m_trsf_comp;
 }
+
+bool RootNode::is_active_recursive() {
+    return m_active;
+}

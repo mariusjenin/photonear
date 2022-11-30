@@ -2,18 +2,20 @@
 // Created by mariusjenin on 19/11/22.
 //
 
+#include "imgui.h"
+
 #include "Shape.h"
 #include "printer.h"
 #include "ShadersBufferManager.h"
 #include "TransformComponent.h"
 #include "Material.h"
+#include "Photonear.h"
 
 using namespace component::shape;
 using namespace component::material;
 using namespace shader_manager;
 
 Shape::Shape(bool both_face_visible) : Component(){
-    m_up_to_date = false;
     m_vertex_positions = {};
     m_triangle_indices = {};
     m_vertex_tex_coords = {};
@@ -55,28 +57,8 @@ Shape::~Shape() {
     }
 }
 
-GLuint Shape::get_vao_id() const {
-    return m_vao_id;
-}
-
-GLuint Shape::get_ebo_triangle_indices_id() const {
-    return m_ebo_triangle_indices_id;
-}
-
-std::vector<unsigned short int> Shape::get_triangle_indices() {
-    return m_triangle_indices;
-}
-
 ComponentType Shape::get_type() {
     return typeid(this);
-}
-
-bool Shape::is_both_face_visible() const {
-    return m_both_face_visible;
-}
-
-void Shape::set_both_face_visible(bool both_face_visible){
-    m_both_face_visible = both_face_visible;
 }
 
 void Shape::draw(const std::shared_ptr<Shaders>& shaders) {
@@ -101,4 +83,14 @@ void Shape::draw(const std::shared_ptr<Shaders>& shaders) {
 
     ShadersBufferManager::bind_vao(m_vao_id);
     ShadersBufferManager::draw(m_ebo_triangle_indices_id, (long) m_triangle_indices.size());
+}
+
+void Shape::generate_ui_component_editor() {
+    bool both_face_visible = m_both_face_visible;
+    ImGui::Checkbox("Both Face Visible",&both_face_visible);
+    ImGui::Separator();
+    if(both_face_visible != m_both_face_visible){
+        Photonear::get_instance()->get_scene()->set_scene_modified(true);
+        m_both_face_visible = both_face_visible;
+    }
 }

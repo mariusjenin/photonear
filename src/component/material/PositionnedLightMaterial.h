@@ -19,7 +19,7 @@ namespace component {
 
             Light generate_light() override;
 
-            void generate_component_editor_ui() override;
+            void generate_ui_component_editor() override;
         };
     }
 }

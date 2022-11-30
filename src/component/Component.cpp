@@ -82,7 +82,7 @@ std::string Component::get_ui_name(){
     return name_with_package.substr(name_with_package.find_last_of(sep)+1,name_with_package.size());
 }
 
-void Component::generate_node_editor_ui() {
+void Component::generate_ui_node_editor_ui() {
     auto photonear = Photonear::get_instance();
     auto component_selected = photonear->get_component_selected();
     ImGui::PushID(this);

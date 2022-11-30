@@ -22,8 +22,8 @@ namespace scene {
         protected:
             /// Transformation applied to the AbstractNode and all the children
             std::vector<std::shared_ptr<Node>> m_children{};
-            bool m_children_dirty;
             std::string m_name;
+            bool m_active;
         public :
 
             /**
@@ -70,7 +70,11 @@ namespace scene {
             /// Destructor of the AbstractNode
             virtual ~AbstractNode();
 
-            void generate_scene_graph_ui();
+            void generate_ui_scene_graph();
+
+            void generate_ui_node_editor();
+
+            virtual bool is_active_recursive() = 0;
 
             std::string get_name() const;
         };

@@ -6,6 +6,7 @@
 
 #include "TransformComponent.h"
 #include <ShadersDataManager.h>
+#include <Photonear.h>
 
 #define stringify( name ) #name
 
@@ -36,6 +37,8 @@ void TransformComponent::compute_trsf_scene_graph() {
 
     auto node = Component::get_node(this);
     compute_trsf_scene_graph_node((AbstractNode*) &*node);
+
+    Photonear::get_instance()->get_scene()->set_scene_modified(true);
 }
 
 void TransformComponent::compute_trsf_scene_graph_node(AbstractNode* node) {
@@ -110,7 +113,7 @@ void TransformComponent::load_in_shaders(const std::shared_ptr<Shaders>& shaders
 
 }
 
-void TransformComponent::generate_component_editor_ui() {
+void TransformComponent::generate_ui_component_editor() {
     //Init
     glm::vec3 translation = m_transform->get_translation();
     glm::vec3 rotation = m_transform->get_rotation();
@@ -162,11 +165,16 @@ void TransformComponent::generate_component_editor_ui() {
     m_transform->set_rotation(rotation);
     m_transform->set_scale(scale);
     m_transform->set_order_rotation(order);
-    if(!m_transform->is_up_to_date()) m_transform->compute();
     m_local_transform->set_translation(local_translation);
     m_local_transform->set_rotation(local_rotation);
     m_local_transform->set_scale(local_scale);
     m_local_transform->set_order_rotation(local_order);
+
+    if(!m_transform->is_up_to_date() || !m_local_transform->is_up_to_date()){
+        Photonear::get_instance()->get_scene()->set_scene_modified(true);
+    }
+
+    if(!m_transform->is_up_to_date()) m_transform->compute();
     if(!m_local_transform->is_up_to_date()) m_local_transform->compute();
 
 
@@ -190,19 +198,3 @@ std::string TransformComponent::order_to_string(OrderRotation order) {
             return "";
     }
 }
-
-//int TransformComponent::string_to_order(const std::string& str_order) {
-//    if(str_order == "ORDER_YXZ"){
-//        return ORDER_YXZ;
-//    } else if(str_order == "ORDER_XYZ"){
-//        return ORDER_XYZ;
-//    } else if(str_order == "ORDER_XZY"){
-//        return ORDER_XZY;
-//    } else if(str_order == "ORDER_YZX"){
-//        return ORDER_YZX;
-//    } else if(str_order == "ORDER_ZXY"){
-//        return ORDER_ZXY;
-//    } else if(str_order == "ORDER_ZYX"){
-//        return ORDER_ZYX;
-//    }
-//}

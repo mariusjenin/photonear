@@ -18,23 +18,23 @@ namespace component {
     class Camera : public Component {
 
     private:
-        bool m_active{};
+        bool m_capturing{};
         float m_fovy;
         float m_z_near;
         float m_z_far;
 
     public:
-        explicit Camera(bool active = true, float fovy = 45.0f, float z_near = 0.1f, float z_far = 10000.0f);
+        explicit Camera(bool capturing = true, float fovy = 45.0f, float z_near = 0.1f, float z_far = 10000.0f);
 
         ComponentType get_type() override;
 
-        int is_active() const;
+        int is_capturing() const;
 
-        void set_active(bool active);
+        void set_capturing(bool capturing);
 
         void load_in_shaders(const std::shared_ptr<Shaders>& shaders, int width, int height);
 
-        void generate_component_editor_ui() override;
+        void generate_ui_component_editor() override;
     };
 }
 

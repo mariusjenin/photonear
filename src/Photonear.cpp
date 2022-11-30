@@ -13,6 +13,7 @@ const char * Photonear::ComponentEditorName = "Component Editor";
 const char * Photonear::OpenGLViewerName = "OpenGL Viewer";
 const char * Photonear::PhotonMappingViewerName = "Photon Mapping Viewer";
 const char * Photonear::SceneSettingsName = "Scene Settings";
+const char * Photonear::RayTracingSettingsName = "Ray Tracing Settings";
 const char * Photonear::PhotonMappingSettingsName = "Photon Mapping Settings";
 const char * Photonear::LogsName = "Logs";
 
@@ -27,6 +28,7 @@ void Photonear::init() {
     m_init_ui = true;
     m_scene = std::make_shared<CornellBox>(m_window, "../src/shader/vertex_shader.glsl",
                                            "../src/shader/fragment_shader.glsl");
+
 
     //Callback resize
     glfwSetWindowSizeCallback(m_window, Photonear::window_resize_callback);
@@ -45,9 +47,18 @@ void Photonear::init() {
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init();
 
+    // Init Dear Imgui Frame if we need ImGui data at initialization
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+
+    m_ray_tracer = std::make_shared<RayTracer>();
+
     m_scene->init();
 
-//  TODO BB and raycast  std::cout << abi::__cxa_demangle(typeid(*Component::get_component<Camera>()).name(), 0, 0, nullptr) << std::endl;
+    // Shutdown the Frame
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }
 
 void Photonear::reinit_ui() {
@@ -73,40 +84,50 @@ void Photonear::draw(float delta_time) {
 
     auto window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar;
 
+    // Scene Graph
     ImGui::Begin(SceneGraphEditorName, nullptr, window_flags);
     m_scene->get_scene_graph()->generate_scene_graph_ui();
     ImGui::End();
+
+    // Node Editor
     ImGui::Begin(NodeEditorName, nullptr, window_flags);
     generate_ui_node_editor();
     ImGui::End();
+
+    // Component Editor
     ImGui::Begin(ComponentEditorName, nullptr, window_flags);
     generate_ui_component_editor();
     ImGui::End();
 
     ImGui::Begin(OpenGLViewerName, nullptr, window_flags);
     auto window_size = ImGui::GetWindowSize();
-    auto cursor_pos = ImGui::GetCursorScreenPos();
-
-    //RENDER SCENE
-    int width, height;
-    glfwGetWindowSize(m_window, &width, &height);
     m_scene->set_viewer_size((int) window_size.x, (int) window_size.y);
     m_scene->update(delta_time);
     m_scene->draw();
+    m_scene->generate_ui_viewer();
+    ImGui::End();
 
-    ImGui::GetWindowDrawList()->AddImage(
-            reinterpret_cast<ImTextureID>(m_scene->get_texture()),
-            cursor_pos,
-            ImVec2(cursor_pos.x + window_size.x - 15, cursor_pos.y + window_size.y - 35),
-            ImVec2(0, 1), ImVec2(1, 0)
-    );
-    ImGui::End();
-    ImGui::Begin(PhotonMappingViewerName, nullptr, window_flags);
-    ImGui::End();
+    // Scene Settings
     ImGui::Begin(SceneSettingsName, nullptr, window_flags);
+    m_scene->generate_ui_scene_settings();
     ImGui::End();
+
+    // Ray Tracing Settings
+    ImGui::Begin(RayTracingSettingsName, nullptr, window_flags);
+    m_ray_tracer->generate_ui_ray_tracing_settings();
+    ImGui::End();
+
+    // Photon Mapping Settings
     ImGui::Begin(PhotonMappingSettingsName, nullptr, window_flags);
     ImGui::End();
+
+    // Photon Mapping Viewer
+    ImGui::Begin(PhotonMappingViewerName, nullptr, window_flags);
+    m_ray_tracer->update();
+    m_ray_tracer->generate_ui_viewer();
+    ImGui::End();
+
+    // Logs
     ImGui::Begin(LogsName, nullptr, window_flags);
     ImGui::End();
 
@@ -120,9 +141,9 @@ void Photonear::dock_ui(){
     ImVec2 viewport_pos = ImGui::GetMainViewport()->Pos;
 
     // ------- Docking Layout -------
-    // |  1   |     2    |    7     |
+    // |  1   |  2  |   7   |   8   |
     // |------|---------------------|
-    // |  3   |     5    |    8     |
+    // |  3   |     5    |    9     |
     // |------|---------------------|
     // |  4   |          6          |
     // ------- Docking Layout -------
@@ -130,27 +151,30 @@ void Photonear::dock_ui(){
     ImGui::DockBuilderSetNodePos(dock_id_1, viewport_pos);
     ImGui::DockBuilderSetNodeSize(dock_id_1, io.DisplaySize);
     ImGuiID dock_id_2 = ImGui::DockBuilderSplitNode(dock_id_1, ImGuiDir_Right, 0.8, nullptr,
-                                                    &dock_id_1); // width 25678 in window
+                                                    &dock_id_1); // width 256789 in window
     ImGuiID dock_id_3 = ImGui::DockBuilderSplitNode(dock_id_1, ImGuiDir_Down, 0.65, nullptr,
                                                     &dock_id_1); // height 34 in 134
     ImGuiID dock_id_4 = ImGui::DockBuilderSplitNode(dock_id_3, ImGuiDir_Down, 0.54, nullptr,
                                                     &dock_id_3); // height 4 in 34
     ImGuiID dock_id_5 = ImGui::DockBuilderSplitNode(dock_id_2, ImGuiDir_Down, 0.75, nullptr,
-                                                    &dock_id_2); // height 586 in 25678
+                                                    &dock_id_2); // height 596 in 256789
     ImGuiID dock_id_6 = ImGui::DockBuilderSplitNode(dock_id_5, ImGuiDir_Down, 0.33, nullptr,
-                                                    &dock_id_5); // height 6 in 586
-    ImGuiID dock_id_7 = ImGui::DockBuilderSplitNode(dock_id_2, ImGuiDir_Right, 0.5, nullptr,
-                                                    &dock_id_2); // width 7 in 27
-    ImGuiID dock_id_8 = ImGui::DockBuilderSplitNode(dock_id_5, ImGuiDir_Right, 0.5, nullptr,
-                                                    &dock_id_5); // width 8 in 58
+                                                    &dock_id_5); // height 6 in 596
+    ImGuiID dock_id_7 = ImGui::DockBuilderSplitNode(dock_id_2, ImGuiDir_Right, 0.7, nullptr,
+                                                    &dock_id_2); // width 78 in 278
+    ImGuiID dock_id_8 = ImGui::DockBuilderSplitNode(dock_id_7, ImGuiDir_Right, 0.5, nullptr,
+                                                    &dock_id_7); // width 7 in 78
+    ImGuiID dock_id_9 = ImGui::DockBuilderSplitNode(dock_id_5, ImGuiDir_Right, 0.5, nullptr,
+                                                    &dock_id_5); // width 9 in 59
     ImGui::DockBuilderDockWindow(SceneGraphEditorName, dock_id_1);
     ImGui::DockBuilderDockWindow(SceneSettingsName, dock_id_2);
     ImGui::DockBuilderDockWindow(NodeEditorName, dock_id_3);
     ImGui::DockBuilderDockWindow(ComponentEditorName, dock_id_4);
     ImGui::DockBuilderDockWindow(OpenGLViewerName, dock_id_5);
     ImGui::DockBuilderDockWindow(LogsName, dock_id_6);
-    ImGui::DockBuilderDockWindow(PhotonMappingSettingsName, dock_id_7);
-    ImGui::DockBuilderDockWindow(PhotonMappingViewerName, dock_id_8);
+    ImGui::DockBuilderDockWindow(RayTracingSettingsName, dock_id_7);
+    ImGui::DockBuilderDockWindow(PhotonMappingSettingsName, dock_id_8);
+    ImGui::DockBuilderDockWindow(PhotonMappingViewerName, dock_id_9);
     ImGui::DockBuilderFinish(dock_id_1);
 }
 
@@ -186,17 +210,52 @@ Component *Photonear::get_component_selected() {
 }
 
 void Photonear::generate_ui_node_editor() {
-    if(m_node_selected != nullptr){
+    if(m_node_selected == nullptr){
+        std::string text = "No Node selected";
+        auto window_size = ImGui::GetWindowSize();
+        auto text_size   = ImGui::CalcTextSize(text.c_str());
+        ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f,(window_size.y - text_size.y) * 0.5f));
+        ImGui::Text("%s", text.c_str());
+    } else {
+        m_node_selected->generate_ui_node_editor();
         auto components = Component::get_components(m_node_selected);
         for(const auto& component:components){
-            component->generate_node_editor_ui();
+            component->generate_ui_node_editor_ui();
         }
     }
 }
 
-
 void Photonear::generate_ui_component_editor() {
-    if(m_component_selected != nullptr){
-        m_component_selected->generate_component_editor_ui();
+    if(m_component_selected == nullptr){
+        if(m_node_selected != nullptr) {
+            m_component_selected = &*Component::get_component<TransformComponent>(m_node_selected);
+            if(m_component_selected == nullptr) {
+                auto components = Component::get_components(m_node_selected);
+                if(!components.empty()){
+                    m_component_selected = &*components[0];
+                }
+            }
+        }
     }
+    if(m_component_selected == nullptr){
+        std::string text = "No Component selected";
+        auto window_size = ImGui::GetWindowSize();
+        auto text_size   = ImGui::CalcTextSize(text.c_str());
+        ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f,(window_size.y - text_size.y) * 0.5f));
+        ImGui::Text("%s", text.c_str());
+    } else {
+        m_component_selected->generate_ui_component_editor();
+    }
+}
+
+std::shared_ptr<RayTracer> Photonear::get_ray_tracer() {
+    return m_ray_tracer;
+}
+
+std::shared_ptr<PhotonMapper> Photonear::get_photon_mapper() {
+    return m_photon_mapper;
+}
+
+std::shared_ptr<Scene> Photonear::get_scene() {
+    return m_scene;
 }

@@ -23,7 +23,7 @@ namespace component {
         public:
             explicit Quad(float length_x, float length_z, bool both_face_visible = false);
 
-            void generate_component_editor_ui() override;
+            void generate_ui_component_editor() override;
         };
     }
 }

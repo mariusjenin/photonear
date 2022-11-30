@@ -28,16 +28,23 @@ namespace component {
     class Component {
     private:
     protected:
+        static std::map<ComponentType, std::vector<std::pair<std::shared_ptr<Component>, std::shared_ptr<AbstractNode>>>> COMPONENTS;
 
         Component() = default;
-    public:
-        static std::map<ComponentType,std::vector<std::pair<std::shared_ptr<Component>,std::shared_ptr<AbstractNode>>>> COMPONENTS;
 
-        virtual ComponentType get_type() =0;
+    public:
+
+        virtual ComponentType get_type() = 0;
+
+        void generate_ui_node_editor_ui();
+
+        virtual void generate_ui_component_editor() = 0;
+
+        std::string get_ui_name();
 
         template<class T>
         static ComponentType get_type() {
-            return typeid(T*);
+            return typeid(T *);
         }
 
         /**
@@ -50,7 +57,7 @@ namespace component {
          * @param component
          * @param node
          */
-        static void remove_component_from_node(Component* component, AbstractNode* node = nullptr);
+        static void remove_component_from_node(Component *component, AbstractNode *node = nullptr);
 
 
         /**
@@ -58,7 +65,8 @@ namespace component {
          * @param component
          * @param node
          */
-        static void add_component_to_node(const std::shared_ptr<Component>& component, const std::shared_ptr<AbstractNode>& node);
+        static void
+        add_component_to_node(const std::shared_ptr<Component> &component, const std::shared_ptr<AbstractNode> &node);
 
         /**
          * Get a Component (can be from a specific Node)
@@ -67,15 +75,15 @@ namespace component {
          * @return component or nullptr if not found
          */
         template<class T>
-        static std::shared_ptr<T> get_component(AbstractNode* node = nullptr) {
+        static std::shared_ptr<T> get_component(AbstractNode *node = nullptr) {
             auto component_type = Component::get_type<T>();
             if (COMPONENTS.find(component_type) == COMPONENTS.end()) {
                 return nullptr;
             } else {
-                int nb_components = (int)COMPONENTS[component_type].size();
+                int nb_components = (int) COMPONENTS[component_type].size();
                 std::shared_ptr<T> component;
                 for (int i = 0; i < nb_components; ++i) {
-                    if(&*(COMPONENTS[component_type][i].second) == node || node == nullptr){
+                    if (&*(COMPONENTS[component_type][i].second) == node || node == nullptr) {
                         return std::static_pointer_cast<T>(COMPONENTS[component_type][i].first);
                     }
                 }
@@ -95,10 +103,10 @@ namespace component {
             if (COMPONENTS.find(component_type) == COMPONENTS.end()) {
                 return {};
             } else {
-                int nb_components = (int)COMPONENTS[component_type].size();
+                int nb_components = (int) COMPONENTS[component_type].size();
                 std::vector<std::shared_ptr<T>> components = {};
                 for (int i = 0; i < nb_components; ++i) {
-                    if(&*(COMPONENTS[component_type][i].second) == node || node == nullptr) {
+                    if (&*(COMPONENTS[component_type][i].second) == node || node == nullptr) {
                         components.push_back(std::static_pointer_cast<T>(COMPONENTS[component_type][i].first));
                     }
                 }
@@ -120,15 +128,15 @@ namespace component {
          * @return components
          */
         template<class T>
-        static std::vector<std::shared_ptr<T>> get_children_components(AbstractNode* node) {
+        static std::vector<std::shared_ptr<T>> get_children_components(AbstractNode *node) {
             auto children = node->get_children();
-            if(children.empty()){
+            if (children.empty()) {
                 return {};
             }
             std::vector<std::shared_ptr<T>> components = {};
-            for(const auto& child_node : children){
-                auto child_components = get_components<T>((AbstractNode*)&*child_node);
-                components.insert(components.end(),child_components.begin(),child_components.end());
+            for (const auto &child_node: children) {
+                auto child_components = get_components<T>((AbstractNode *) &*child_node);
+                components.insert(components.end(), child_components.begin(), child_components.end());
             }
             return components;
         }
@@ -140,12 +148,12 @@ namespace component {
          * @return component
          */
         template<class T>
-        static std::shared_ptr<T> get_nearest_component_upper(AbstractNode* node) {
-            if(node == nullptr){
+        static std::shared_ptr<T> get_nearest_component_upper(AbstractNode *node) {
+            if (node == nullptr) {
                 return nullptr;
             }
             auto component = get_component<T>(&*node);
-            if(component == nullptr){
+            if (component == nullptr) {
                 component = get_nearest_component_upper<T>(&*node->get_parent());
             }
             return component;
@@ -165,7 +173,7 @@ namespace component {
          * @return node or nullptr if not found
          */
         template<class T>
-        static std::shared_ptr<AbstractNode> get_node_having(){
+        static std::shared_ptr<AbstractNode> get_node_having() {
             ComponentType component_type = get_type<T>();
             if (COMPONENTS.find(component_type) == COMPONENTS.end()) {
                 return nullptr;
@@ -180,14 +188,7 @@ namespace component {
          * @param component
          * @return node or nullptr if not found
          */
-        static std::shared_ptr<AbstractNode> get_node(Component* component);
-
-        void generate_node_editor_ui();
-
-        virtual void generate_component_editor_ui() = 0;
-
-        std::string get_ui_name();
-
+        static std::shared_ptr<AbstractNode> get_node(Component *component);
     };
 }
 

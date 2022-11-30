@@ -20,7 +20,9 @@ namespace scene {
 
         void load_lights();
 
-        static void draw_shapes(const std::shared_ptr<Shaders>& shaders);
+        void load_camera();
+
+        static void draw_shapes(const std::shared_ptr<Shaders>& shaders) ;
 
         void generate_texture();
 
@@ -36,6 +38,9 @@ namespace scene {
         int m_width_viewer{};
         int m_height_viewer{};
         vec3 m_clear_color{};
+        bool m_scene_modified{};
+        bool m_auto_draw{};
+        bool m_camera_valid{};
         std::shared_ptr<VertFragShaders> m_shaders;
         std::shared_ptr<SceneGraph> m_scene_graph;
 
@@ -46,7 +51,7 @@ namespace scene {
 
         void update(float delta_time);
 
-        void draw();
+        void draw(bool force = false);
 
         /**
          * Process the input of the user to have actions on the Scene
@@ -58,7 +63,13 @@ namespace scene {
 
         void set_viewer_size(int width, int height);
 
+        void set_scene_modified(bool modified);
+
         std::shared_ptr<SceneGraph> get_scene_graph();
+
+        void generate_ui_scene_settings();
+
+        void generate_ui_viewer() const;
     };
 }
 #endif //PHOTONEAR_SCENE_H

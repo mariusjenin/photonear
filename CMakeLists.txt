@@ -38,6 +38,7 @@ add_definitions(
 
 
 include_directories(
+        .
         external/glm/
         external/glew/include/
         external/glfw/include/
@@ -55,7 +56,7 @@ include_directories(
         src/component/material/
         src/shader_manager/
         src/shader/
-        .
+        src/ray_tracing/
 )
 add_executable(main main.cpp
         src/Photonear.cpp src/Photonear.h
@@ -120,6 +121,10 @@ add_executable(main main.cpp
         src/scene/SceneGraph.cpp src/scene/SceneGraph.h
         src/scene/Scene.cpp src/scene/Scene.h
         src/scene/example/CornellBox.cpp src/scene/example/CornellBox.h
+        # ray_tracing
+        src/ray_tracing/RayTracer.cpp src/ray_tracing/RayTracer.h
+        src/ray_tracing/PhotonMapper.cpp src/ray_tracing/PhotonMapper.h
+        src/ray_tracing/PhotonHit.cpp src/ray_tracing/PhotonHit.h
         )
 
 target_link_libraries(main

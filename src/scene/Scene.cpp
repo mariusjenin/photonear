@@ -8,6 +8,7 @@
 #include "LightMaterial.h"
 #include "TextureManager.h"
 #include "NodeFactory.h"
+#include "Photonear.h"
 
 using namespace std;
 using namespace scene;
@@ -18,11 +19,14 @@ Scene::Scene(GLFWwindow* window,
              const std::string &vertex_shader_path,
              const std::string &fragment_shader_path, vec3 clear_color){
     m_window = window;
+    m_scene_modified = true;
+    m_auto_draw = true;
+    m_camera_valid = false;
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
     // Accept fragment if it closer to the camera than the former one
-    glDepthFunc(GL_LESS);
+//    glDepthFunc(GL_LESS);
 
     m_clear_color = clear_color;
 
@@ -57,43 +61,58 @@ void Scene::update(float delta_time){
     glClearColor(m_clear_color.x,m_clear_color.y,m_clear_color.z,0);
     handle_inputs(delta_time);
 
-    //CAMERA
+    if(m_scene_modified){
+        if(m_auto_draw){
+            Photonear::get_instance()->get_ray_tracer()->set_raytracing_computed(false);
+        }
+
+        load_camera();
+
+        load_lights();
+    }
+}
+
+void Scene::load_camera(){
     auto cams = Component::get_components<Camera>();
     std::shared_ptr<Camera> camera = nullptr;
     for(const auto& cam : cams){
-        if(camera == nullptr || cam->is_active()){
-            camera = cam;
+        if(camera == nullptr || cam->is_capturing()){
+            auto node = Component::get_node(&*cam);
+            if(node->is_active_recursive()){
+                camera = cam;
+            }
         }
     }
-    if(camera == nullptr){
-        std::cerr << "No camera found in the scene" << std::endl;
-        exit(1);
+    m_camera_valid = camera != nullptr;
+    if(m_camera_valid){
+        camera->load_in_shaders(m_shaders,m_width_viewer,m_height_viewer);
     }
-    camera->load_in_shaders(m_shaders,m_width_viewer,m_height_viewer);
-
-    load_lights();
-
-    glViewport(0, 0,m_width_viewer, m_height_viewer);
 }
 
-void Scene::draw() {
-    glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+void Scene::draw(bool force) {
+    if((m_auto_draw && m_scene_modified) || force){
+        glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        draw_shapes(m_shaders);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    draw_shapes(m_shaders);
-
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        m_scene_modified = false;
+    }
 }
 
-void Scene::draw_shapes(const std::shared_ptr<Shaders>& shaders){
+void Scene::draw_shapes(const std::shared_ptr<Shaders>& shaders) {
     auto shapes = Component::get_components<Shape>();
     for(const auto& shape : shapes){
-        shape->draw(shaders);
+        auto node = Component::get_node(&*shape);
+        if(node->is_active_recursive()){
+            shape->draw(shaders);
+        }
     }
 }
 
 void Scene::set_viewer_size(int width, int height){
     if(height != m_height_viewer || width != m_width_viewer){
+        m_scene_modified = true;
         m_width_viewer = width;
         m_height_viewer = height;
         resize_texture();
@@ -107,7 +126,10 @@ void Scene::load_lights(){
     std::vector<LightMaterial*> light_materials = {};
     for(const auto& material: materials){
         if(material->is_emissive()){
-            light_materials.push_back((LightMaterial*)&*material);
+            auto node = Component::get_node(&*material);
+            if(node->is_active_recursive()){
+                light_materials.push_back((LightMaterial*)&*material);
+            }
         }
     }
     size_t size_lights = light_materials.size();
@@ -155,13 +177,24 @@ void Scene::load_lights(){
     }
     glUniform1iv(m_shaders->get_shader_data_manager()->get_location(ShadersDataManager::SHADOW_MAP_ARRAY_LOC_NAME),NB_MAX_LIGHTS, depth_maps);
     m_shaders->get_shader_data_manager()->load_lights(m_shaders->get_program_id(), lights_shader,(int)size_lights);
+
+    glViewport(0, 0,m_width_viewer, m_height_viewer);
 }
 
 void Scene::handle_inputs(float delta_time) {
     float camera_speed = 7.f * delta_time;
     float camera_speed_rot = 100 * delta_time;
 
-    auto camera_node = Component::get_node_having<Camera>();
+    auto cameras = Component::get_components<Camera>();
+    std::shared_ptr<Camera> camera = nullptr;
+    for(const auto& cam : cameras){
+        if(cam->is_capturing()){
+            camera = cam;
+        }
+    }
+    auto camera_node = Component::get_node(&*camera);
+    if(!camera_node->is_active_recursive()) return;
+
     auto camera_trsf = Component::get_component<TransformComponent>(&*camera_node)->get_transform();
 
     //Camera Translation
@@ -202,7 +235,10 @@ void Scene::handle_inputs(float delta_time) {
         }
         camera_trsf->set_rotation(camera_trsf->get_rotation() + rot);
     }
-    if (!camera_trsf->is_up_to_date()) camera_trsf->compute();
+    if (!camera_trsf->is_up_to_date()){
+        camera_trsf->compute();
+        m_scene_modified = true;
+    }
 }
 
 void Scene::generate_texture() {
@@ -247,4 +283,39 @@ GLuint Scene::get_texture() const {
 
 std::shared_ptr<SceneGraph> Scene::get_scene_graph() {
     return m_scene_graph;
+}
+
+void Scene::set_scene_modified(bool modified) {
+    m_scene_modified = modified;
+}
+
+void Scene::generate_ui_scene_settings() {
+    ImGui::Checkbox("Auto draw Scene", &m_auto_draw);
+    if(ImGui::Button("Draw")){
+        if(m_scene_modified){
+            Photonear::get_instance()->get_ray_tracer()->set_raytracing_computed(false);
+        }
+        load_camera();
+        load_lights();
+        draw(true);
+    }
+}
+
+void Scene::generate_ui_viewer() const {
+    if(m_camera_valid){
+        auto cursor_pos = ImGui::GetCursorScreenPos();
+
+        ImGui::GetWindowDrawList()->AddImage(
+                reinterpret_cast<ImTextureID>(m_texture),
+                cursor_pos,
+                ImVec2(cursor_pos.x + (float)m_width_viewer - 15, cursor_pos.y + (float)m_height_viewer - 35),
+                ImVec2(0, 1), ImVec2(1, 0)
+        );
+    } else {
+        std::string text = "No Camera Active";
+        auto window_size = ImGui::GetWindowSize();
+        auto text_size   = ImGui::CalcTextSize(text.c_str());
+        ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f,(window_size.y - text_size.y) * 0.5f));
+        ImGui::Text("%s", text.c_str());
+    }
 }

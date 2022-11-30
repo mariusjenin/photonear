@@ -38,7 +38,7 @@ bool Material::is_emissive() const {
     return m_emissive;
 }
 
-void Material::generate_component_editor_ui() {
+void Material::generate_ui_component_editor() {
     m_albedo->generate_ui("Albedo");
 }
 

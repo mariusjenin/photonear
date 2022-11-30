@@ -15,13 +15,12 @@ using namespace scene::node;
 
 AbstractNode::AbstractNode(std::string name) {
     m_children = {};
-    m_children_dirty = true;
+    m_active = true;
     m_name = std::move(name);
 }
 
 void AbstractNode::add_child(const std::shared_ptr<Node>& node) {
     m_children.push_back(node);
-    m_children_dirty = true;
 }
 
 AbstractNode::~AbstractNode() {
@@ -35,19 +34,18 @@ std::vector<std::shared_ptr<Node>> AbstractNode::get_children() const{
 
 void AbstractNode::remove_child_at(int i) {
     m_children.erase(m_children.begin()+i);
-    m_children_dirty = true;
 }
 
 void AbstractNode::clear_children() {
     m_children.clear();
-    m_children_dirty = true;
 }
 
 bool AbstractNode::has_children() const {
     return !m_children.empty();
 }
 
-void AbstractNode::generate_scene_graph_ui() {
+#pragma GCC diagnostic ignored "-Wformat-zero-length"
+void AbstractNode::generate_ui_scene_graph() {
 
     auto flags_leaf = ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_SpanFullWidth;
 
@@ -65,7 +63,7 @@ void AbstractNode::generate_scene_graph_ui() {
         ImGui::PopID();
         if (tree_node_open){
             for(const auto& child : m_children){
-                child->generate_scene_graph_ui();
+                child->generate_ui_scene_graph();
             }
             ImGui::TreePop();
         }
@@ -77,7 +75,18 @@ void AbstractNode::generate_scene_graph_ui() {
         ImGui::PopID();
     }
 }
+#pragma GCC diagnostic warning "-Wformat-zero-length"
 
 std::string AbstractNode::get_name() const {
     return m_name;
+}
+
+void AbstractNode::generate_ui_node_editor() {
+    bool active = m_active;
+    ImGui::Checkbox("Active",&active);
+    if(m_active != active){
+        Photonear::get_instance()->get_scene()->set_scene_modified(true);
+        m_active=active;
+    }
+    ImGui::Separator();
 }

@@ -7,6 +7,7 @@
 
 #include "SpotLightMaterial.h"
 #include "TransformComponent.h"
+#include "Photonear.h"
 
 
 using namespace component::material;
@@ -17,9 +18,9 @@ SpotLightMaterial::SpotLightMaterial(GLuint id_texture_shadow_map, std::shared_p
     m_bias = bias;
     m_inner_cutoff = in_co;
     m_outer_cutoff = out_co;
-    m_inner_cutoff_computed = cos(radians(in_co));
-    m_outer_cutoff_computed = cos(radians(out_co));
-    m_cut_off_angle = std::fmax(in_co,out_co);
+    m_inner_cutoff_computed = cos(radians(m_inner_cutoff));
+    m_outer_cutoff_computed = cos(radians(m_outer_cutoff));
+    m_cut_off_angle = std::fmax(m_inner_cutoff,m_outer_cutoff);
     m_id_texture_shadow_map = id_texture_shadow_map;
     m_shadow_map = std::make_shared<ShadowMap>(m_resolution,m_resolution,id_texture_shadow_map);
     m_shadow_map->activate_texture();
@@ -53,28 +54,32 @@ Light SpotLightMaterial::generate_light() {
     return light;
 }
 
-void SpotLightMaterial::generate_component_editor_ui() {
-    PositionnedLightMaterial::generate_component_editor_ui();
+void SpotLightMaterial::generate_ui_component_editor() {
+    PositionnedLightMaterial::generate_ui_component_editor();
     ImGui::Separator();
     float inner_cutoff = m_inner_cutoff;
     float outer_cutoff = m_outer_cutoff;
+    float bias = m_bias;
+    int resolution = m_resolution;
     ImGui::SliderFloat("Outer Cutoff",&outer_cutoff,0,90);
     ImGui::SliderFloat("Inner Cutoff",&inner_cutoff,0,m_outer_cutoff);
-    ImGui::SliderFloat("Bias Shadow Map",&m_bias,0,1,"%.3f",ImGuiSliderFlags_Logarithmic);
-    ImGui::SliderInt("Resolution Shadow Map",&m_resolution,2,4000);
+    ImGui::SliderFloat("Bias Shadow Map",&bias,0,1,"%.3f",ImGuiSliderFlags_Logarithmic);
+    ImGui::SliderInt("Resolution Shadow Map",&resolution,2,4000);
 
-    auto inner_cutoff_changed = inner_cutoff != m_inner_cutoff;
+    auto inner_cutoff_changed = inner_cutoff != m_inner_cutoff || inner_cutoff > outer_cutoff;
     auto outer_cutoff_changed = outer_cutoff != m_outer_cutoff;
-    if(outer_cutoff_changed) {
-        m_outer_cutoff = outer_cutoff;
-        m_outer_cutoff_computed = cos(radians(outer_cutoff));
-    }
-    if(inner_cutoff_changed) {
-        m_inner_cutoff = inner_cutoff;
-        if(m_inner_cutoff > m_outer_cutoff) m_inner_cutoff = m_outer_cutoff;
-        m_inner_cutoff_computed = cos(radians(inner_cutoff));
-    }
-    if(inner_cutoff_changed || outer_cutoff_changed) {
-        m_cut_off_angle = std::fmax(m_inner_cutoff,m_outer_cutoff);
-    }
+
+    if(inner_cutoff_changed) m_inner_cutoff = inner_cutoff;
+    if(outer_cutoff_changed) m_outer_cutoff = outer_cutoff;
+    if(m_inner_cutoff > m_outer_cutoff) m_inner_cutoff = m_outer_cutoff;
+    if(inner_cutoff_changed) m_inner_cutoff_computed = cos(radians(m_inner_cutoff));
+    if(outer_cutoff_changed) m_outer_cutoff_computed = cos(radians(m_outer_cutoff));
+    if(inner_cutoff_changed || outer_cutoff_changed) m_cut_off_angle = std::fmax(m_inner_cutoff,m_outer_cutoff);
+
+    if(inner_cutoff_changed || outer_cutoff_changed || m_bias != bias || m_resolution != resolution)
+        Photonear::get_instance()->get_scene()->set_scene_modified(true);
+
+    m_bias = bias;
+    m_resolution = resolution;
+
 }

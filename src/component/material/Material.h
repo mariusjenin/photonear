@@ -49,7 +49,7 @@ namespace component {
 
             ComponentType get_type() override;
 
-            void generate_component_editor_ui() override;
+            void generate_ui_component_editor() override;
         };
     }
 }

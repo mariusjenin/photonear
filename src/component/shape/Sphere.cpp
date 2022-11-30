@@ -5,6 +5,7 @@
 #include "imgui.h"
 
 #include "Sphere.h"
+#include "Photonear.h"
 
 using namespace component::shape;
 
@@ -53,14 +54,14 @@ void Sphere::assign_mesh_sphere() {
     }
 }
 
-void Sphere::generate_component_editor_ui() {
+void Sphere::generate_ui_component_editor() {
+    Shape::generate_ui_component_editor();
     float radius = m_radius;
     int slices = m_slices;
     int stacks = m_stacks;
     ImGui::DragFloat("Radius",&radius,0.01f,0,FLT_MAX);
     ImGui::DragInt("Slices",&slices,0.1f,0,INT_MAX);
     ImGui::DragInt("Stacks",&stacks,0.1f,0,INT_MAX);
-    ImGui::Checkbox("Both Face Visible",&m_both_face_visible);
     auto radius_changed = radius != m_radius;
     auto slices_changed = slices != m_slices;
     auto stacks_changed = stacks != m_stacks;
@@ -70,5 +71,6 @@ void Sphere::generate_component_editor_ui() {
     if(radius_changed || slices_changed || stacks_changed){
         assign_mesh_sphere();
         load_mesh_in_vao();
+        Photonear::get_instance()->get_scene()->set_scene_modified(true);
     }
 }

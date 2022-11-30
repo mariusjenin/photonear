@@ -7,6 +7,7 @@
 
 #include "PositionnedLightMaterial.h"
 #include "TransformComponent.h"
+#include "Photonear.h"
 
 
 using namespace component;
@@ -33,9 +34,16 @@ Light PositionnedLightMaterial::generate_light() {
     return light;
 }
 
-void PositionnedLightMaterial::generate_component_editor_ui() {
-    Material::generate_component_editor_ui();
+void PositionnedLightMaterial::generate_ui_component_editor() {
+    float linear_attenuation = m_linear_attenuation;
+    float quadratic_attenuation = m_quadratic_attenuation;
+    Material::generate_ui_component_editor();
     ImGui::Separator();
-    ImGui::SliderFloat("Linear Attenuation",&m_linear_attenuation,0,1,"%.3f", ImGuiSliderFlags_Logarithmic);
-    ImGui::SliderFloat("Quadratic Attenuation",&m_quadratic_attenuation,0,1,"%.3f", ImGuiSliderFlags_Logarithmic);
+    ImGui::SliderFloat("Linear Attenuation",&linear_attenuation,0,1,"%.3f", ImGuiSliderFlags_Logarithmic);
+    ImGui::SliderFloat("Quadratic Attenuation",&quadratic_attenuation,0,1,"%.3f", ImGuiSliderFlags_Logarithmic);
+
+    if(m_linear_attenuation != linear_attenuation || m_quadratic_attenuation != quadratic_attenuation)
+        Photonear::get_instance()->get_scene()->set_scene_modified(true);
+    m_linear_attenuation = linear_attenuation;
+    m_quadratic_attenuation = quadratic_attenuation;
 }

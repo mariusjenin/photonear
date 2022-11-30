@@ -23,4 +23,9 @@ std::shared_ptr<AbstractNode> Node::get_parent() const {
     return m_parent;
 }
 
+bool Node::is_active_recursive() {
+    if(!m_active) return false;
+    else return m_parent->is_active_recursive();
+}
+
 

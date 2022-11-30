@@ -29,6 +29,8 @@ namespace scene {
             void set_trsf_comp(std::shared_ptr<TransformComponent> trsf_comp);
 
             std::shared_ptr<TransformComponent> get_trsf_comp() const;
+
+            bool is_active_recursive() override;
         };
     }
 }
