@@ -43,7 +43,7 @@ void PositionnedLightMaterial::generate_ui_component_editor() {
     ImGui::SliderFloat("Quadratic Attenuation",&quadratic_attenuation,0,1,"%.3f", ImGuiSliderFlags_Logarithmic);
 
     if(m_linear_attenuation != linear_attenuation || m_quadratic_attenuation != quadratic_attenuation)
-        Photonear::get_instance()->get_scene()->set_scene_modified(true);
+        Photonear::get_instance()->get_scene()->set_scene_valid();
     m_linear_attenuation = linear_attenuation;
     m_quadratic_attenuation = quadratic_attenuation;
 }

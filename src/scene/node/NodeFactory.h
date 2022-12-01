@@ -17,7 +17,7 @@ namespace scene{
             static int NodeCount;
         public:
             static std::shared_ptr<RootNode> create_root_node(const std::string& name = "RootNode");
-            static std::shared_ptr<Node> create_node(const std::shared_ptr<AbstractNode>& parent, std::string name = "", bool with_transform_component = true);
+            static std::shared_ptr<Node> create_node(const std::shared_ptr<AbstractNode>& parent, std::string name = "");
         };
 
     }

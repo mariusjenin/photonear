@@ -80,7 +80,10 @@ int main() {
         if (dt_frame_acc > dt_frame_fixed) {
             dt_frame_acc -= dt_frame_fixed;
 
-            photonear->draw(dt_frame_fixed);
+            photonear->start_frame();
+            photonear->update(dt_frame_fixed);
+            photonear->draw();
+            photonear->finish_frame();
 
             // Swap buffers
             glfwSwapBuffers(window_photonear);

@@ -56,10 +56,11 @@ void ShadersBufferManager::draw(GLuint ebo_id, long nb_indices) {
     glDrawElements(GL_TRIANGLES, (GLsizei) nb_indices, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void ShadersBufferManager::draw_verticies_debug(std::vector<glm::vec3> verticies) {
+void ShadersBufferManager::draw_verticies_debug(GLenum type, std::vector<glm::vec3> verticies) {
     size_t verticies_size = verticies.size();
     if((int)verticies_size>0){
-        glPointSize(10);
+
+        glLineWidth(100.f);
         GLuint vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);
@@ -72,12 +73,10 @@ void ShadersBufferManager::draw_verticies_debug(std::vector<glm::vec3> verticies
         glEnableVertexAttribArray(0);
 
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-        glDrawArrays(GL_POINTS, 0, (int)verticies_size);
+        glDrawArrays(type, 0, (int)verticies_size);
 
         glDeleteBuffers(1, &vertex_buffer);
         glDeleteVertexArrays(1, &vao);
-
-        glPointSize(1);
     }
 }
 

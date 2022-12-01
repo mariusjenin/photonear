@@ -18,10 +18,12 @@
 #include <typeindex>
 #include <typeinfo>
 #include "AbstractNode.h"
+#include "Shaders.h"
 
 typedef std::type_index ComponentType;
 
 using namespace scene::node;
+using namespace shader_manager;
 
 namespace component {
     /// Component addable to a Node in the SceneGraph Graph
@@ -36,11 +38,13 @@ namespace component {
 
         virtual ComponentType get_type() = 0;
 
-        void generate_ui_node_editor_ui();
+        virtual void generate_ui_node_editor_ui();
 
         virtual void generate_ui_component_editor() = 0;
 
         std::string get_ui_name();
+
+        virtual void draw(const std::shared_ptr<Shaders> &shaders){};
 
         template<class T>
         static ComponentType get_type() {
@@ -142,7 +146,7 @@ namespace component {
         }
 
         /**
-         * Get nearest Component recursively upper
+         * Get nearest Component recursively upper in the hierarchy
          * @tparam T
          * @param node
          * @return component
@@ -158,13 +162,6 @@ namespace component {
             }
             return component;
         }
-
-
-        /**
-         * Get the Node that has the Component
-         * @param component
-         * @return node or nullptr if not found
-         */
 
         /**
          * Get the Node that has a Component of the type specified

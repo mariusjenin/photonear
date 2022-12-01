@@ -10,6 +10,7 @@
 #include "vector"
 #include "Component.h"
 #include "Shaders.h"
+#include "BoundingBox.h"
 
 using namespace shader_manager;
 
@@ -40,6 +41,8 @@ namespace component {
             void draw(const std::shared_ptr<Shaders> &shaders);
 
             void generate_ui_component_editor() override;
+
+            virtual std::vector<glm::vec3> to_few_vertices() =0;
 
             ~Shape();
         };

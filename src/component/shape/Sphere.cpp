@@ -2,6 +2,8 @@
 // Created by mariusjenin on 21/11/22.
 //
 
+#include <memory>
+
 #include "imgui.h"
 
 #include "Sphere.h"
@@ -71,6 +73,23 @@ void Sphere::generate_ui_component_editor() {
     if(radius_changed || slices_changed || stacks_changed){
         assign_mesh_sphere();
         load_mesh_in_vao();
-        Photonear::get_instance()->get_scene()->set_scene_modified(true);
+        Photonear::get_instance()->get_scene()->set_scene_valid();
     }
+}
+
+
+
+std::vector<glm::vec3> Sphere::to_few_vertices() {
+    glm::vec3 radius_vec = {m_radius,m_radius,m_radius};
+    glm::vec3 min = m_center-radius_vec;
+    glm::vec3 max = m_center+radius_vec;
+    return {min,
+            {min[0], min[1], max[2]},
+            {min[0], max[1], min[2]},
+            {min[0], max[1], max[2]},
+            {max[0], min[1], min[2]},
+            {max[0], min[1], max[2]},
+            {max[0], max[1], min[2]},
+            max
+    };
 }

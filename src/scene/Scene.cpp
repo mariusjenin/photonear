@@ -9,6 +9,8 @@
 #include "TextureManager.h"
 #include "NodeFactory.h"
 #include "Photonear.h"
+#include "BoundingBox.h"
+#include "ShadersBufferManager.h"
 
 using namespace std;
 using namespace scene;
@@ -19,16 +21,18 @@ Scene::Scene(GLFWwindow* window,
              const std::string &vertex_shader_path,
              const std::string &fragment_shader_path, vec3 clear_color){
     m_window = window;
-    m_scene_modified = true;
+    m_scene_valid = false;
     m_auto_draw = true;
     m_camera_valid = false;
+    m_debug_enabled = true;
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
     // Accept fragment if it closer to the camera than the former one
-//    glDepthFunc(GL_LESS);
+    glDepthFunc(GL_LESS);
 
     m_clear_color = clear_color;
+    m_debug_color = {1,0,0.5f};
 
     m_shaders = std::make_shared<VertFragShaders>(vertex_shader_path.c_str(), fragment_shader_path.c_str());
 
@@ -36,8 +40,6 @@ Scene::Scene(GLFWwindow* window,
     m_shaders->use();
 
     generate_texture();
-
-
 
     auto shadow_map_shaders = m_shaders->get_shadow_map_shaders();
 
@@ -55,21 +57,11 @@ Scene::Scene(GLFWwindow* window,
 void Scene::init() {
     init_scene_graph();
     m_scene_graph->compute_scene_graph();
+    m_scene_graph->generate_bounding_boxes();
 }
 
 void Scene::update(float delta_time){
-    glClearColor(m_clear_color.x,m_clear_color.y,m_clear_color.z,0);
     handle_inputs(delta_time);
-
-    if(m_scene_modified){
-        if(m_auto_draw){
-            Photonear::get_instance()->get_ray_tracer()->set_raytracing_computed(false);
-        }
-
-        load_camera();
-
-        load_lights();
-    }
 }
 
 void Scene::load_camera(){
@@ -90,15 +82,37 @@ void Scene::load_camera(){
 }
 
 void Scene::draw(bool force) {
-    if((m_auto_draw && m_scene_modified) || force){
+    if((m_auto_draw && !m_scene_valid) || force){
+        load_camera();
+        load_lights();
+
         glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
+
+        glClearColor(m_clear_color.x,m_clear_color.y,m_clear_color.z,0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
         draw_shapes(m_shaders);
+
+        auto component_selected = Photonear::get_instance()->get_component_selected();
+        if(component_selected != nullptr){
+            component_selected->draw(m_shaders);
+        }
+        auto node = Photonear::get_instance()->get_node_selected();
+        if(node != nullptr){
+            auto bounding_box_node_selected = Component::get_component<BoundingBox>(node);
+            if(bounding_box_node_selected != nullptr){
+                bounding_box_node_selected->draw(m_shaders);
+            }
+        }
+
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        m_scene_modified = false;
+        m_scene_valid = true;
+        Photonear::get_instance()->get_ray_tracer()->set_ray_tracing_valid(false);
+        m_scene_graph->compute_bounding_boxes();
     }
 }
+
 
 void Scene::draw_shapes(const std::shared_ptr<Shaders>& shaders) {
     auto shapes = Component::get_components<Shape>();
@@ -112,7 +126,7 @@ void Scene::draw_shapes(const std::shared_ptr<Shaders>& shaders) {
 
 void Scene::set_viewer_size(int width, int height){
     if(height != m_height_viewer || width != m_width_viewer){
-        m_scene_modified = true;
+        m_scene_valid = false;
         m_width_viewer = width;
         m_height_viewer = height;
         resize_texture();
@@ -237,7 +251,7 @@ void Scene::handle_inputs(float delta_time) {
     }
     if (!camera_trsf->is_up_to_date()){
         camera_trsf->compute();
-        m_scene_modified = true;
+        m_scene_valid = false;
     }
 }
 
@@ -276,29 +290,35 @@ void Scene::resize_texture() const {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
-
-GLuint Scene::get_texture() const {
-    return m_texture;
-}
-
 std::shared_ptr<SceneGraph> Scene::get_scene_graph() {
     return m_scene_graph;
 }
 
-void Scene::set_scene_modified(bool modified) {
-    m_scene_modified = modified;
+void Scene::set_scene_valid(bool valid) {
+    m_scene_valid = valid;
 }
 
 void Scene::generate_ui_scene_settings() {
     ImGui::Checkbox("Auto draw Scene", &m_auto_draw);
     if(ImGui::Button("Draw")){
-        if(m_scene_modified){
-            Photonear::get_instance()->get_ray_tracer()->set_raytracing_computed(false);
+        if(m_scene_valid){
+            Photonear::get_instance()->get_ray_tracer()->set_ray_tracing_valid(false);
         }
         load_camera();
         load_lights();
         draw(true);
     }
+    ImGui::Separator();
+    glm::vec3 debug_color = m_debug_color;
+    bool debug_enabled = m_debug_enabled;
+    ImGui::Checkbox("Debugging", &debug_enabled);
+    ImGui::ColorEdit3("Debugging Color", &debug_color[0]);
+    if(m_debug_color != debug_color || m_debug_enabled != debug_enabled){
+        m_scene_valid = false;
+    }
+    m_debug_color = debug_color;
+    m_debug_enabled = debug_enabled;
+
 }
 
 void Scene::generate_ui_viewer() const {
@@ -318,4 +338,12 @@ void Scene::generate_ui_viewer() const {
         ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f,(window_size.y - text_size.y) * 0.5f));
         ImGui::Text("%s", text.c_str());
     }
+}
+
+bool Scene::is_debug_enabled() const {
+    return m_debug_enabled;
+}
+
+vec3 Scene::get_debug_color() const {
+    return m_debug_color;
 }

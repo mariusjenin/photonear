@@ -77,7 +77,7 @@ void SpotLightMaterial::generate_ui_component_editor() {
     if(inner_cutoff_changed || outer_cutoff_changed) m_cut_off_angle = std::fmax(m_inner_cutoff,m_outer_cutoff);
 
     if(inner_cutoff_changed || outer_cutoff_changed || m_bias != bias || m_resolution != resolution)
-        Photonear::get_instance()->get_scene()->set_scene_modified(true);
+        Photonear::get_instance()->get_scene()->set_scene_valid();
 
     m_bias = bias;
     m_resolution = resolution;

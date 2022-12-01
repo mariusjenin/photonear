@@ -15,31 +15,33 @@ namespace ray_tracing{
     private:
         int m_sample_by_pixel;
         bool m_auto_size;
-        int m_width;
-        int m_height;
+        int m_width{};
+        int m_height{};
         bool m_auto_recompute{};
         GLuint m_image_texture{};
         std::vector<unsigned char> m_data;
         std::vector<std::vector<PhotonHit>> m_photon_hit;
 
-        bool m_image_computed{};
-        bool m_raytracing_computed{};
+        bool m_image_valid{};
+        bool m_ray_tracing_valid{};
 
         void compute_raytracing();
 
         void compute_image();
 
-        void reinit_data();
+        void init_ray_tracing_data();
     public:
         RayTracer();
 
         void update();
 
+        void init();
+
         void generate_ui_ray_tracing_settings();
 
         void generate_ui_viewer();
 
-        void set_raytracing_computed(bool computed);
+        void set_ray_tracing_valid(bool computed);
     };
 }
 

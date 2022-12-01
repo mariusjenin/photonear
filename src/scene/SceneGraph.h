@@ -7,20 +7,39 @@
 
 #include "memory"
 #include "RootNode.h"
+#include "BoundingBox.h"
 
 using namespace scene::node;
 
 namespace scene {
+    enum ShapeInHierarchy{
+        NoShape,
+        InNode,
+        InChildren
+    };
     class SceneGraph {
     private:
         std::shared_ptr<RootNode> m_root_node;
 
+        /**
+         * Generate BoundingBox Component to a node recursively if it has more than 1 Shape or 1 Shape and 1 Shape in one of his branch
+         * @param node
+         * @return shape_in_hierarchy
+         */
+        ShapeInHierarchy generate_bounding_boxes_recursively(const std::shared_ptr<AbstractNode>& node);
+
+        BoundingBox* compute_bounding_boxes_recursively(AbstractNode* node);
+
     public:
         explicit SceneGraph(std::shared_ptr<RootNode> rn);
 
-        void generate_scene_graph_ui();
+        void generate_ui_scene_graph();
+
+        void generate_bounding_boxes();
 
         void compute_scene_graph();
+
+        void compute_bounding_boxes();
     };
 }
 

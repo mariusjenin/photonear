@@ -46,6 +46,6 @@ void TextureColor::generate_ui(const std::string& name) {
     glm::vec3 value = m_value;
     ImGui::ColorEdit3(name.c_str(),&value[0]);
     if(value != m_value)
-        Photonear::get_instance()->get_scene()->set_scene_modified(true);
+        Photonear::get_instance()->get_scene()->set_scene_valid();
     m_value = value;
 }

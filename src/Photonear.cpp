@@ -25,7 +25,7 @@ Photonear *Photonear::get_instance() {
 }
 
 void Photonear::init() {
-    m_init_ui = true;
+    m_init_docking = true;
     m_scene = std::make_shared<CornellBox>(m_window, "../src/shader/vertex_shader.glsl",
                                            "../src/shader/fragment_shader.glsl");
 
@@ -47,93 +47,77 @@ void Photonear::init() {
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init();
 
-    // Init Dear Imgui Frame if we need ImGui data at initialization
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
+    start_frame();
     m_ray_tracer = std::make_shared<RayTracer>();
-
+    m_ray_tracer->init();
     m_scene->init();
-
-    // Shutdown the Frame
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    finish_frame();
 }
 
-void Photonear::reinit_ui() {
-    m_init_ui = true;
+void Photonear::init_docking() {
+    m_init_docking = true;
 }
 
-void Photonear::draw(float delta_time) {
-
-    // Clear the UI screen
-    glClearColor(0.1f, 0.1f, 0.1f, 0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Init Dear Imgui Frame
-    ImGui_ImplOpenGL3_NewFrame();
-    ImGui_ImplGlfw_NewFrame();
-    ImGui::NewFrame();
-
-
-    if (m_init_ui) {
+void Photonear::update(float delta_time) {
+    if (m_init_docking) {
         dock_ui();
-        m_init_ui = false;
+        m_init_docking = false;
     }
 
-    auto window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar;
+    ImGui::Begin(OpenGLViewerName, nullptr, ImGuiWindowFlags_NoMove);
+    auto window_size = ImGui::GetWindowSize();
+    m_scene->set_viewer_size((int) window_size.x, (int) window_size.y);
+    m_scene->update(delta_time);
+    ImGui::End();
 
+    m_ray_tracer->update();
+}
+
+void Photonear::draw() {
     // Scene Graph
-    ImGui::Begin(SceneGraphEditorName, nullptr, window_flags);
-    m_scene->get_scene_graph()->generate_scene_graph_ui();
+    ImGui::Begin(SceneGraphEditorName, nullptr, ImGuiWindowFlags_NoMove);
+    m_scene->get_scene_graph()->generate_ui_scene_graph();
     ImGui::End();
 
     // Node Editor
-    ImGui::Begin(NodeEditorName, nullptr, window_flags);
+    ImGui::Begin(NodeEditorName, nullptr, ImGuiWindowFlags_NoMove);
     generate_ui_node_editor();
     ImGui::End();
 
     // Component Editor
-    ImGui::Begin(ComponentEditorName, nullptr, window_flags);
+    ImGui::Begin(ComponentEditorName, nullptr, ImGuiWindowFlags_NoMove);
     generate_ui_component_editor();
     ImGui::End();
 
-    ImGui::Begin(OpenGLViewerName, nullptr, window_flags);
-    auto window_size = ImGui::GetWindowSize();
-    m_scene->set_viewer_size((int) window_size.x, (int) window_size.y);
-    m_scene->update(delta_time);
+    ImGui::Begin(OpenGLViewerName, nullptr, ImGuiWindowFlags_NoMove);
     m_scene->draw();
     m_scene->generate_ui_viewer();
     ImGui::End();
 
     // Scene Settings
-    ImGui::Begin(SceneSettingsName, nullptr, window_flags);
+    ImGui::Begin(SceneSettingsName, nullptr, ImGuiWindowFlags_NoMove);
     m_scene->generate_ui_scene_settings();
     ImGui::End();
 
     // Ray Tracing Settings
-    ImGui::Begin(RayTracingSettingsName, nullptr, window_flags);
+    ImGui::Begin(RayTracingSettingsName, nullptr, ImGuiWindowFlags_NoMove);
     m_ray_tracer->generate_ui_ray_tracing_settings();
     ImGui::End();
 
     // Photon Mapping Settings
-    ImGui::Begin(PhotonMappingSettingsName, nullptr, window_flags);
+    ImGui::Begin(PhotonMappingSettingsName, nullptr, ImGuiWindowFlags_NoMove);
+    //TODO
     ImGui::End();
 
     // Photon Mapping Viewer
-    ImGui::Begin(PhotonMappingViewerName, nullptr, window_flags);
-    m_ray_tracer->update();
+    ImGui::Begin(PhotonMappingViewerName, nullptr, ImGuiWindowFlags_NoMove);
     m_ray_tracer->generate_ui_viewer();
     ImGui::End();
 
     // Logs
-    ImGui::Begin(LogsName, nullptr, window_flags);
+    ImGui::Begin(LogsName, nullptr, ImGuiWindowFlags_NoMove);
+    //TODO
     ImGui::End();
-
-    ImGui::Render();
-    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
 }
 
 void Photonear::dock_ui(){
@@ -185,7 +169,7 @@ void Photonear::finish() { // NOLINT(readability-convert-member-functions-to-sta
 }
 
 void Photonear::window_resize_callback(GLFWwindow *window, int width, int height) {
-    Photonear::get_instance()->reinit_ui();
+    Photonear::get_instance()->init_docking();
 }
 
 void Photonear::set_window(GLFWwindow *window) {
@@ -258,4 +242,20 @@ std::shared_ptr<PhotonMapper> Photonear::get_photon_mapper() {
 
 std::shared_ptr<Scene> Photonear::get_scene() {
     return m_scene;
+}
+
+void Photonear::start_frame() { // NOLINT(readability-convert-member-functions-to-static)
+    // Clear the UI screen
+    glClearColor(0.1f, 0.1f, 0.1f, 0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // Init Dear Imgui Frame
+    ImGui_ImplOpenGL3_NewFrame();
+    ImGui_ImplGlfw_NewFrame();
+    ImGui::NewFrame();
+}
+
+void Photonear::finish_frame() { // NOLINT(readability-convert-member-functions-to-static)
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 }

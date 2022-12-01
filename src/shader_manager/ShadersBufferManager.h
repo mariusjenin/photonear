@@ -98,9 +98,10 @@ namespace shader_manager {
 
         /**
          * Draw a list of verticies as a debug rendering
+         * @param type
          * @param verticies
          */
-        static void draw_verticies_debug(std::vector<glm::vec3> verticies);
+        static void draw_verticies_debug(GLenum type, std::vector<glm::vec3> verticies);
 
     };
 }

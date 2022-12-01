@@ -19,22 +19,23 @@ using namespace ray_tracing;
 class Photonear {
 private:
     static Photonear* PhotonearInstance;
+
     std::shared_ptr<Scene> m_scene;
     std::shared_ptr<RayTracer> m_ray_tracer;
     std::shared_ptr<PhotonMapper> m_photon_mapper;
+
     GLFWwindow* m_window{};
-    bool m_init_ui{};
+
     AbstractNode* m_node_selected{};
     Component* m_component_selected{};
 
-    bool m_illumination_changed{};
-    bool m_scene_changed{};
+    bool m_init_docking{};
 
     Photonear() = default;
 
     static void dock_ui();
 
-    void reinit_ui();
+    void init_docking();
 
     void generate_ui_node_editor();
 
@@ -58,7 +59,13 @@ public:
 
     void init();
 
-    void draw(float delta_time);
+    void update(float delta_time);
+
+    void start_frame();
+
+    void finish_frame();
+
+    void draw();
 
     void finish();
 
@@ -72,10 +79,8 @@ public:
 
     AbstractNode* get_node_selected();
 
-    void set_component_selected(Component* component_selected);
-
     Component* get_component_selected();
 
-    void draw_scene(float delta_time);
+    void set_component_selected(Component* component_selected);
 };
 #endif //PHOTONEAR_PHOTONEAR_H

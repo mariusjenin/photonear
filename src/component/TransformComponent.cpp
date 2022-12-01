@@ -38,7 +38,7 @@ void TransformComponent::compute_trsf_scene_graph() {
     auto node = Component::get_node(this);
     compute_trsf_scene_graph_node((AbstractNode*) &*node);
 
-    Photonear::get_instance()->get_scene()->set_scene_modified(true);
+    Photonear::get_instance()->get_scene()->set_scene_valid();
 }
 
 void TransformComponent::compute_trsf_scene_graph_node(AbstractNode* node) {
@@ -171,7 +171,7 @@ void TransformComponent::generate_ui_component_editor() {
     m_local_transform->set_order_rotation(local_order);
 
     if(!m_transform->is_up_to_date() || !m_local_transform->is_up_to_date()){
-        Photonear::get_instance()->get_scene()->set_scene_modified(true);
+        Photonear::get_instance()->get_scene()->set_scene_valid();
     }
 
     if(!m_transform->is_up_to_date()) m_transform->compute();

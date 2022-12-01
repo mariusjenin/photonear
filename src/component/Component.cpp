@@ -28,7 +28,7 @@ void Component::add_component_to_node(const std::shared_ptr<Component>& componen
             return;
         }
     }
-    COMPONENTS[component_type].push_back(std::pair<std::shared_ptr<Component>, std::shared_ptr<AbstractNode>>(component, node));
+    COMPONENTS[component_type].emplace_back(component, node);
 }
 
 void Component::remove_component_from_node(Component* component, AbstractNode* node) {
@@ -88,6 +88,8 @@ void Component::generate_ui_node_editor_ui() {
     ImGui::PushID(this);
     if (ImGui::Selectable(get_ui_name().c_str(),component_selected == this)){
         photonear->set_component_selected(this);
+        photonear->get_scene()->set_scene_valid();
     }
     ImGui::PopID();
 }
+

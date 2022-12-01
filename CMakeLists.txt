@@ -80,7 +80,7 @@ add_executable(main main.cpp
         src/utils/printer.h src/utils/printer.cpp
         # common
         src/common/Transform.cpp src/common/Transform.h
-        src/common/Ray.cpp src/common/Ray.h
+        src/ray_tracing/Ray.cpp src/ray_tracing/Ray.h
         # texture
         src/texture/Texture.cpp src/texture/Texture.h
         src/texture/TextureColor.cpp src/texture/TextureColor.h
@@ -106,6 +106,8 @@ add_executable(main main.cpp
         src/component/Component.cpp src/component/Component.h
         src/component/TransformComponent.cpp src/component/TransformComponent.h
         src/component/Camera.cpp src/component/Camera.h
+        src/component/MaskedComponent.cpp src/component/MaskedComponent.h
+        src/component/BoundingBox.cpp src/component/BoundingBox.h
         # shape
         src/component/shape/Shape.cpp src/component/shape/Shape.h
         src/component/shape/Sphere.cpp src/component/shape/Sphere.h

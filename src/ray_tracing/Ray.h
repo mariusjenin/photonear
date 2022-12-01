@@ -7,7 +7,7 @@
 
 #include "Transform.h"
 
-namespace common {
+namespace ray_tracing {
     class Ray {
     private:
         point m_origin{};

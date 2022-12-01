@@ -26,11 +26,14 @@ namespace component {
 
             void assign_mesh_sphere();
 
+            std::vector<glm::vec3> to_few_vertices() override;
+
         public:
             explicit Sphere(float radius = 1, int slices = 20, int stacks = 20,
                             bool both_face_visible = false);
 
             void generate_ui_component_editor() override;
+
         };
     }
 }
