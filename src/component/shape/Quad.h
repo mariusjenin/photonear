@@ -15,7 +15,7 @@ namespace component {
     namespace shape {
         class Quad : public Shape {
         private:
-            glm::vec3 m_normal{};
+            versor m_normal{};
             float m_length_x;
             float m_length_z;
 
@@ -26,7 +26,7 @@ namespace component {
 
             void generate_ui_component_editor() override;
 
-            std::vector<glm::vec3> to_few_vertices() override;
+            std::vector<point> to_few_vertices() override;
         };
     }
 }

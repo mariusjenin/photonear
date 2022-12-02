@@ -26,7 +26,7 @@ void BoundingBox::merge(BoundingBox bb) {
     merge(bb.to_vertices());
 }
 
-void BoundingBox::merge(const std::vector<glm::vec3> &vertices) {
+void BoundingBox::merge(const std::vector<point> &vertices) {
     for (auto vertex: vertices) {
         for (int i = 0; i < 3; i++) {
             if (m_min[i] > vertex[i]) m_min[i] = vertex[i];
@@ -42,13 +42,13 @@ void BoundingBox::generate_ui_component_editor() {
     ImGui::Text("max %f %f %f", m_max[0], m_max[1], m_max[2]);
 }
 
-void BoundingBox::draw(const std::shared_ptr<Shaders> &shaders, glm::vec3 color) {
+void BoundingBox::draw(const std::shared_ptr<Shaders> &shaders, color color) {
     auto shader_data_manager = shaders->get_shader_data_manager();
     glUniform1i(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_LOC_NAME), true);
     glUniform3fv(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_COLOR_LOC_NAME),
                  1, &color[0]);
-    std::vector<glm::vec3> vertices = to_vertices();
-    std::vector<glm::vec3> lines = {
+    std::vector<point> vertices = to_vertices();
+    std::vector<point> lines = {
             vertices[0], vertices[1],
             vertices[1], vertices[3],
             vertices[3], vertices[2],
@@ -68,7 +68,7 @@ void BoundingBox::draw(const std::shared_ptr<Shaders> &shaders, glm::vec3 color)
     glUniform1i(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_LOC_NAME), false);
 }
 
-std::vector<glm::vec3> BoundingBox::to_vertices() {
+std::vector<point> BoundingBox::to_vertices() {
     return {m_min,
             {m_min[0], m_min[1], m_max[2]},
             {m_min[0], m_max[1], m_min[2]},
@@ -78,4 +78,20 @@ std::vector<glm::vec3> BoundingBox::to_vertices() {
             {m_max[0], m_max[1], m_min[2]},
             m_max
     };
+}
+
+bool BoundingBox::hit_by_ray(Ray ray) {
+
+    for (int i = 0; i < 3; i++) {
+//        auto invD = 1.0f / r.direction()[i];
+//        auto t0 = (min()[i] - r.origin()[i]) * invD;
+//        auto t1 = (max()[i] - r.origin()[i]) * invD;
+//        if (invD < 0.0f)
+//            std::swap(t0, t1);
+//        t_min = t0 > t_min ? t0 : t_min;
+//        t_max = t1 < t_max ? t1 : t_max;
+//        if (t_max <= t_min)
+//            return false;
+    }
+    return true;
 }

@@ -15,6 +15,7 @@
 #include <sstream>
 #include "GL/glew.h"
 #include "glm/glm.hpp"
+#include "vec3_type.h"
 
 namespace shader_manager {
     class TextureManager;
@@ -43,10 +44,10 @@ namespace shader_manager {
         glsl_vec3();
 
         /**
-         * Construct a glsl_vec3 from a glm::vec3
+         * Construct a glsl_vec3 from a vec3
          * @param v
          */
-        explicit glsl_vec3(glm::vec3 v);
+        explicit glsl_vec3(vec3 v);
     };
 
     /**
@@ -58,10 +59,10 @@ namespace shader_manager {
         glsl_mat4();
 
         /**
-         * Construct a glsl_mat4 from a glm::mat4
+         * Construct a glsl_mat4 from a mat4
          * @param m
          */
-        explicit glsl_mat4(glm::mat4 m);
+        explicit glsl_mat4(mat4 m);
     };
 
     /// Group the VAOManager, the ShadersDataManager and the TextureManager

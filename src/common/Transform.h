@@ -9,6 +9,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include <vector>
+#include "vec3_type.h"
 
 #define ORDER_ZYX 0
 #define ORDER_ZXY 1
@@ -18,10 +19,6 @@
 #define ORDER_XZY 5
 
 using namespace glm;
-typedef vec3 point;
-typedef vec3 vector;
-typedef vec3 versor;
-
 
 namespace common {
 
@@ -100,7 +97,7 @@ namespace common {
          * Constructor of a temporary Transdform
          * @param matrix
          */
-        explicit Transform(glm::mat4 matrix);
+        explicit Transform(mat4 matrix);
 
         /**
          * Decompose a matrix to 3 matrices(TRS)
@@ -215,7 +212,7 @@ namespace common {
          * @param inverse
          * @return vector
          */
-        vector apply_to_vector(vector &v, bool inverse = false);
+        vec3 apply_to_vector(vec3 &v, bool inverse = false);
 
         /**
          * Apply the Transform to a versor
@@ -237,7 +234,7 @@ namespace common {
          * @param vectors
          * @param inverse
          */
-        void apply_vector_list(std::vector<vector> *vectors, bool inverse = false);
+        void apply_vector_list(std::vector<vec3> *vectors, bool inverse = false);
 
         /**
          * Apply the Transform to a list of versor

@@ -21,14 +21,14 @@ void Camera::load_in_shaders(const std::shared_ptr<Shaders> &shaders, int width,
     glUniformMatrix4fv(shaders->get_shader_data_manager()->get_location(ShadersDataManager::PROJ_MAT_LOC_NAME), 1,
                        GL_FALSE, &projection_mat[0][0]);
     // VIEW
-    glm::vec3 camera_init_position = CAMERA_POSITION;
-    glm::vec3 camera_init_forward = CAMERA_FORWARD;
-    glm::vec3 camera_init_up = CAMERA_UP;
-    glm::vec3 eye_camera = trsf.apply_to_point(camera_init_position);
-    glm::vec3 dir_camera = trsf.apply_to_versor(camera_init_forward);
-    glm::vec3 up_camera = trsf.apply_to_versor(camera_init_up);
+    point camera_init_position = CAMERA_POSITION;
+    versor camera_init_forward = CAMERA_FORWARD;
+    versor camera_init_up = CAMERA_UP;
+    point eye_camera = trsf.apply_to_point(camera_init_position);
+    versor dir_camera = trsf.apply_to_versor(camera_init_forward);
+    versor up_camera = trsf.apply_to_versor(camera_init_up);
 
-    glm::mat4 view_mat = lookAt(
+    mat4 view_mat = lookAt(
             eye_camera,
             eye_camera + dir_camera,
             up_camera
@@ -37,7 +37,7 @@ void Camera::load_in_shaders(const std::shared_ptr<Shaders> &shaders, int width,
                        GL_FALSE, &view_mat[0][0]);
 
     //POS
-    glm::vec3 position_tmp = glm::vec3(0, 0, 0);
+    point position_tmp = point(0, 0, 0);
     position_tmp = trsf.apply_to_point(position_tmp);
     glUniform3fv(shaders->get_shader_data_manager()->get_location(ShadersDataManager::VIEW_POS_LOC_NAME), 1,
                  &position_tmp[0]);

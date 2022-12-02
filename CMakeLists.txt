@@ -128,7 +128,7 @@ add_executable(main main.cpp
         src/ray_tracing/RayTracer.cpp src/ray_tracing/RayTracer.h
         src/ray_tracing/PhotonMapper.cpp src/ray_tracing/PhotonMapper.h
         src/ray_tracing/PhotonHit.cpp src/ray_tracing/PhotonHit.h
-        )
+        src/common/vec3_type.h)
 
 target_link_libraries(main
         ${ALL_LIBS}

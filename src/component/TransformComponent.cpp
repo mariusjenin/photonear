@@ -55,7 +55,7 @@ void TransformComponent::compute_trsf_scene_graph_node(AbstractNode* node) {
     }
 }
 
-glm::mat4 TransformComponent::get_matrix(bool inverse){
+mat4 TransformComponent::get_matrix(bool inverse){
     auto node = Component::get_node(this);
     auto trsf_mat = m_transform->get_matrix(inverse);
     auto parent_trsf = Component::get_nearest_component_upper<TransformComponent>(&*node->get_parent());
@@ -70,7 +70,7 @@ glm::mat4 TransformComponent::get_matrix(bool inverse){
     }
 }
 
-glm::mat4 TransformComponent::get_matrix_as_end_node(bool inverse){
+mat4 TransformComponent::get_matrix_as_end_node(bool inverse){
     auto node = Component::get_node(this);
     auto trsf_mat = m_transform->get_matrix(inverse);
     auto local_trsf_mat = m_local_transform->get_matrix(inverse);
@@ -102,10 +102,9 @@ void TransformComponent::load_in_shaders(const std::shared_ptr<Shaders>& shaders
     ShadersDataManager *shader_data_manager = shaders->get_shader_data_manager();
 
     //Model matrix and Normal model (if non scalar transform)
-    glm::mat4 model = get_matrix_as_end_node(false);
-    glm::mat4 inverse_model = get_matrix_as_end_node(true);
-    glm::mat4 normal_model = glm::transpose(inverse_model);
-//    glm::mat4 normal_model = glm::transpose(glm::inverse(model));
+    mat4 model = get_matrix_as_end_node(false);
+    mat4 inverse_model = get_matrix_as_end_node(true);
+    mat4 normal_model = transpose(inverse_model);
     glUniformMatrix4fv(shader_data_manager->get_location(ShadersDataManager::MODEL_MAT_LOC_NAME), 1, GL_FALSE,
                        &model[0][0]);
     glUniformMatrix4fv(shader_data_manager->get_location(ShadersDataManager::NORMAL_MODEL_MAT_LOC_NAME), 1, GL_FALSE,
@@ -115,13 +114,13 @@ void TransformComponent::load_in_shaders(const std::shared_ptr<Shaders>& shaders
 
 void TransformComponent::generate_ui_component_editor() {
     //Init
-    glm::vec3 translation = m_transform->get_translation();
-    glm::vec3 rotation = m_transform->get_rotation();
-    glm::vec3 scale = m_transform->get_scale();
+    vec3 translation = m_transform->get_translation();
+    vec3 rotation = m_transform->get_rotation();
+    vec3 scale = m_transform->get_scale();
     OrderRotation order = m_transform->get_order_rotation();
-    glm::vec3 local_translation = m_local_transform->get_translation();
-    glm::vec3 local_rotation = m_local_transform->get_rotation();
-    glm::vec3 local_scale = m_local_transform->get_scale();
+    vec3 local_translation = m_local_transform->get_translation();
+    vec3 local_rotation = m_local_transform->get_rotation();
+    vec3 local_scale = m_local_transform->get_scale();
     OrderRotation local_order = m_local_transform->get_order_rotation();
 
     OrderRotation orders[] = { OrderXYZ, OrderXZY, OrderYXZ, OrderYZX, OrderZXY, OrderZYX};

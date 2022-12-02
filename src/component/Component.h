@@ -44,7 +44,7 @@ namespace component {
 
         std::string get_ui_name();
 
-        virtual void draw(const std::shared_ptr<Shaders> &shaders, glm::vec3 color){};
+        virtual void draw(const std::shared_ptr<Shaders> &shaders, color color){};
 
         template<class T>
         static ComponentType get_type() {

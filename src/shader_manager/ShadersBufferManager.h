@@ -18,6 +18,7 @@
 
 #include <iostream>
 #include <vector>
+#include "vec3_type.h"
 
 namespace shader_manager {
     /// Manager of VBOs and EBO
@@ -101,7 +102,7 @@ namespace shader_manager {
          * @param type
          * @param verticies
          */
-        static void draw_verticies_debug(GLenum type, std::vector<glm::vec3> verticies);
+        static void draw_verticies_debug(GLenum type, std::vector<point> verticies);
 
     };
 }

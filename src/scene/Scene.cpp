@@ -19,7 +19,7 @@ using namespace component::material;
 
 Scene::Scene(GLFWwindow* window,
              const std::string &vertex_shader_path,
-             const std::string &fragment_shader_path, vec3 clear_color){
+             const std::string &fragment_shader_path, color clear_color){
     m_window = window;
     m_scene_valid = false;
     m_auto_draw = true;
@@ -222,39 +222,39 @@ void Scene::handle_inputs(float delta_time) {
 
     //Camera Translation
     if (glfwGetKey(m_window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE) {
-        glm::vec3 dir = {};
+        vec3 dir = {};
         if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS) {
-            dir += glm::vec3(camera_speed, 0.f, 0.f);
+            dir += vec3(camera_speed, 0.f, 0.f);
         }
         if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS) {
-            dir += glm::vec3(-camera_speed, 0.f, 0.f);
+            dir += vec3(-camera_speed, 0.f, 0.f);
         }
         if (glfwGetKey(m_window, GLFW_KEY_Q) == GLFW_PRESS) {
-            dir += glm::vec3(0.f, camera_speed, 0.f);
+            dir += vec3(0.f, camera_speed, 0.f);
         }
         if (glfwGetKey(m_window, GLFW_KEY_E) == GLFW_PRESS) {
-            dir += glm::vec3(0.f, -camera_speed, 0.f);
+            dir += vec3(0.f, -camera_speed, 0.f);
         }
         if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS) {
-            dir += glm::vec3(0.f, 0.f, +camera_speed);
+            dir += vec3(0.f, 0.f, +camera_speed);
         }
         if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS) {
-            dir += glm::vec3(0.f, 0.f, -camera_speed);
+            dir += vec3(0.f, 0.f, -camera_speed);
         }
         camera_trsf->set_translation(camera_trsf->get_translation() + camera_trsf->apply_to_vector(dir));
     } else {
-        glm::vec3 rot = {};
+        vec3 rot = {};
         if (glfwGetKey(m_window, GLFW_KEY_W) == GLFW_PRESS) {
-            rot += glm::vec3(camera_speed_rot, 0.f, 0.f);
+            rot += vec3(camera_speed_rot, 0.f, 0.f);
         }
         if (glfwGetKey(m_window, GLFW_KEY_S) == GLFW_PRESS) {
-            rot -= glm::vec3(camera_speed_rot, 0.f, 0.f);
+            rot -= vec3(camera_speed_rot, 0.f, 0.f);
         }
         if (glfwGetKey(m_window, GLFW_KEY_A) == GLFW_PRESS) {
-            rot += glm::vec3(0.f, camera_speed_rot, 0.f);
+            rot += vec3(0.f, camera_speed_rot, 0.f);
         }
         if (glfwGetKey(m_window, GLFW_KEY_D) == GLFW_PRESS) {
-            rot -= glm::vec3(0.f, camera_speed_rot, 0.f);
+            rot -= vec3(0.f, camera_speed_rot, 0.f);
         }
         camera_trsf->set_rotation(camera_trsf->get_rotation() + rot);
     }
@@ -318,8 +318,8 @@ void Scene::generate_ui_scene_settings() {
         draw(true);
     }
     ImGui::Separator();
-    glm::vec3 debug_color = m_debug_color;
-    glm::vec3 debug_color_2 = m_debug_color_2;
+    color debug_color = m_debug_color;
+    color debug_color_2 = m_debug_color_2;
     bool debug_enabled = m_debug_enabled;
     ImGui::Checkbox("Debugging", &debug_enabled);
     ImGui::ColorEdit3("Debugging Color", &debug_color[0]);

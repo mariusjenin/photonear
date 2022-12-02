@@ -41,9 +41,9 @@ namespace scene {
         int m_width_viewer{};
         int m_height_viewer{};
 
-        vec3 m_clear_color{};
-        vec3 m_debug_color{};
-        vec3 m_debug_color_2{};
+        color m_clear_color{};
+        color m_debug_color{};
+        color m_debug_color_2{};
 
         bool m_debug_enabled{};
 
@@ -53,7 +53,7 @@ namespace scene {
 
 
         Scene(GLFWwindow *window, const std::string &vertex_shader_path, const std::string &fragment_shader_path,
-              vec3 clear_color = {0, 0, 0});
+              color clear_color = {0, 0, 0});
     public:
         void init();
 

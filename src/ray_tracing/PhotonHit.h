@@ -6,17 +6,18 @@
 #define PHOTONEAR_PHOTONHIT_H
 
 #include "glm/glm.hpp"
+#include "Transform.h"
 
 namespace ray_tracing{
     class PhotonHit {
     private:
-        glm::vec3 m_position;
-        glm::vec3 m_normal;
-        glm::vec3 m_ray_direction;
-        glm::vec2 m_pixel_position;
+        point m_position;
+        versor m_normal;
+        versor m_ray_direction;
+        point m_pixel_position;
         float m_radius;
         int m_n_photon;
-        glm::vec3 m_color;
+        color m_color;
     };
 }
 

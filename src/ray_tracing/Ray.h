@@ -12,22 +12,14 @@ namespace ray_tracing {
     private:
         point m_origin{};
         versor m_direction{};
-        float m_time{};
     public:
         Ray() = default;
 
-        Ray(point origin, versor direction, float time = 0.0f)
-                : m_origin(origin), m_direction(direction), m_time(time) {}
+        Ray(point origin, versor direction, float time = 0.0f);
 
-        point origin() const { return m_origin; }
+        point get_origin() const;
 
-        versor direction() const { return m_direction; }
-
-        double time() const { return m_time; }
-
-        point at(float t) const {
-            return m_origin + t * m_direction;
-        }
+        versor get_direction() const;
     };
 }
 

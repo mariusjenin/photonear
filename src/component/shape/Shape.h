@@ -24,10 +24,10 @@ namespace component {
             GLuint m_vbo_position_id{}, m_vbo_tex_coords_id{}, m_vbo_normals_id{}, m_ebo_triangle_indices_id{};
             GLuint m_vao_id{};
 
-            std::vector<glm::vec3> m_vertex_positions;
+            std::vector<point> m_vertex_positions;
             std::vector<unsigned short int> m_triangle_indices;
-            std::vector<glm::vec2> m_vertex_tex_coords;
-            std::vector<glm::vec3> m_vertex_normals;
+            std::vector<vec2> m_vertex_tex_coords;
+            std::vector<versor> m_vertex_normals;
 
             bool m_both_face_visible;
 
@@ -42,7 +42,7 @@ namespace component {
 
             void generate_ui_component_editor() override;
 
-            virtual std::vector<glm::vec3> to_few_vertices() =0;
+            virtual std::vector<point> to_few_vertices() =0;
 
             ~Shape();
         };

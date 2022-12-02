@@ -3,6 +3,7 @@
 //
 
 #include "ShadersBufferManager.h"
+#include "vec3_type.h"
 
 using namespace shader_manager;
 
@@ -43,9 +44,9 @@ void ShadersBufferManager::fill_bo(GLenum buffer_type, GLuint vbo_id, std::vecto
 template void
 ShadersBufferManager::fill_bo<unsigned short int>(GLenum buffer_type, GLuint vbo_id, std::vector<unsigned short int> datas);
 
-template void ShadersBufferManager::fill_bo<glm::vec2>(GLenum buffer_type, GLuint vbo_id, std::vector<glm::vec2> datas);
+template void ShadersBufferManager::fill_bo<vec2>(GLenum buffer_type, GLuint vbo_id, std::vector<vec2> datas);
 
-template void ShadersBufferManager::fill_bo<glm::vec3>(GLenum buffer_type, GLuint vbo_id, std::vector<glm::vec3> datas);
+template void ShadersBufferManager::fill_bo<vec3>(GLenum buffer_type, GLuint vbo_id, std::vector<vec3> datas);
 
 void ShadersBufferManager::disable_attrib_vbo(GLuint index_vbo) {
     glDisableVertexAttribArray(index_vbo);
@@ -56,7 +57,7 @@ void ShadersBufferManager::draw(GLuint ebo_id, long nb_indices) {
     glDrawElements(GL_TRIANGLES, (GLsizei) nb_indices, GL_UNSIGNED_SHORT, nullptr);
 }
 
-void ShadersBufferManager::draw_verticies_debug(GLenum type, std::vector<glm::vec3> verticies) {
+void ShadersBufferManager::draw_verticies_debug(GLenum type, std::vector<point> verticies) {
     size_t verticies_size = verticies.size();
     if((int)verticies_size>0){
 
@@ -68,7 +69,7 @@ void ShadersBufferManager::draw_verticies_debug(GLenum type, std::vector<glm::ve
         GLuint vertex_buffer;
         glGenBuffers(1, &vertex_buffer);
         glBindBuffer(GL_ARRAY_BUFFER, vertex_buffer);
-        glBufferData(GL_ARRAY_BUFFER, (long)verticies_size * (long)sizeof(glm::vec3), &verticies[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, (long)verticies_size * (long)sizeof(point), &verticies[0], GL_STATIC_DRAW);
         glVertexAttribPointer(0,3,GL_FLOAT,GL_FALSE,0, nullptr);
         glEnableVertexAttribArray(0);
 

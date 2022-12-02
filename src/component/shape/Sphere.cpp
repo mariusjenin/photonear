@@ -31,7 +31,7 @@ void Sphere::assign_mesh_sphere() {
     float dv = (float) M_PI / (float) m_stacks;
     int i, j;
     float u, v;
-    vec3 coords;
+    point coords;
     for (i = 0; i <= m_stacks; i++) {
         v = (float) -M_PI / 2 + (float) i * dv;
         for (j = 0; j <= m_slices; j++) {
@@ -79,10 +79,10 @@ void Sphere::generate_ui_component_editor() {
 
 
 
-std::vector<glm::vec3> Sphere::to_few_vertices() {
-    glm::vec3 radius_vec = {m_radius,m_radius,m_radius};
-    glm::vec3 min = m_center-radius_vec;
-    glm::vec3 max = m_center+radius_vec;
+std::vector<point> Sphere::to_few_vertices() {
+    vec3 radius_vec = {m_radius,m_radius,m_radius};
+    point min = m_center-radius_vec;
+    point max = m_center+radius_vec;
     return {min,
             {min[0], min[1], max[2]},
             {min[0], max[1], min[2]},

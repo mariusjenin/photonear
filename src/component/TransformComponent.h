@@ -32,9 +32,9 @@ namespace component {
 
         static void compute_trsf_scene_graph_node(AbstractNode* node);
 
-        glm::mat4 get_matrix(bool inverse = false);
+        mat4 get_matrix(bool inverse = false);
 
-        glm::mat4 get_matrix_as_end_node(bool inverse = false);
+        mat4 get_matrix_as_end_node(bool inverse = false);
 
         void load_in_shaders(const std::shared_ptr<Shaders>& shaders);
 

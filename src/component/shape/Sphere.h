@@ -20,13 +20,13 @@ namespace component {
             int m_slices;
             int m_stacks;
 
-            static glm::vec3 spheric_to_euclidian_coords(float theta, float phi) {
+            static point spheric_to_euclidian_coords(float theta, float phi) {
                 return {cos(theta) * cos(phi), sin(theta) * cos(phi), sin(phi)};
             }
 
             void assign_mesh_sphere();
 
-            std::vector<glm::vec3> to_few_vertices() override;
+            std::vector<point> to_few_vertices() override;
 
         public:
             explicit Sphere(float radius = 1, int slices = 20, int stacks = 20,

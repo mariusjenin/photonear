@@ -6,12 +6,15 @@
 #define PHOTONEAR_BOUNDINGBOX_H
 
 #include "MaskedComponent.h"
+#include "Ray.h"
+
+using namespace ray_tracing;
 
 namespace component{
     class BoundingBox : public MaskedComponent{
     private:
-        glm::vec3 m_max{};
-        glm::vec3 m_min{};
+        point m_max{};
+        point m_min{};
     public:
         BoundingBox();
 
@@ -19,15 +22,17 @@ namespace component{
 
         void merge(BoundingBox bb);
 
-        void merge(const std::vector<glm::vec3>& vertices);
+        void merge(const std::vector<point>& vertices);
 
         ComponentType get_type() override;
 
         void generate_ui_component_editor() override;
 
-        void draw(const std::shared_ptr<Shaders> &shaders, glm::vec3 color) override;
+        void draw(const std::shared_ptr<Shaders> &shaders, color color) override;
 
-        std::vector<glm::vec3> to_vertices();
+        std::vector<point> to_vertices();
+
+        bool hit_by_ray(Ray ray);
     };
 }
 

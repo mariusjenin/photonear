@@ -33,9 +33,9 @@ void Shape::load_mesh_in_vao() {
     ShadersBufferManager::generate_bo(&m_vbo_normals_id);
     ShadersBufferManager::generate_bo(&m_ebo_triangle_indices_id);
     //Fill the VBO data
-    ShadersBufferManager::fill_bo<glm::vec3>(GL_ARRAY_BUFFER, m_vbo_position_id, m_vertex_positions);
-    ShadersBufferManager::fill_bo<glm::vec2>(GL_ARRAY_BUFFER, m_vbo_tex_coords_id, m_vertex_tex_coords);
-    ShadersBufferManager::fill_bo<glm::vec3>(GL_ARRAY_BUFFER, m_vbo_normals_id, m_vertex_normals);
+    ShadersBufferManager::fill_bo<point>(GL_ARRAY_BUFFER, m_vbo_position_id, m_vertex_positions);
+    ShadersBufferManager::fill_bo<vec2>(GL_ARRAY_BUFFER, m_vbo_tex_coords_id, m_vertex_tex_coords);
+    ShadersBufferManager::fill_bo<versor>(GL_ARRAY_BUFFER, m_vbo_normals_id, m_vertex_normals);
     ShadersBufferManager::fill_bo<unsigned short int>(GL_ELEMENT_ARRAY_BUFFER, m_ebo_triangle_indices_id, m_triangle_indices);
     //Attrib Pointers
     ShadersBufferManager::enable_attrib_vbo(ShadersBufferManager::ID_VERTEX_BUFFER, m_vbo_position_id, 3, GL_FALSE);

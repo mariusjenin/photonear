@@ -8,7 +8,7 @@
 
 using namespace shader_manager;
 
-glsl_vec3::glsl_vec3(glm::vec3 v) {
+glsl_vec3::glsl_vec3(vec3 v) {
     x = v.x;
     y = v.y;
     z = v.z;
@@ -30,7 +30,7 @@ glsl_bool::glsl_bool(bool boolean) {
 
 
 
-glsl_mat4::glsl_mat4(glm::mat4 m) {
+glsl_mat4::glsl_mat4(mat4 m) {
     x0 = m[0][0]; x1 = m[0][1];  x2 = m[0][2]; x3 = m[0][3];
     y0 = m[1][0]; y1 = m[1][1];  y2 = m[1][2]; y3 = m[1][3];
     z0 = m[2][0]; z1 = m[2][1];  z2 = m[2][2]; z3 = m[2][3];

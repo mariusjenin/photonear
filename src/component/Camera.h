@@ -10,9 +10,9 @@
 
 using namespace shader_manager;
 
-#define CAMERA_POSITION glm::vec3(0, 0, 0)
-#define CAMERA_FORWARD glm::vec3(0, 0, -1)
-#define CAMERA_UP glm::vec3(0, 1, 0)
+#define CAMERA_POSITION point(0, 0, 0)
+#define CAMERA_FORWARD versor(0, 0, -1)
+#define CAMERA_UP versor(0, 1, 0)
 
 namespace component {
     class Camera : public Component {

@@ -23,14 +23,14 @@ void Quad::assign_mesh_plane() {
     m_vertex_tex_coords.clear();
     m_triangle_indices.clear();
 
-    glm::vec3 points[4];
+    point points[4];
 
     auto half_length_x = m_length_x/2.f;
     auto half_length_z = m_length_z/2.f;
-    points[0] = glm::vec3(-half_length_x,0,-half_length_z);
-    points[1] = glm::vec3(-half_length_x,0,half_length_z);
-    points[2] = glm::vec3(half_length_x,0,half_length_z);
-    points[3] = glm::vec3(half_length_x,0,-half_length_z);
+    points[0] = point(-half_length_x,0,-half_length_z);
+    points[1] = point(-half_length_x,0,half_length_z);
+    points[2] = point(half_length_x,0,half_length_z);
+    points[3] = point(half_length_x,0,-half_length_z);
 
     for(auto point:points){
         m_vertex_positions.emplace_back(point[0],point[1],point[2]);
@@ -69,12 +69,12 @@ void Quad::generate_ui_component_editor() {
 
 
 
-std::vector<glm::vec3> Quad::to_few_vertices() {
+std::vector<point> Quad::to_few_vertices() {
     auto bb = BoundingBox();
     auto half_length_x = m_length_x/2.f;
     auto half_length_z = m_length_z/2.f;
-    glm::vec3 min = {-half_length_x,0,-half_length_z};
-    glm::vec3 max = {half_length_x,0,half_length_z};
+    point min = {-half_length_x,0,-half_length_z};
+    point max = {half_length_x,0,half_length_z};
     return {min,
             {min[0], min[1], max[2]},
             {min[0], max[1], min[2]},
