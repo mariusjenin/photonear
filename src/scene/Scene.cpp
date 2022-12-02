@@ -32,7 +32,8 @@ Scene::Scene(GLFWwindow* window,
     glDepthFunc(GL_LESS);
 
     m_clear_color = clear_color;
-    m_debug_color = {1,0,0.5f};
+    m_debug_color = {0,1,0.5f};
+    m_debug_color_2 = {1,0,0.5f};
 
     m_shaders = std::make_shared<VertFragShaders>(vertex_shader_path.c_str(), fragment_shader_path.c_str());
 
@@ -93,23 +94,31 @@ void Scene::draw(bool force) {
 
         draw_shapes(m_shaders);
 
-        auto component_selected = Photonear::get_instance()->get_component_selected();
-        if(component_selected != nullptr){
-            component_selected->draw(m_shaders);
-        }
-        auto node = Photonear::get_instance()->get_node_selected();
-        if(node != nullptr){
-            auto bounding_box_node_selected = Component::get_component<BoundingBox>(node);
-            if(bounding_box_node_selected != nullptr){
-                bounding_box_node_selected->draw(m_shaders);
-            }
-        }
+        if(m_debug_enabled) draw_debug();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
         m_scene_valid = true;
         Photonear::get_instance()->get_ray_tracer()->set_ray_tracing_valid(false);
         m_scene_graph->compute_bounding_boxes();
+    }
+}
+
+void Scene::draw_debug(){
+    auto component_selected = Photonear::get_instance()->get_component_selected();
+    if(component_selected != nullptr){
+        component_selected->draw(m_shaders, m_debug_color);
+    }
+    auto node = Photonear::get_instance()->get_node_selected();
+    if(node != nullptr){
+        auto bounding_box_node_selected = Component::get_component<BoundingBox>(node);
+        if(bounding_box_node_selected != nullptr){
+            bounding_box_node_selected->draw(m_shaders, m_debug_color);
+        }
+        auto bounding_box_children = Component::get_children_components<BoundingBox>(&*node,true);
+        for(const auto& bb: bounding_box_children){
+            bb->draw(m_shaders, m_debug_color_2);
+        }
     }
 }
 
@@ -310,13 +319,16 @@ void Scene::generate_ui_scene_settings() {
     }
     ImGui::Separator();
     glm::vec3 debug_color = m_debug_color;
+    glm::vec3 debug_color_2 = m_debug_color_2;
     bool debug_enabled = m_debug_enabled;
     ImGui::Checkbox("Debugging", &debug_enabled);
     ImGui::ColorEdit3("Debugging Color", &debug_color[0]);
-    if(m_debug_color != debug_color || m_debug_enabled != debug_enabled){
+    ImGui::ColorEdit3("Debugging Color 2", &debug_color_2[0]);
+    if(m_debug_color != debug_color || m_debug_enabled != debug_enabled || m_debug_color_2 != debug_color_2 ){
         m_scene_valid = false;
     }
     m_debug_color = debug_color;
+    m_debug_color_2 = debug_color_2;
     m_debug_enabled = debug_enabled;
 
 }
@@ -338,12 +350,4 @@ void Scene::generate_ui_viewer() const {
         ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f,(window_size.y - text_size.y) * 0.5f));
         ImGui::Text("%s", text.c_str());
     }
-}
-
-bool Scene::is_debug_enabled() const {
-    return m_debug_enabled;
-}
-
-vec3 Scene::get_debug_color() const {
-    return m_debug_color;
 }

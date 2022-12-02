@@ -3,7 +3,7 @@
 //
 
 #include "Photonear.h"
-#include "CornellBox.h"
+#include "DepthScene.h"
 
 Photonear *Photonear::PhotonearInstance = nullptr;
 

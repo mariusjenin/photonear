@@ -85,7 +85,6 @@ Shaders::Shaders(const char *vertex_file_path, const char *fragment_file_path, b
 
 
         // Compile Vertex Shader
-        printf("Compiling shader : %s\n", vertex_file_path);
         char const *vertex_source_pointer = vertex_shader_code.c_str();
         glShaderSource(vertex_shader_id, 1, &vertex_source_pointer, nullptr);
         glCompileShader(vertex_shader_id);
@@ -102,7 +101,6 @@ Shaders::Shaders(const char *vertex_file_path, const char *fragment_file_path, b
 
 
         // Compile Fragment Shader
-        printf("Compiling shader : %s\n", fragment_file_path);
         char const *fragment_source_pointer = fragment_shader_code.c_str();
         glShaderSource(fragment_shader_id, 1, &fragment_source_pointer, nullptr);
         glCompileShader(fragment_shader_id);
@@ -118,7 +116,6 @@ Shaders::Shaders(const char *vertex_file_path, const char *fragment_file_path, b
 
 
         // Link the program
-        printf("Linking program\n");
         m_program_id = glCreateProgram();
         glAttachShader(m_program_id, vertex_shader_id);
         glAttachShader(m_program_id, fragment_shader_id);

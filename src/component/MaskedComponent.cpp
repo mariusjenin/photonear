@@ -9,6 +9,6 @@
     //Nothing
 //}
 
-//void component::MaskedComponent::generate_ui_component_editor() {
+void component::MaskedComponent::generate_ui_component_editor() {
     //Nothing
-//}
+}

@@ -44,7 +44,7 @@ namespace component {
 
         std::string get_ui_name();
 
-        virtual void draw(const std::shared_ptr<Shaders> &shaders){};
+        virtual void draw(const std::shared_ptr<Shaders> &shaders, glm::vec3 color){};
 
         template<class T>
         static ComponentType get_type() {
@@ -129,17 +129,27 @@ namespace component {
          * Get a list of Component from children of a Node
          * @tparam T
          * @param node
+         * @param recursive
          * @return components
          */
         template<class T>
-        static std::vector<std::shared_ptr<T>> get_children_components(AbstractNode *node) {
+        static std::vector<std::shared_ptr<T>> get_children_components(AbstractNode *node, bool recursive = false) {
             auto children = node->get_children();
             if (children.empty()) {
-                return {};
+                if(recursive){
+                    return get_components<T>((AbstractNode *) &*node);
+                } else {
+                    return {};
+                }
             }
             std::vector<std::shared_ptr<T>> components = {};
             for (const auto &child_node: children) {
-                auto child_components = get_components<T>((AbstractNode *) &*child_node);
+                std::vector<std::shared_ptr<T>> child_components;
+                if(recursive){
+                    child_components = get_children_components<T>((AbstractNode *) &*child_node, true);
+                } else {
+                    child_components = get_components<T>((AbstractNode *) &*child_node);
+                }
                 components.insert(components.end(), child_components.begin(), child_components.end());
             }
             return components;

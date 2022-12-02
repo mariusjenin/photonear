@@ -22,7 +22,7 @@ ray_tracing::RayTracer::RayTracer() {
 
 
 void RayTracer::init() {
-    ImGui::Begin(Photonear::PhotonMappingViewerName, nullptr,ImGuiWindowFlags_NoMove);
+    ImGui::Begin(Photonear::PhotonMappingViewerName, nullptr, ImGuiWindowFlags_NoMove);
     ImVec2 pmv_window_size = ImGui::GetWindowSize();
     ImGui::End();
 
@@ -82,10 +82,10 @@ void ray_tracing::RayTracer::generate_ui_ray_tracing_settings() {
     m_sample_by_pixel = sample_by_pixel;
     ImGui::Separator();
     ImGui::Checkbox("Auto recompute Ray Tracing", &m_auto_recompute);
-    if(width_changed || height_changed || sample_by_pixel_changed){
+    if (width_changed || height_changed || sample_by_pixel_changed) {
         init_ray_tracing_data();
     }
-    if(ImGui::Button("Recompute")){
+    if (ImGui::Button("Recompute")) {
         compute_raytracing();
     }
 }
@@ -100,8 +100,8 @@ void RayTracer::init_ray_tracing_data() {
 //        m_data[i + 2] = 0;
 //        m_data[i + 3] = 255;
 //    }
-    for (int i = 0; i < m_width; i ++) {
-        for (int j = 0; j < m_height; j ++) {
+    for (int i = 0; i < m_width; i++) {
+        for (int j = 0; j < m_height; j++) {
             int val = 0;
 //            if(i % 50 < 25){
 //                if(j % 50 < 25){
@@ -121,35 +121,35 @@ void RayTracer::init_ray_tracing_data() {
 //            } else {
 //                val = 128;
 //            }
-            m_data[4*(i * m_height +j) + 0] = val;
-            m_data[4*(i * m_height +j) + 1] = val;
-            m_data[4*(i * m_height +j) + 2] = val;
-            m_data[4*(i * m_height +j) + 3] = 255;
+            m_data[4 * (i * m_height + j) + 0] = val;
+            m_data[4 * (i * m_height + j) + 1] = val;
+            m_data[4 * (i * m_height + j) + 2] = val;
+            m_data[4 * (i * m_height + j) + 3] = 255;
         }
     }
-    for(int i = 2*m_width+2 - 48; i < size_data; i+=4*m_width){
+    for (int i = 2 * m_width + 2 - 48; i < size_data; i += 4 * m_width) {
         for (int j = 0; j < 48; ++j) {
-            m_data[i+j*4] = 128;
-            m_data[i+j*4+1] = 128;
-            m_data[i+j*4+2] = 128;
-            m_data[i+j*4+3] = 128;
+            m_data[i + j * 4] = 128;
+            m_data[i + j * 4 + 1] = 128;
+            m_data[i + j * 4 + 2] = 128;
+            m_data[i + j * 4 + 3] = 128;
         }
     }
-    for(int i = ((m_height-48)/2)*m_width*4; i < ((m_height+48)/2)*m_width*4; i+=4){
+    for (int i = ((m_height - 48) / 2) * m_width * 4; i < ((m_height + 48) / 2) * m_width * 4; i += 4) {
         m_data[i] = 128;
-        m_data[i+1] = 128;
-        m_data[i+2] = 128;
-        m_data[i+3] = 128;
+        m_data[i + 1] = 128;
+        m_data[i + 2] = 128;
+        m_data[i + 3] = 128;
     }
-    m_photon_hit.resize(size_img,{});
+    m_photon_hit.resize(size_img, {});
     m_ray_tracing_valid = false;
 }
 
-void RayTracer::update(){
-    if(m_auto_recompute && !m_ray_tracing_valid){
+void RayTracer::update() {
+    if (m_auto_recompute && !m_ray_tracing_valid) {
         compute_raytracing();
     }
-    if(!m_image_valid){
+    if (!m_image_valid) {
         compute_image();
     }
 }
@@ -161,35 +161,32 @@ void RayTracer::generate_ui_viewer() {
 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_width, m_height, 0, GL_RGBA, GL_UNSIGNED_BYTE, &m_data[0]);
 
-    float width;
-    float height;
+    float diff_x = 0;
+    float diff_y = 0;
 
-    if((float)m_width > window_size.x){
-        width = window_size.x;
-        height = window_size.x * (float) m_height / (float)m_width;
+    if ((float) m_width > window_size.x) {
+        diff_y = window_size.y - (window_size.x * (float) m_height / (float) m_width);
     }
-    if((float)m_height > window_size.y){
-        width = window_size.y * (float) m_width / (float)m_height;
-        height = window_size.y;
+    if ((float) m_height > window_size.y) {
+        diff_x = window_size.x - (window_size.y * (float) m_width / (float) m_height);
     }
 
-    auto diff = ImVec2(window_size.x - width, window_size.y - height);
     ImGui::GetWindowDrawList()->AddImage(
             reinterpret_cast<ImTextureID>(m_image_texture),
-            ImVec2(cursor_pos.x + diff.x / 2.f, cursor_pos.y + diff.y / 2.f),
-            ImVec2(cursor_pos.x + window_size.x - 15 - diff.x / 2.f, cursor_pos.y + window_size.y - 35 - diff.y / 2.f),
+            ImVec2(cursor_pos.x + diff_x / 2.f, cursor_pos.y + diff_y / 2.f),
+            ImVec2(cursor_pos.x + window_size.x - 15 - diff_x / 2.f, cursor_pos.y + window_size.y - 35 - diff_y / 2.f),
             ImVec2(0, 1), ImVec2(1, 0)
     );
 }
 
-void RayTracer::compute_raytracing(){
+void RayTracer::compute_raytracing() {
     //TODO
     m_ray_tracing_valid = true;
     m_image_valid = false;
 }
 
-void RayTracer::compute_image(){
-    //TODO PHOTON MAPPING
+void RayTracer::compute_image() {
+    //TODO
     m_image_valid = true;
 }
 

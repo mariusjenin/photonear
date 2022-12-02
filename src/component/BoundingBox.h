@@ -21,13 +21,11 @@ namespace component{
 
         void merge(const std::vector<glm::vec3>& vertices);
 
-        void merge(glm::vec3 min , glm::vec3 max);
-
         ComponentType get_type() override;
 
         void generate_ui_component_editor() override;
 
-        void draw(const std::shared_ptr<Shaders> &shaders) override;
+        void draw(const std::shared_ptr<Shaders> &shaders, glm::vec3 color) override;
 
         std::vector<glm::vec3> to_vertices();
     };

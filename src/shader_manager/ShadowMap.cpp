@@ -34,7 +34,7 @@ ShadowMap::ShadowMap(int w, int h, GLuint id_texture_unit_depth_map) {
         glDrawBuffer(GL_NONE); // No color buffer is drawn to.
 
         if(glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
-            std::cout << "Shadow Map not successfully created" << std::endl;
+            std::cerr << "Error while creating Shadow Map" << std::endl;
         }
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
     }

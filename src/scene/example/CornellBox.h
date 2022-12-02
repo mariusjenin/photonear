@@ -7,7 +7,6 @@
 
 #include "Scene.h"
 
-
 namespace scene {
     class CornellBox : public Scene {
     public:

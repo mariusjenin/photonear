@@ -50,7 +50,7 @@ ShapeInHierarchy SceneGraph::generate_bounding_boxes_recursively(const std::shar
             if (shape_in_hierarchy == ShapeInHierarchy::InChildren) count_shape_in_hierarchy++;
             if (shape_in_hierarchy == ShapeInHierarchy::InNode) count_child_shape++;
         }
-        if (count_child_shape > 1 || (count_child_shape == 1 && count_shape_in_hierarchy > 0)) {
+        if (count_child_shape > 1 || count_shape_in_hierarchy > 1) {
             Component::add_component_to_node(std::make_shared<BoundingBox>(), node);
             return ShapeInHierarchy::InChildren;
         }
@@ -71,16 +71,14 @@ BoundingBox* SceneGraph::compute_bounding_boxes_recursively(AbstractNode *node) 
         bounding_box->init();
     }
 
+    auto trsf_comp = Component::get_component<TransformComponent>(&*node);
+    auto matrix = trsf_comp->get_matrix_as_end_node();
     auto shapes = Component::get_components<Shape>(node);
     for (const auto& shape: shapes) {
         auto vertices = shape->to_few_vertices();
-        auto shape_node = Component::get_node(&*shape);
-        auto trsf_comp = Component::get_component<TransformComponent>(&*shape_node);
-        auto matrix = trsf_comp->get_matrix_as_end_node();
         for(int i = 0 ; i < 8 ; i ++){
             vertices[i] = matrix*vec4(vertices[i],1);
         }
-
         bounding_box->merge(vertices);
     }
 

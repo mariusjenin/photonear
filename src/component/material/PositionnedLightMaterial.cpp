@@ -23,7 +23,8 @@ Light PositionnedLightMaterial::generate_light() {
     auto trsf_comp = Component::get_nearest_component_upper<TransformComponent>(&*node);
     auto matrix = trsf_comp->get_matrix_as_end_node();
     Transform trsf = Transform(matrix);
-    vec3 position = {};
+    vec3 position = {0,0,0};
+    //TODO problem rotation
     position = trsf.apply_to_point(position);
 
     Light light = LightMaterial::generate_light();

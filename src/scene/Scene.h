@@ -43,6 +43,7 @@ namespace scene {
 
         vec3 m_clear_color{};
         vec3 m_debug_color{};
+        vec3 m_debug_color_2{};
 
         bool m_debug_enabled{};
 
@@ -60,6 +61,8 @@ namespace scene {
 
         void draw(bool force = false);
 
+        void draw_debug();
+
         /**
          * Process the input of the user to have actions on the Scene
          * @param delta_time
@@ -75,11 +78,6 @@ namespace scene {
         void generate_ui_scene_settings();
 
         void generate_ui_viewer() const;
-
-        bool is_debug_enabled() const;
-
-        vec3 get_debug_color() const;
-
     };
 }
 #endif //PHOTONEAR_SCENE_H
