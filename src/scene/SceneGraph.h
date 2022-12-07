@@ -20,18 +20,19 @@ namespace scene {
     class SceneGraph {
     private:
         std::shared_ptr<RootNode> m_root_node;
-
         /**
          * Generate BoundingBox Component to a node recursively if it has more than 1 Shape or 1 Shape and 1 Shape in one of his branch
          * @param node
          * @return shape_in_hierarchy
          */
-        ShapeInHierarchy generate_bounding_boxes_recursively(const std::shared_ptr<AbstractNode>& node);
+        ShapeInHierarchy generate_bounding_boxes_recursive(const std::shared_ptr<AbstractNode>& node);
 
-        BoundingBox* compute_bounding_boxes_recursively(AbstractNode* node);
+        BoundingBox* compute_bounding_boxes_recursive(AbstractNode* node);
 
     public:
         explicit SceneGraph(std::shared_ptr<RootNode> rn);
+
+        std::shared_ptr<RootNode> get_root_node();
 
         void generate_ui_scene_graph();
 
@@ -40,6 +41,10 @@ namespace scene {
         void compute_scene_graph();
 
         void compute_bounding_boxes();
+
+        bool raycast(Ray ray);
+
+        bool raycast_recursive(Ray ray, const std::shared_ptr<AbstractNode>& node);
     };
 }
 

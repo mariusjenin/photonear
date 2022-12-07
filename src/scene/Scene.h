@@ -10,6 +10,7 @@
 #include "VertFragShaders.h"
 #include "Material.h"
 #include "Shape.h"
+#include "Camera.h"
 
 using namespace shader_manager;
 using namespace component;
@@ -46,10 +47,12 @@ namespace scene {
         color m_debug_color_2{};
 
         bool m_debug_enabled{};
+        int m_debug_depth{};
 
         bool m_auto_draw{};
         bool m_camera_valid{};
         bool m_scene_valid{};
+        bool m_viewer_valid{};
 
 
         Scene(GLFWwindow *window, const std::string &vertex_shader_path, const std::string &fragment_shader_path,
@@ -69,9 +72,15 @@ namespace scene {
          */
         void handle_inputs(float delta_time);
 
+        void init_camera();
+
+        static std::shared_ptr<Camera> get_active_camera();
+
         void set_viewer_size(int width, int height);
 
         void set_scene_valid(bool valid = false);
+
+        void set_viewer_valid(bool valid = false);
 
         std::shared_ptr<SceneGraph> get_scene_graph();
 

@@ -27,6 +27,8 @@ namespace component {
             void generate_ui_component_editor() override;
 
             std::vector<point> to_few_vertices() override;
+
+            bool hit(Ray ray) override;
         };
     }
 }

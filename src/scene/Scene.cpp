@@ -22,9 +22,11 @@ Scene::Scene(GLFWwindow* window,
              const std::string &fragment_shader_path, color clear_color){
     m_window = window;
     m_scene_valid = false;
+    m_viewer_valid = false;
     m_auto_draw = true;
     m_camera_valid = false;
     m_debug_enabled = true;
+    m_debug_depth = 2;
 
     // Enable depth test
     glEnable(GL_DEPTH_TEST);
@@ -59,6 +61,7 @@ void Scene::init() {
     init_scene_graph();
     m_scene_graph->compute_scene_graph();
     m_scene_graph->generate_bounding_boxes();
+    init_camera();
 }
 
 void Scene::update(float delta_time){
@@ -66,16 +69,8 @@ void Scene::update(float delta_time){
 }
 
 void Scene::load_camera(){
-    auto cams = Component::get_components<Camera>();
-    std::shared_ptr<Camera> camera = nullptr;
-    for(const auto& cam : cams){
-        if(camera == nullptr || cam->is_capturing()){
-            auto node = Component::get_node(&*cam);
-            if(node->is_active_recursive()){
-                camera = cam;
-            }
-        }
-    }
+    std::shared_ptr<Camera> camera = get_active_camera();
+
     m_camera_valid = camera != nullptr;
     if(m_camera_valid){
         camera->load_in_shaders(m_shaders,m_width_viewer,m_height_viewer);
@@ -83,9 +78,12 @@ void Scene::load_camera(){
 }
 
 void Scene::draw(bool force) {
-    if((m_auto_draw && !m_scene_valid) || force){
+    if((m_auto_draw && (!m_scene_valid || !m_viewer_valid)) || force){
         load_camera();
+        if(!m_camera_valid) return;
         load_lights();
+
+        m_scene_graph->compute_bounding_boxes();
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
 
@@ -98,28 +96,38 @@ void Scene::draw(bool force) {
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+        if(!m_scene_valid){
+            Photonear::get_instance()->get_ray_tracer()->set_ray_tracing_valid(false);
+        }
         m_scene_valid = true;
-        Photonear::get_instance()->get_ray_tracer()->set_ray_tracing_valid(false);
-        m_scene_graph->compute_bounding_boxes();
+        m_viewer_valid = true;
     }
 }
 
 void Scene::draw_debug(){
+
+    auto shader_data_manager = m_shaders->get_shader_data_manager();
+    glUniform1i(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_LOC_NAME), true);
+    glUniform3fv(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_COLOR_LOC_NAME), 1, &m_debug_color[0]);
+
     auto component_selected = Photonear::get_instance()->get_component_selected();
     if(component_selected != nullptr){
-        component_selected->draw(m_shaders, m_debug_color);
+        component_selected->draw();
     }
     auto node = Photonear::get_instance()->get_node_selected();
     if(node != nullptr){
         auto bounding_box_node_selected = Component::get_component<BoundingBox>(node);
         if(bounding_box_node_selected != nullptr){
-            bounding_box_node_selected->draw(m_shaders, m_debug_color);
+            bounding_box_node_selected->draw();
         }
-        auto bounding_box_children = Component::get_children_components<BoundingBox>(&*node,true);
+        glUniform3fv(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_COLOR_LOC_NAME), 1, &m_debug_color_2[0]);
+        auto bounding_box_children = Component::get_children_components_recursive<BoundingBox>(&*node,m_debug_depth);
         for(const auto& bb: bounding_box_children){
-            bb->draw(m_shaders, m_debug_color_2);
+            bb->draw();
         }
     }
+
+    glUniform1i(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_LOC_NAME), false);
 }
 
 
@@ -135,7 +143,7 @@ void Scene::draw_shapes(const std::shared_ptr<Shaders>& shaders) {
 
 void Scene::set_viewer_size(int width, int height){
     if(height != m_height_viewer || width != m_width_viewer){
-        m_scene_valid = false;
+        m_viewer_valid = false;
         m_width_viewer = width;
         m_height_viewer = height;
         resize_texture();
@@ -208,15 +216,9 @@ void Scene::handle_inputs(float delta_time) {
     float camera_speed = 7.f * delta_time;
     float camera_speed_rot = 100 * delta_time;
 
-    auto cameras = Component::get_components<Camera>();
-    std::shared_ptr<Camera> camera = nullptr;
-    for(const auto& cam : cameras){
-        if(cam->is_capturing()){
-            camera = cam;
-        }
-    }
+    std::shared_ptr<Camera> camera = get_active_camera();
+    if(camera == nullptr) return;
     auto camera_node = Component::get_node(&*camera);
-    if(!camera_node->is_active_recursive()) return;
 
     auto camera_trsf = Component::get_component<TransformComponent>(&*camera_node)->get_transform();
 
@@ -307,6 +309,10 @@ void Scene::set_scene_valid(bool valid) {
     m_scene_valid = valid;
 }
 
+void Scene::set_viewer_valid(bool valid) {
+    m_viewer_valid = valid;
+}
+
 void Scene::generate_ui_scene_settings() {
     ImGui::Checkbox("Auto draw Scene", &m_auto_draw);
     if(ImGui::Button("Draw")){
@@ -321,15 +327,18 @@ void Scene::generate_ui_scene_settings() {
     color debug_color = m_debug_color;
     color debug_color_2 = m_debug_color_2;
     bool debug_enabled = m_debug_enabled;
+    int debug_depth = m_debug_depth;
     ImGui::Checkbox("Debugging", &debug_enabled);
     ImGui::ColorEdit3("Debugging Color", &debug_color[0]);
     ImGui::ColorEdit3("Debugging Color 2", &debug_color_2[0]);
-    if(m_debug_color != debug_color || m_debug_enabled != debug_enabled || m_debug_color_2 != debug_color_2 ){
-        m_scene_valid = false;
+    ImGui::DragInt("Debug Depth",&debug_depth,0.01f,0,INT_MAX);
+    if(m_debug_color != debug_color || m_debug_enabled != debug_enabled || m_debug_color_2 != debug_color_2 || m_debug_depth != debug_depth ){
+        m_viewer_valid = false;
     }
     m_debug_color = debug_color;
     m_debug_color_2 = debug_color_2;
     m_debug_enabled = debug_enabled;
+    m_debug_depth = debug_depth;
 
 }
 
@@ -350,4 +359,26 @@ void Scene::generate_ui_viewer() const {
         ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f,(window_size.y - text_size.y) * 0.5f));
         ImGui::Text("%s", text.c_str());
     }
+}
+
+void Scene::init_camera() {
+    auto camera = get_active_camera();
+    if(camera != nullptr) {
+        camera->set_capturing(true);
+        m_camera_valid = true;
+    }
+}
+
+std::shared_ptr<Camera> Scene::get_active_camera() {
+    auto cameras = Component::get_components<Camera>();
+    std::shared_ptr<Camera> camera;
+    for(const auto& cam: cameras){
+        if(camera == nullptr || cam->is_capturing()){
+            auto node = Component::get_node(&*cam);
+            if(node->is_active_recursive()){
+                camera = cam;
+            }
+        }
+    }
+    return camera;
 }

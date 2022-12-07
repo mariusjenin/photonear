@@ -34,6 +34,8 @@ namespace component {
 
             void generate_ui_component_editor() override;
 
+            bool hit(Ray ray) override;
+
         };
     }
 }

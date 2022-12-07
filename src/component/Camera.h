@@ -24,9 +24,15 @@ namespace component {
         float m_z_far;
 
     public:
-        explicit Camera(bool capturing = true, float fovy = 45.0f, float z_near = 0.1f, float z_far = 10000.0f);
+        explicit Camera(bool capturing = false, float fovy = 45.0f, float z_near = 0.001f, float z_far = 10000.0f);
 
         ComponentType get_type() override;
+
+        float get_fovy() const;
+
+        float get_z_near() const;
+
+        float get_z_far() const;
 
         int is_capturing() const;
 

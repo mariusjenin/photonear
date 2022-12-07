@@ -143,10 +143,15 @@ void CornellBox::init_scene_graph() {
 
     // Camera
     auto camera = make_shared<Camera>();
+    auto camera2 = make_shared<Camera>();
+    auto camera_node_2 = NodeFactory::create_node(camera_node,"CameraNode2");
     Component::add_component_to_node(camera, camera_node);
+    Component::add_component_to_node(camera2, camera_node_2);
     auto trsf_camera = Component::get_component<TransformComponent>(&*camera_node)->get_transform();
     trsf_camera->set_translation({0,8.8,12});
     trsf_camera->set_rotation({-25,0,0});
+    auto trsf_camera2 = Component::get_component<TransformComponent>(&*camera_node_2)->get_transform();
+    trsf_camera2->set_translation({0,1,1});
 
     m_scene_graph = make_shared<SceneGraph>(root);
 }

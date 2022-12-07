@@ -9,8 +9,7 @@
 
 namespace component{
     class MaskedComponent : public Component{
-        //TODO uncomment
-//        void generate_ui_node_editor_ui() override;
+        void generate_ui_node_editor_ui() override;
 
         void generate_ui_component_editor() override;
     };

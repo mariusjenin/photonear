@@ -60,11 +60,11 @@ void Camera::generate_ui_component_editor() {
     float fovy = m_fovy;
     float z_near = m_z_near;
     float z_far = m_z_far;
-    if (ImGui::Button("Set Active")) {
-        set_capturing(true);
+    if(!m_capturing){
+        if (ImGui::Button("Capture With this camera")) {
+            set_capturing(true);
+        }
     }
-    ImGui::SameLine();
-    ImGui::Text("%s%s", "Active : ", m_capturing ? "Yes" : "No");
     ImGui::DragFloat("FOV Y", &fovy, 0.1f, 0, 180);
     ImGui::DragFloat("Z Near", &z_near, 0.1f, 0, FLT_MAX);
     ImGui::DragFloat("Z Far", &z_far, 1.f, 0, FLT_MAX);
@@ -82,7 +82,7 @@ int Camera::is_capturing() const {
 }
 
 void Camera::set_capturing(bool capturing) {
-    if(m_capturing != capturing)
+    if (m_capturing != capturing)
         Photonear::get_instance()->get_scene()->set_scene_valid();
     if (capturing) {
         auto cameras = Component::get_components<Camera>();
@@ -95,3 +95,14 @@ void Camera::set_capturing(bool capturing) {
     m_capturing = capturing;
 }
 
+float Camera::get_fovy() const {
+    return m_fovy;
+}
+
+float Camera::get_z_near() const {
+    return m_z_near;
+}
+
+float Camera::get_z_far() const {
+    return m_z_far;
+}

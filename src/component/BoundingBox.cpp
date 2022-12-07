@@ -33,20 +33,12 @@ void BoundingBox::merge(const std::vector<point> &vertices) {
             if (m_max[i] < vertex[i]) m_max[i] = vertex[i];
         }
     }
-    m_min = {m_min[0] - 0.001f,m_min[1] - 0.001f,m_min[2] - 0.001f};
-    m_max = {m_max[0] + 0.001f,m_max[1] + 0.001f,m_max[2] + 0.001f};
+    float bias = 0.001f;
+    m_min = {m_min[0] - bias, m_min[1] - bias, m_min[2] - bias};
+    m_max = {m_max[0] + bias, m_max[1] + bias, m_max[2] + bias};
 }
 
-void BoundingBox::generate_ui_component_editor() {
-    ImGui::Text("min %f %f %f", m_min[0], m_min[1], m_min[2]);
-    ImGui::Text("max %f %f %f", m_max[0], m_max[1], m_max[2]);
-}
-
-void BoundingBox::draw(const std::shared_ptr<Shaders> &shaders, color color) {
-    auto shader_data_manager = shaders->get_shader_data_manager();
-    glUniform1i(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_LOC_NAME), true);
-    glUniform3fv(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_COLOR_LOC_NAME),
-                 1, &color[0]);
+void BoundingBox::draw() {
     std::vector<point> vertices = to_vertices();
     std::vector<point> lines = {
             vertices[0], vertices[1],
@@ -64,8 +56,6 @@ void BoundingBox::draw(const std::shared_ptr<Shaders> &shaders, color color) {
     };
 
     ShadersBufferManager::draw_verticies_debug(GL_LINES, lines);
-
-    glUniform1i(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_LOC_NAME), false);
 }
 
 std::vector<point> BoundingBox::to_vertices() {
@@ -81,17 +71,20 @@ std::vector<point> BoundingBox::to_vertices() {
 }
 
 bool BoundingBox::hit_by_ray(Ray ray) {
-
     for (int i = 0; i < 3; i++) {
-//        auto invD = 1.0f / r.direction()[i];
-//        auto t0 = (min()[i] - r.origin()[i]) * invD;
-//        auto t1 = (max()[i] - r.origin()[i]) * invD;
-//        if (invD < 0.0f)
-//            std::swap(t0, t1);
-//        t_min = t0 > t_min ? t0 : t_min;
-//        t_max = t1 < t_max ? t1 : t_max;
-//        if (t_max <= t_min)
-//            return false;
+        auto origin = ray.get_origin();
+        auto direction = ray.get_direction();
+        auto t_min = ray.get_t_min();
+        auto t_max = ray.get_t_max();
+        auto invD = 1.0f / direction[i];
+        auto t0 = (m_min[i] - origin[i]) * invD;
+        auto t1 = (m_max[i] - origin[i]) * invD;
+        if (invD < 0.0f)
+            std::swap(t0, t1);
+        t_min = t0 > t_min ? t0 : t_min;
+        t_max = t1 < t_max ? t1 : t_max;
+        if (t_max <= t_min)
+            return false;
     }
     return true;
 }

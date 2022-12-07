@@ -44,6 +44,8 @@ namespace component {
 
             virtual std::vector<point> to_few_vertices() =0;
 
+            virtual bool hit(Ray ray)=0;
+
             ~Shape();
         };
     }

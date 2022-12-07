@@ -26,9 +26,7 @@ namespace component{
 
         ComponentType get_type() override;
 
-        void generate_ui_component_editor() override;
-
-        void draw(const std::shared_ptr<Shaders> &shaders, color color) override;
+        void draw() override;
 
         std::vector<point> to_vertices();
 

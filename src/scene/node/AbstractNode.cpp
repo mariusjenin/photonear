@@ -59,7 +59,7 @@ void AbstractNode::generate_ui_scene_graph() {
         ImGui::PushID(this);
         if (ImGui::Selectable(m_name.c_str(),node_selected == this,flags_leaf)){
             photonear->set_node_selected(this);
-            photonear->get_scene()->set_scene_valid();
+            photonear->get_scene()->set_viewer_valid();
         }
         ImGui::PopID();
         if (tree_node_open){
@@ -71,8 +71,8 @@ void AbstractNode::generate_ui_scene_graph() {
     } else {
         ImGui::PushID(this);
         if (ImGui::Selectable(m_name.c_str(),node_selected == this,flags_leaf)){
-            photonear->get_scene()->set_scene_valid();
             photonear->set_node_selected(this);
+            photonear->get_scene()->set_viewer_valid();
         }
         ImGui::PopID();
     }

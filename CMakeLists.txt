@@ -123,12 +123,12 @@ add_executable(main main.cpp
         src/scene/SceneGraph.cpp src/scene/SceneGraph.h
         src/scene/Scene.cpp src/scene/Scene.h
         src/scene/example/CornellBox.cpp src/scene/example/CornellBox.h
-        src/scene/example/DepthScene.cpp src/scene/example/DepthScene.h
+        src/scene/example/QuadScene.cpp src/scene/example/QuadScene.h
         # ray_tracing
         src/ray_tracing/RayTracer.cpp src/ray_tracing/RayTracer.h
         src/ray_tracing/PhotonMapper.cpp src/ray_tracing/PhotonMapper.h
         src/ray_tracing/PhotonHit.cpp src/ray_tracing/PhotonHit.h
-        src/common/vec3_type.h)
+        src/common/vec3_type.h src/component/RootTransformComponent.cpp src/component/RootTransformComponent.h)
 
 target_link_libraries(main
         ${ALL_LIBS}

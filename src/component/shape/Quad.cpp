@@ -23,10 +23,11 @@ void Quad::assign_mesh_plane() {
     m_vertex_tex_coords.clear();
     m_triangle_indices.clear();
 
-    point points[4];
 
     auto half_length_x = m_length_x/2.f;
     auto half_length_z = m_length_z/2.f;
+
+    point points[4];
     points[0] = point(-half_length_x,0,-half_length_z);
     points[1] = point(-half_length_x,0,half_length_z);
     points[2] = point(half_length_x,0,half_length_z);
@@ -84,4 +85,43 @@ std::vector<point> Quad::to_few_vertices() {
             {max[0], max[1], min[2]},
             max
     };
+}
+
+bool Quad::hit(Ray ray) {
+    auto half_length_x = m_length_x/2.f;
+    auto half_length_z = m_length_z/2.f;
+
+    auto node = Component::get_node(this);
+    auto matrix = Component::get_component<TransformComponent>(&*node)->get_matrix_as_end_node();
+
+    auto origin = ray.get_origin();
+    auto direction = ray.get_direction();
+    auto normal_quad = normalize(vec3(matrix * vec4(0,1,0,0)));
+
+    if(dot(direction,normal_quad) > 0) return false;
+
+    point pt_quad = point(matrix * vec4(-half_length_x,0,-half_length_z,1));
+
+    point points[4];
+    points[0] = point(-half_length_x,0,-half_length_z);
+    points[1] = point(-half_length_x,0,half_length_z);
+    points[2] = point(half_length_x,0,half_length_z);
+    points[3] = point(half_length_x,0,-half_length_z);
+
+    auto right_vector = (vec3(matrix * vec4(points[1] - points[0],0)));
+    auto up_vector = (vec3(matrix * vec4(points[3] - points[0],0)));
+
+    float right_vector_norm = length(right_vector);
+    float up_vector_norm = length(up_vector);
+
+    float t = (dot(pt_quad,normal_quad) - dot(origin,normal_quad)) /  dot(direction,normal_quad);
+    auto intersection = origin + t * direction;
+
+    auto v = intersection - pt_quad;
+    float right_val = dot(v,right_vector);
+    float up_val = dot(v,up_vector);
+
+    return t > 0 && right_val > 0 && up_val > 0 &&
+    right_val < right_vector_norm*right_vector_norm &&
+    up_val < up_vector_norm*up_vector_norm;
 }

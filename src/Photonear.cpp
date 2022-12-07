@@ -3,7 +3,7 @@
 //
 
 #include "Photonear.h"
-#include "DepthScene.h"
+#include "QuadScene.h"
 
 Photonear *Photonear::PhotonearInstance = nullptr;
 
@@ -47,11 +47,12 @@ void Photonear::init() {
     ImGui_ImplGlfw_InitForOpenGL(m_window, true);
     ImGui_ImplOpenGL3_Init();
 
-    start_frame();
     m_ray_tracer = std::make_shared<RayTracer>();
     m_ray_tracer->init();
     m_scene->init();
-    finish_frame();
+
+    m_scene->set_viewer_valid();
+    m_node_selected = &*m_scene->get_scene_graph()->get_root_node();
 }
 
 void Photonear::init_docking() {
@@ -89,6 +90,7 @@ void Photonear::draw() {
     generate_ui_component_editor();
     ImGui::End();
 
+    //OpenGL Viewer
     ImGui::Begin(OpenGLViewerName, nullptr, ImGuiWindowFlags_NoMove);
     m_scene->draw();
     m_scene->generate_ui_viewer();
@@ -116,7 +118,7 @@ void Photonear::draw() {
 
     // Logs
     ImGui::Begin(LogsName, nullptr, ImGuiWindowFlags_NoMove);
-    //TODO
+    m_ray_tracer->generate_ui_logs();
     ImGui::End();
 }
 

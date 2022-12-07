@@ -28,7 +28,36 @@ using namespace shader_manager;
 namespace component {
     /// Component addable to a Node in the SceneGraph Graph
     class Component {
+
     private:
+        template<class T>
+        static std::vector<std::shared_ptr<T>> get_children_components_aux(AbstractNode *node, bool recursive, bool first, int depth) {
+            if(recursive && depth==0)
+                return get_components<T>((AbstractNode *) &*node);
+            auto children = node->get_children();
+            if (children.empty()) {
+                if(recursive && !first){
+                    return get_components<T>((AbstractNode *) &*node);
+                } else {
+                    return {};
+                }
+            }
+            std::vector<std::shared_ptr<T>> components = {};
+            if(recursive && !first){
+                std::vector<std::shared_ptr<T>> comps =  get_components<T>((AbstractNode *) &*node);
+                components.insert(components.end(), comps.begin(), comps.end());
+            }
+            for (const auto &child_node: children) {
+                std::vector<std::shared_ptr<T>> child_components;
+                if(recursive){
+                    child_components = get_children_components_aux<T>((AbstractNode *) &*child_node, true, false,depth-1);
+                } else {
+                    child_components = get_components<T>((AbstractNode *) &*child_node);
+                }
+                components.insert(components.end(), child_components.begin(), child_components.end());
+            }
+            return components;
+        }
     protected:
         static std::map<ComponentType, std::vector<std::pair<std::shared_ptr<Component>, std::shared_ptr<AbstractNode>>>> COMPONENTS;
 
@@ -44,7 +73,7 @@ namespace component {
 
         std::string get_ui_name();
 
-        virtual void draw(const std::shared_ptr<Shaders> &shaders, color color){};
+        virtual void draw(){};
 
         template<class T>
         static ComponentType get_type() {
@@ -133,26 +162,20 @@ namespace component {
          * @return components
          */
         template<class T>
-        static std::vector<std::shared_ptr<T>> get_children_components(AbstractNode *node, bool recursive = false) {
-            auto children = node->get_children();
-            if (children.empty()) {
-                if(recursive){
-                    return get_components<T>((AbstractNode *) &*node);
-                } else {
-                    return {};
-                }
-            }
-            std::vector<std::shared_ptr<T>> components = {};
-            for (const auto &child_node: children) {
-                std::vector<std::shared_ptr<T>> child_components;
-                if(recursive){
-                    child_components = get_children_components<T>((AbstractNode *) &*child_node, true);
-                } else {
-                    child_components = get_components<T>((AbstractNode *) &*child_node);
-                }
-                components.insert(components.end(), child_components.begin(), child_components.end());
-            }
-            return components;
+        static std::vector<std::shared_ptr<T>> get_children_components(AbstractNode *node) {
+            return get_children_components_aux<T>(node,false,true,0);
+        }
+
+        /**
+         * Get a list of Component from children of a Node recursively
+         * @tparam T
+         * @param node
+         * @param depth
+         * @return
+         */
+        template<class T>
+        static std::vector<std::shared_ptr<T>> get_children_components_recursive(AbstractNode *node, int depth) {
+            return get_children_components_aux<T>(node,true,true,depth);
         }
 
         /**
@@ -196,6 +219,7 @@ namespace component {
          * @return node or nullptr if not found
          */
         static std::shared_ptr<AbstractNode> get_node(Component *component);
+
     };
 }
 

@@ -4,11 +4,12 @@
 
 #include "MaskedComponent.h"
 
-//TODO uncomment
-//void component::MaskedComponent::generate_ui_node_editor_ui() {
-    //Nothing
-//}
+using namespace component;
 
-void component::MaskedComponent::generate_ui_component_editor() {
+void MaskedComponent::generate_ui_node_editor_ui() {
+    //Nothing
+}
+
+void MaskedComponent::generate_ui_component_editor() {
     //Nothing
 }

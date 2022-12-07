@@ -73,7 +73,13 @@ void Sphere::generate_ui_component_editor() {
     if(radius_changed || slices_changed || stacks_changed){
         assign_mesh_sphere();
         load_mesh_in_vao();
-        Photonear::get_instance()->get_scene()->set_scene_valid();
+        if(slices_changed || stacks_changed){
+            Photonear::get_instance()->get_scene()->set_viewer_valid();
+        }
+        if(radius_changed){
+            Photonear::get_instance()->get_scene()->set_viewer_valid();
+
+        }
     }
 }
 
@@ -92,4 +98,22 @@ std::vector<point> Sphere::to_few_vertices() {
             {max[0], max[1], min[2]},
             max
     };
+}
+
+bool Sphere::hit(Ray ray) {
+    auto node = Component::get_node(this);
+    auto matrix = Component::get_component<TransformComponent>(&*node)->get_matrix_as_end_node();
+    auto center = vec3(matrix*vec4(m_center,1));
+    auto ray_dir = ray.get_direction();
+    auto sqr_length_ray_dir = glm::dot(ray_dir,ray_dir);
+    auto ray_origin = ray.get_origin();
+    auto oc = ray_origin - center;
+    auto sqr_length_oc = glm::dot(oc,oc);
+    auto a = sqr_length_ray_dir;
+    auto half_b = dot(oc, ray_dir);
+    auto c = sqr_length_oc - m_radius*m_radius;
+
+    auto discriminant = half_b*half_b - a*c;
+    if (discriminant < 0) return false;
+    return true;
 }

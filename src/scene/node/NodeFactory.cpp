@@ -13,7 +13,6 @@ using namespace scene::node;
 int NodeFactory::NodeCount = 1;
 
 std::shared_ptr<RootNode> NodeFactory::create_root_node(const std::string& name) {
-    // The TransformComponent is creating in the SceneGraph Constructor
     return std::make_shared<RootNode>(name);
 }
 
