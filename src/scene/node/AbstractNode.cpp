@@ -3,7 +3,6 @@
 //
 
 #include <utility>
-#include "glm/glm.hpp"
 #include "imgui.h"
 
 #include "AbstractNode.h"

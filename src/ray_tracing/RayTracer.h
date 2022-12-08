@@ -10,7 +10,7 @@
 #include <future>
 #include <GL/glew.h>
 #include "SceneGraph.h"
-#include "PhotonHit.h"
+#include "Photon.h"
 
 using namespace scene;
 
@@ -21,13 +21,16 @@ namespace ray_tracing{
         bool m_auto_size;
         int m_width{};
         int m_height{};
+        int m_max_depth{};
+        color m_default_color{};
+
         bool m_auto_recompute{};
         GLuint m_image_texture{};
         std::vector<unsigned char> m_data;
-        std::vector<std::vector<PhotonHit>> m_photon_hit;
+        std::vector<std::vector<Photon>> m_photon_hit;
 
         std::future<void> m_async_ray_tracing;
-        std::mutex m_image_size_mutex;
+        std::mutex m_ray_tracing_mutex;
 
         bool m_image_valid{};
         bool m_ray_tracing_valid{};
@@ -37,7 +40,7 @@ namespace ray_tracing{
 
         void compute_raytracing();
 
-        void compute_raytracing_ray(const std::shared_ptr<SceneGraph>& scene_graph,int x, int y, vec3 origin,vec3 direction,float z_near,float z_far);
+        void compute_raytracing_ray(SceneGraph* scene_graph,int x, int y, vec3 origin,vec3 direction,float z_near,float z_far);
 
         void compute_image();
 

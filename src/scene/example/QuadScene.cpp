@@ -9,7 +9,7 @@
 #include "Node.h"
 #include "Camera.h"
 #include "DiffuseMaterial.h"
-#include "PositionnedLightMaterial.h"
+#include "PositionnedEmissiveMaterial.h"
 #include "TextureManager.h"
 #include "Sphere.h"
 #include "Quad.h"
@@ -21,8 +21,6 @@ using namespace component::material;
 using namespace component::shape;
 
 void QuadScene::init_scene_graph() {
-    auto texture_manager = m_shaders->get_texture_manager();
-
     //CREATE THE SCENE GRAPH
     auto root = NodeFactory::create_root_node();
     auto quad_node = NodeFactory::create_node(root,"QuadNode");
@@ -40,7 +38,7 @@ void QuadScene::init_scene_graph() {
     // Light
     auto ambient_spot_intensity = vec3(0.08,0.08,0.06);
     auto sphere_light = make_shared<Sphere>(0.1,30,30);
-    auto point_light = make_shared<PositionnedLightMaterial>(make_shared<TextureColor>(vec3(0.8,0.8,0.75)));
+    auto point_light = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(vec3(0.8, 0.8, 0.75)));
     Component::add_component_to_node(point_light, light_node_node);
     auto trsf_light_1 = Component::get_component<TransformComponent>(&*light_node)->get_transform();
     trsf_light_1->set_translation({0,7.8,0});
@@ -61,10 +59,5 @@ void QuadScene::init_scene_graph() {
 }
 
 QuadScene::QuadScene(GLFWwindow *window, const string &vertex_shader_path,
-                     const string &fragment_shader_path, vec3 clear_color) : Scene(window,
-                                                                                                      vertex_shader_path,
-                                                                                                      fragment_shader_path,
-                                                                                                      clear_color) {
-
-}
+                     const string &fragment_shader_path) : Scene(window, vertex_shader_path,fragment_shader_path) {}
 

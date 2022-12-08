@@ -11,8 +11,10 @@
 #include "Component.h"
 #include "Shaders.h"
 #include "BoundingBox.h"
+#include "RayTraceHit.h"
 
 using namespace shader_manager;
+using namespace ray_tracing;
 
 namespace component {
     namespace shape {
@@ -31,7 +33,7 @@ namespace component {
 
             bool m_both_face_visible;
 
-            explicit Shape(bool both_face_visible = false);
+            explicit Shape(bool both_face_visible = true);
 
         public:
             void load_mesh_in_vao();
@@ -44,7 +46,7 @@ namespace component {
 
             virtual std::vector<point> to_few_vertices() =0;
 
-            virtual bool hit(Ray ray)=0;
+            virtual RayTraceHit hit(Ray ray)=0;
 
             ~Shape();
         };

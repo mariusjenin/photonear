@@ -60,8 +60,8 @@ void ShadersBufferManager::draw(GLuint ebo_id, long nb_indices) {
 void ShadersBufferManager::draw_verticies_debug(GLenum type, std::vector<point> verticies) {
     size_t verticies_size = verticies.size();
     if((int)verticies_size>0){
+        //glLineWidth(10.f); TODO doesn't have any effect
 
-        glLineWidth(100.f);
         GLuint vao;
         glGenVertexArrays(1, &vao);
         glBindVertexArray(vao);

@@ -1,0 +1,19 @@
+//
+// Created by mariusjenin on 08/12/22.
+//
+
+#ifndef PHOTONEAR_CONDUCTORMATERIAL_H
+#define PHOTONEAR_CONDUCTORMATERIAL_H
+
+#include "DiffuseMaterial.h"
+
+namespace component{
+    namespace material{
+        class ConductorMaterial : public DiffuseMaterial{
+        public:
+            explicit ConductorMaterial(std::shared_ptr<TextureColor> albedo = std::make_shared<TextureColor>(1.0f),float roughness=0.f);
+        };
+    }
+}
+
+#endif //PHOTONEAR_CONDUCTORMATERIAL_H

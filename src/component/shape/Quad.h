@@ -22,13 +22,13 @@ namespace component {
             void assign_mesh_plane();
 
         public:
-            explicit Quad(float length_x, float length_z, bool both_face_visible = false);
+            explicit Quad(float length_x, float length_z, bool both_face_visible = true);
 
             void generate_ui_component_editor() override;
 
             std::vector<point> to_few_vertices() override;
 
-            bool hit(Ray ray) override;
+            RayTraceHit hit(Ray ray) override;
         };
     }
 }

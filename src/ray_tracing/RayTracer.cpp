@@ -11,6 +11,7 @@
 #include "Camera.h"
 
 using namespace ray_tracing;
+using namespace component::material;
 
 RayTracer::RayTracer() {
     m_sample_by_pixel = 1;
@@ -24,6 +25,8 @@ RayTracer::RayTracer() {
     m_px_computed = 0;
     m_width = 120;
     m_height = 80;
+    m_default_color = {0, 0, 0};
+    m_max_depth = 10;
 }
 
 
@@ -49,6 +52,28 @@ void RayTracer::generate_ui_ray_tracing_settings() {
     int height = m_height;
     int sample_by_pixel = m_sample_by_pixel;
 
+
+    ImGui::Checkbox("Auto recompute Ray Tracing", &m_auto_recompute);
+    if (ImGui::Button("Recompute")) {
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "UnusedValue"
+        m_async_ray_tracing = std::async(&RayTracer::compute_raytracing, this);
+#pragma clang diagnostic pop
+    }
+    ImGui::Separator();
+
+
+    color default_color = m_default_color;
+    int max_depth = m_max_depth;
+    ImGui::ColorEdit3("Default Color", &default_color[0]);
+    ImGui::DragInt("Max Depth Ray Tracing", &max_depth, 0.1, 1, INT_MAX);
+    bool default_color_changed = m_default_color != default_color;
+    bool max_depth_changed = m_max_depth != max_depth;
+    m_default_color = default_color;
+    m_max_depth = max_depth;
+    ImGui::Separator();
+
+
     ImGui::Checkbox(("Use " + std::string(Photonear::PhotonMappingViewerName) + " size").c_str(), &m_auto_size);
     ImGui::Begin(Photonear::PhotonMappingViewerName, nullptr, ImGuiWindowFlags_NoMove);
     ImVec2 pmv_window_size = ImGui::GetWindowSize();
@@ -68,7 +93,7 @@ void RayTracer::generate_ui_ray_tracing_settings() {
     sample_by_pixel_changed = m_sample_by_pixel != sample_by_pixel;
     m_sample_by_pixel = sample_by_pixel;
 
-    m_image_size_mutex.lock();
+    m_ray_tracing_mutex.lock();
     if (m_auto_size) {
         ImGui::PopStyleVar();
         width_changed = m_width != (int) pmv_window_size.x;
@@ -81,20 +106,11 @@ void RayTracer::generate_ui_ray_tracing_settings() {
         m_width = width;
         m_height = height;
     }
-    m_image_size_mutex.unlock();
 
-    ImGui::Separator();
-    ImGui::Checkbox("Auto recompute Ray Tracing", &m_auto_recompute);
-    if (width_changed || height_changed || sample_by_pixel_changed ) {
+    if (width_changed || height_changed || sample_by_pixel_changed || default_color_changed || max_depth_changed) {
         init_ray_tracing_data();
     }
-    m_image_size_mutex.unlock();
-    if (ImGui::Button("Recompute")) {
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnusedValue"
-        m_async_ray_tracing = std::async(&RayTracer::compute_raytracing, this);
-#pragma clang diagnostic pop
-    }
+    m_ray_tracing_mutex.unlock();
 }
 
 void RayTracer::init_ray_tracing_data() {
@@ -188,37 +204,44 @@ void RayTracer::compute_raytracing() {
         for (int i = 0; i < m_width; i++) {
             if (!m_ray_tracing_valid) { //Cancel the execution
                 m_is_computing = false;
-                m_image_size_mutex.unlock();
+                m_ray_tracing_mutex.unlock();
                 return;
             }
             float x = (2.0f * (float) i / (float) m_width) - 1.0f;
             float y = (2.0f * (float) j / (float) m_height) - 1.0f;
             x *= aspect_ratio;
-            versor direction = glm::normalize( forward + y * tan_half_fov * up + x * tan_half_fov * glm::cross(forward, up));
-            std::async(&RayTracer::compute_raytracing_ray, this, scene_graph, i, j, origin, direction, z_near, z_far); // NOLINT(bugprone-unused-return-value)
+            versor direction = glm::normalize(
+                    forward + y * tan_half_fov * up + x * tan_half_fov * glm::cross(forward, up));
+            std::async(&RayTracer::compute_raytracing_ray, this, // NOLINT(bugprone-unused-return-value
+                       &*scene_graph, i, j, origin, direction, z_near,z_far);
         }
     }
     m_is_computing = false;
 }
 
-void RayTracer::compute_raytracing_ray(const std::shared_ptr<SceneGraph> &scene_graph, int x, int y, vec3 origin,
+void RayTracer::compute_raytracing_ray(SceneGraph* scene_graph, int x, int y, vec3 origin,
                                        vec3 direction, float z_near, float z_far) {
-    m_image_size_mutex.lock();
+    m_ray_tracing_mutex.lock();
+
+    color px_color;
+    auto index = 4 * (y * m_width + x);
 
     Ray ray = Ray(origin, direction, z_near, z_far);
-    auto index = 4 * (y * m_width + x);
-    if (scene_graph->raycast(ray)) {
-        m_data[index] = 128;
-        m_data[index + 1] = 128;
-        m_data[index + 2] = 128;
-    } else {
-        m_data[index] = 64;
-        m_data[index + 1] = 64;
-        m_data[index + 2] = 64;
+    RayTraceHit ray_hit = scene_graph->raycast(ray);
+    if(ray_hit.hit){
+        auto node = Component::get_node(ray_hit.shape);
+        auto material = Component::get_nearest_component_upper<Material>(&*node);
+        px_color = material->resolve_ray(scene_graph,ray_hit,m_max_depth, nullptr);
+    } else{
+        px_color =  m_default_color;
     }
+
+    m_data[index] = (unsigned char) (px_color[0] * 255);
+    m_data[index + 1] = (unsigned char) (px_color[1] * 255);
+    m_data[index + 2] = (unsigned char) (px_color[2] * 255);
     m_data[index + 3] = 255;
 
-    m_image_size_mutex.unlock();
+    m_ray_tracing_mutex.unlock();
     m_px_computed++;
 }
 

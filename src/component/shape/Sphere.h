@@ -30,11 +30,11 @@ namespace component {
 
         public:
             explicit Sphere(float radius = 1, int slices = 20, int stacks = 20,
-                            bool both_face_visible = false);
+                            bool both_face_visible = true);
 
             void generate_ui_component_editor() override;
 
-            bool hit(Ray ray) override;
+            RayTraceHit hit(Ray ray) override;
 
         };
     }

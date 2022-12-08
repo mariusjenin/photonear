@@ -80,7 +80,7 @@ add_executable(main main.cpp
         src/utils/printer.h src/utils/printer.cpp
         # common
         src/common/Transform.cpp src/common/Transform.h
-        src/ray_tracing/Ray.cpp src/ray_tracing/Ray.h
+        src/common/vec3_type.h
         # texture
         src/texture/Texture.cpp src/texture/Texture.h
         src/texture/TextureColor.cpp src/texture/TextureColor.h
@@ -105,6 +105,7 @@ add_executable(main main.cpp
         # component
         src/component/Component.cpp src/component/Component.h
         src/component/TransformComponent.cpp src/component/TransformComponent.h
+        src/component/RootTransformComponent.cpp src/component/RootTransformComponent.h
         src/component/Camera.cpp src/component/Camera.h
         src/component/MaskedComponent.cpp src/component/MaskedComponent.h
         src/component/BoundingBox.cpp src/component/BoundingBox.h
@@ -114,21 +115,23 @@ add_executable(main main.cpp
         src/component/shape/Quad.cpp src/component/shape/Quad.h
         # material
         src/component/material/Material.cpp src/component/material/Material.h
-        src/component/material/LightMaterial.cpp src/component/material/LightMaterial.h
+        src/component/material/EmissiveMaterial.cpp src/component/material/EmissiveMaterial.h
         src/component/material/DiffuseMaterial.cpp src/component/material/DiffuseMaterial.h
-        src/component/material/DirectedLightMaterial.cpp src/component/material/DirectedLightMaterial.h
-        src/component/material/PositionnedLightMaterial.cpp src/component/material/PositionnedLightMaterial.h
-        src/component/material/SpotLightMaterial.cpp src/component/material/SpotLightMaterial.h
+        src/component/material/DirectedEmissiveMaterial.cpp src/component/material/DirectedEmissiveMaterial.h
+        src/component/material/PositionnedEmissiveMaterial.h.cpp src/component/material/PositionnedEmissiveMaterial.h
+        src/component/material/SpotEmissiveMaterial.cpp src/component/material/SpotEmissiveMaterial.h
         # scene
         src/scene/SceneGraph.cpp src/scene/SceneGraph.h
         src/scene/Scene.cpp src/scene/Scene.h
         src/scene/example/CornellBox.cpp src/scene/example/CornellBox.h
         src/scene/example/QuadScene.cpp src/scene/example/QuadScene.h
         # ray_tracing
+        src/ray_tracing/Ray.cpp src/ray_tracing/Ray.h
         src/ray_tracing/RayTracer.cpp src/ray_tracing/RayTracer.h
         src/ray_tracing/PhotonMapper.cpp src/ray_tracing/PhotonMapper.h
-        src/ray_tracing/PhotonHit.cpp src/ray_tracing/PhotonHit.h
-        src/common/vec3_type.h src/component/RootTransformComponent.cpp src/component/RootTransformComponent.h)
+        src/ray_tracing/Photon.cpp src/ray_tracing/Photon.h
+        src/ray_tracing/RayTraceHit.cpp src/ray_tracing/RayTraceHit.h
+        src/component/material/DielectricMaterial.cpp src/component/material/DielectricMaterial.h src/component/material/ConductorMaterial.cpp src/component/material/ConductorMaterial.h)
 
 target_link_libraries(main
         ${ALL_LIBS}

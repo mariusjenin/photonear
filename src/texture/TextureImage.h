@@ -23,7 +23,7 @@ namespace texture {
 
         explicit TextureImage(const char *filename);
 
-        color value(float u, float v, point p) const override;
+        color value(float u, float v) const override;
     };
 }
 

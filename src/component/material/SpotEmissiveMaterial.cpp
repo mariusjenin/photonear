@@ -5,15 +5,15 @@
 #include <utility>
 #include "imgui.h"
 
-#include "SpotLightMaterial.h"
+#include "SpotEmissiveMaterial.h"
 #include "TransformComponent.h"
 #include "Photonear.h"
 
 
 using namespace component::material;
 
-SpotLightMaterial::SpotLightMaterial(GLuint id_texture_shadow_map, std::shared_ptr<TextureColor> albedo, float in_co, float out_co, int resolution, float bias,
-                                     float l_att, float q_att) : PositionnedLightMaterial(std::move(albedo),l_att,q_att) {
+SpotEmissiveMaterial::SpotEmissiveMaterial(GLuint id_texture_shadow_map, std::shared_ptr<TextureColor> albedo, float in_co, float out_co, int resolution, float bias,
+                                           float l_att, float q_att) : PositionnedEmissiveMaterial(std::move(albedo), l_att, q_att) {
     m_resolution = resolution;
     m_bias = bias;
     m_inner_cutoff = in_co;
@@ -26,7 +26,7 @@ SpotLightMaterial::SpotLightMaterial(GLuint id_texture_shadow_map, std::shared_p
     m_shadow_map->activate_texture();
 }
 
-Light SpotLightMaterial::generate_light() {
+Light SpotEmissiveMaterial::generate_light() {
     auto node = Component::get_node(this);
     auto trsf_comp = Component::get_nearest_component_upper<TransformComponent>(&*node);
     auto matrix = trsf_comp->get_matrix_as_end_node();
@@ -41,7 +41,7 @@ Light SpotLightMaterial::generate_light() {
     mat4 view_mat = lookAt(position,position + direction,up);
     mat4 proj_mat = perspective<float>(2*radians(m_cut_off_angle),1.,1.f,100.f);
 
-    Light light = PositionnedLightMaterial::generate_light();
+    Light light = PositionnedEmissiveMaterial::generate_light();
     light.set_type(LIGHT_TYPE_SPOT);
     light.set_inner_cut_off(m_inner_cutoff_computed);
     light.set_outer_cut_off(m_outer_cutoff_computed);
@@ -54,8 +54,8 @@ Light SpotLightMaterial::generate_light() {
     return light;
 }
 
-void SpotLightMaterial::generate_ui_component_editor() {
-    PositionnedLightMaterial::generate_ui_component_editor();
+void SpotEmissiveMaterial::generate_ui_component_editor() {
+    PositionnedEmissiveMaterial::generate_ui_component_editor();
     ImGui::Separator();
     float inner_cutoff = m_inner_cutoff;
     float outer_cutoff = m_outer_cutoff;

@@ -37,13 +37,14 @@ namespace shader_manager {
         static constexpr const char *NB_LIGTHS_LOC_NAME = "nb_lights";
         static constexpr const char *BLOCK_INDEX_LIGHTS_LOC_NAME = "lights_buffer";
         //MATERIAL TYPE
-        static constexpr const char *MATERIAL_TYPE_COLOR_LOC_NAME = "MATERIAL_TYPE_COLOR";
-        static constexpr const char *MATERIAL_TYPE_TEXTURE_LOC_NAME = "MATERIAL_TYPE_TEXTURE";
+        static constexpr const char *MATERIAL_TYPE_COLOR_LOC_NAME = "MATERIAL_ALBEDO_TYPE_COLOR";
+        static constexpr const char *MATERIAL_TYPE_TEXTURE_LOC_NAME = "MATERIAL_ALBEDO_TYPE_TEXTURE";
         //MATERIAL
-        static constexpr const char *MATERIAL_TYPE_LOC_NAME = "material.type";
+        static constexpr const char *MATERIAL_TYPE_LOC_NAME = "material.type_albedo";
         static constexpr const char *MATERIAL_ALBEDO_COLOR_LOC_NAME = "material.albedo";
         static constexpr const char *MATERIAL_ALBEDO_TEXTURE_LOC_NAME = "material.albedo_texture";
         static constexpr const char *MATERIAL_EMISSIVE_LOC_NAME = "material.emissive";
+        static constexpr const char *MATERIAL_TRANSPARENCY_LOC_NAME = "material.transparency";
         //LIGHT TYPE
         static constexpr const char *LIGHT_TYPE_DIRECTIONAL_LOC_NAME = "LIGHT_TYPE_DIRECTIONAL";
         static constexpr const char *LIGHT_TYPE_POINT_LOC_NAME = "LIGHT_TYPE_POINT";

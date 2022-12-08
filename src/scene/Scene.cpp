@@ -5,9 +5,8 @@
 #include <memory>
 #include "Scene.h"
 #include "Camera.h"
-#include "LightMaterial.h"
+#include "EmissiveMaterial.h"
 #include "TextureManager.h"
-#include "NodeFactory.h"
 #include "Photonear.h"
 #include "BoundingBox.h"
 #include "ShadersBufferManager.h"
@@ -17,9 +16,9 @@ using namespace scene;
 using namespace component::shape;
 using namespace component::material;
 
-Scene::Scene(GLFWwindow* window,
+Scene::Scene(GLFWwindow *window,
              const std::string &vertex_shader_path,
-             const std::string &fragment_shader_path, color clear_color){
+             const std::string &fragment_shader_path) {
     m_window = window;
     m_scene_valid = false;
     m_viewer_valid = false;
@@ -32,10 +31,13 @@ Scene::Scene(GLFWwindow* window,
     glEnable(GL_DEPTH_TEST);
     // Accept fragment if it closer to the camera than the former one
     glDepthFunc(GL_LESS);
+    // Enable Blend
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glEnable(GL_BLEND);
 
-    m_clear_color = clear_color;
-    m_debug_color = {0,1,0.5f};
-    m_debug_color_2 = {1,0,0.5f};
+    m_default_color = {0, 0, 0};
+    m_debug_color = {0, 1, 0.5f};
+    m_debug_color_2 = {1, 0, 0.5f};
 
     m_shaders = std::make_shared<VertFragShaders>(vertex_shader_path.c_str(), fragment_shader_path.c_str());
 
@@ -64,39 +66,39 @@ void Scene::init() {
     init_camera();
 }
 
-void Scene::update(float delta_time){
+void Scene::update(float delta_time) {
     handle_inputs(delta_time);
 }
 
-void Scene::load_camera(){
+void Scene::load_camera() {
     std::shared_ptr<Camera> camera = get_active_camera();
 
     m_camera_valid = camera != nullptr;
-    if(m_camera_valid){
-        camera->load_in_shaders(m_shaders,m_width_viewer,m_height_viewer);
+    if (m_camera_valid) {
+        camera->load_in_shaders(m_shaders, m_width_viewer, m_height_viewer);
     }
 }
 
 void Scene::draw(bool force) {
-    if((m_auto_draw && (!m_scene_valid || !m_viewer_valid)) || force){
+    if ((m_auto_draw && (!m_scene_valid || !m_viewer_valid)) || force) {
         load_camera();
-        if(!m_camera_valid) return;
+        if (!m_camera_valid) return;
         load_lights();
 
         m_scene_graph->compute_bounding_boxes();
 
         glBindFramebuffer(GL_FRAMEBUFFER, m_frame_buffer);
 
-        glClearColor(m_clear_color.x,m_clear_color.y,m_clear_color.z,0);
+        glClearColor(m_default_color.x, m_default_color.y, m_default_color.z, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         draw_shapes(m_shaders);
 
-        if(m_debug_enabled) draw_debug();
+        if (m_debug_enabled) draw_debug();
 
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        if(!m_scene_valid){
+        if (!m_scene_valid) {
             Photonear::get_instance()->get_ray_tracer()->set_ray_tracing_valid(false);
         }
         m_scene_valid = true;
@@ -104,25 +106,27 @@ void Scene::draw(bool force) {
     }
 }
 
-void Scene::draw_debug(){
+void Scene::draw_debug() {
 
     auto shader_data_manager = m_shaders->get_shader_data_manager();
     glUniform1i(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_LOC_NAME), true);
-    glUniform3fv(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_COLOR_LOC_NAME), 1, &m_debug_color[0]);
+    glUniform3fv(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_COLOR_LOC_NAME), 1,
+                 &m_debug_color[0]);
 
     auto component_selected = Photonear::get_instance()->get_component_selected();
-    if(component_selected != nullptr){
+    if (component_selected != nullptr) {
         component_selected->draw();
     }
     auto node = Photonear::get_instance()->get_node_selected();
-    if(node != nullptr){
+    if (node != nullptr) {
         auto bounding_box_node_selected = Component::get_component<BoundingBox>(node);
-        if(bounding_box_node_selected != nullptr){
+        if (bounding_box_node_selected != nullptr) {
             bounding_box_node_selected->draw();
         }
-        glUniform3fv(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_COLOR_LOC_NAME), 1, &m_debug_color_2[0]);
-        auto bounding_box_children = Component::get_children_components_recursive<BoundingBox>(&*node,m_debug_depth);
-        for(const auto& bb: bounding_box_children){
+        glUniform3fv(shader_data_manager->get_location(ShadersDataManager::DEBUG_RENDERING_COLOR_LOC_NAME), 1,
+                     &m_debug_color_2[0]);
+        auto bounding_box_children = Component::get_children_components_recursive<BoundingBox>(&*node, m_debug_depth);
+        for (const auto &bb: bounding_box_children) {
             bb->draw();
         }
     }
@@ -131,18 +135,18 @@ void Scene::draw_debug(){
 }
 
 
-void Scene::draw_shapes(const std::shared_ptr<Shaders>& shaders) {
+void Scene::draw_shapes(const std::shared_ptr<Shaders> &shaders) {
     auto shapes = Component::get_components<Shape>();
-    for(const auto& shape : shapes){
+    for (const auto &shape: shapes) {
         auto node = Component::get_node(&*shape);
-        if(node->is_active_recursive()){
+        if (node->is_active_recursive()) {
             shape->draw(shaders);
         }
     }
 }
 
-void Scene::set_viewer_size(int width, int height){
-    if(height != m_height_viewer || width != m_width_viewer){
+void Scene::set_viewer_size(int width, int height) {
+    if (height != m_height_viewer || width != m_width_viewer) {
         m_viewer_valid = false;
         m_width_viewer = width;
         m_height_viewer = height;
@@ -150,16 +154,16 @@ void Scene::set_viewer_size(int width, int height){
     }
 }
 
-void Scene::load_lights(){
+void Scene::load_lights() {
     // Retrieve all the lights
     auto shadow_map_shaders = m_shaders->get_shadow_map_shaders();
     auto materials = Component::get_components<Material>();
-    std::vector<LightMaterial*> light_materials = {};
-    for(const auto& material: materials){
-        if(material->is_emissive()){
+    std::vector<EmissiveMaterial *> light_materials = {};
+    for (const auto &material: materials) {
+        if (material->is_emissive()) {
             auto node = Component::get_node(&*material);
-            if(node->is_active_recursive()){
-                light_materials.push_back((LightMaterial*)&*material);
+            if (node->is_active_recursive()) {
+                light_materials.push_back((EmissiveMaterial *) &*material);
             }
         }
     }
@@ -168,7 +172,7 @@ void Scene::load_lights(){
     // Init Data structure
     LightShader lights_shader[size_lights];
     GLint depth_maps[NB_MAX_LIGHTS];
-    for(int & depth_map : depth_maps){depth_map = 0;}
+    for (int &depth_map: depth_maps) { depth_map = 0; }
 
     int count_index_depth_map = 0;
 
@@ -176,11 +180,11 @@ void Scene::load_lights(){
 
     // Use the depth shader
     shadow_map_shaders->use();
-    for(int i = 0 ; i < size_lights; i++){
+    for (int i = 0; i < size_lights; i++) {
         Light light = light_materials[i]->generate_light();
         lights_shader[i] = LightShader(light);
         // Generate the Shadow if it has to
-        if(light.get_generate_depth_map()){
+        if (light.get_generate_depth_map()) {
             auto shadow_map = light.get_shadow_map();
             shadow_maps.push_back(shadow_map);
             // Bind the buffer, draw the depth map and unbind it
@@ -203,13 +207,14 @@ void Scene::load_lights(){
     // Put shadow maps in texture in the main shader
     m_shaders->use();
 
-    for(auto & shadow_map : shadow_maps){
+    for (auto &shadow_map: shadow_maps) {
         shadow_map->activate_texture();
     }
-    glUniform1iv(m_shaders->get_shader_data_manager()->get_location(ShadersDataManager::SHADOW_MAP_ARRAY_LOC_NAME),NB_MAX_LIGHTS, depth_maps);
-    m_shaders->get_shader_data_manager()->load_lights(m_shaders->get_program_id(), lights_shader,(int)size_lights);
+    glUniform1iv(m_shaders->get_shader_data_manager()->get_location(ShadersDataManager::SHADOW_MAP_ARRAY_LOC_NAME),
+                 NB_MAX_LIGHTS, depth_maps);
+    m_shaders->get_shader_data_manager()->load_lights(m_shaders->get_program_id(), lights_shader, (int) size_lights);
 
-    glViewport(0, 0,m_width_viewer, m_height_viewer);
+    glViewport(0, 0, m_width_viewer, m_height_viewer);
 }
 
 void Scene::handle_inputs(float delta_time) {
@@ -217,7 +222,7 @@ void Scene::handle_inputs(float delta_time) {
     float camera_speed_rot = 100 * delta_time;
 
     std::shared_ptr<Camera> camera = get_active_camera();
-    if(camera == nullptr) return;
+    if (camera == nullptr) return;
     auto camera_node = Component::get_node(&*camera);
 
     auto camera_trsf = Component::get_component<TransformComponent>(&*camera_node)->get_transform();
@@ -260,7 +265,7 @@ void Scene::handle_inputs(float delta_time) {
         }
         camera_trsf->set_rotation(camera_trsf->get_rotation() + rot);
     }
-    if (!camera_trsf->is_up_to_date()){
+    if (!camera_trsf->is_up_to_date()) {
         camera_trsf->compute();
         m_scene_valid = false;
     }
@@ -283,7 +288,7 @@ void Scene::generate_texture() {
     glGenRenderbuffers(1, &m_render_buffer);
     glBindRenderbuffer(GL_RENDERBUFFER, m_render_buffer);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, m_width_viewer, m_height_viewer);
-    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_render_buffer );
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_render_buffer);
     glBindRenderbuffer(GL_RENDERBUFFER, 0);
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -315,14 +320,18 @@ void Scene::set_viewer_valid(bool valid) {
 
 void Scene::generate_ui_scene_settings() {
     ImGui::Checkbox("Auto draw Scene", &m_auto_draw);
-    if(ImGui::Button("Draw")){
-        if(m_scene_valid){
+    if (ImGui::Button("Draw")) {
+        if (m_scene_valid) {
             Photonear::get_instance()->get_ray_tracer()->set_ray_tracing_valid(false);
         }
         load_camera();
         load_lights();
         draw(true);
     }
+    ImGui::Separator();
+    color default_color = m_default_color;
+    ImGui::ColorEdit3("Default Color", &default_color[0]);
+
     ImGui::Separator();
     color debug_color = m_debug_color;
     color debug_color_2 = m_debug_color_2;
@@ -331,10 +340,15 @@ void Scene::generate_ui_scene_settings() {
     ImGui::Checkbox("Debugging", &debug_enabled);
     ImGui::ColorEdit3("Debugging Color", &debug_color[0]);
     ImGui::ColorEdit3("Debugging Color 2", &debug_color_2[0]);
-    ImGui::DragInt("Debug Depth",&debug_depth,0.01f,0,INT_MAX);
-    if(m_debug_color != debug_color || m_debug_enabled != debug_enabled || m_debug_color_2 != debug_color_2 || m_debug_depth != debug_depth ){
+    ImGui::DragInt("Debug Depth", &debug_depth, 0.01f, 0, INT_MAX);
+    if (m_debug_color != debug_color ||
+        m_debug_enabled != debug_enabled ||
+        m_debug_color_2 != debug_color_2 ||
+        m_debug_depth != debug_depth ||
+        m_default_color != default_color) {
         m_viewer_valid = false;
     }
+    m_default_color = default_color;
     m_debug_color = debug_color;
     m_debug_color_2 = debug_color_2;
     m_debug_enabled = debug_enabled;
@@ -343,27 +357,27 @@ void Scene::generate_ui_scene_settings() {
 }
 
 void Scene::generate_ui_viewer() const {
-    if(m_camera_valid){
+    if (m_camera_valid) {
         auto cursor_pos = ImGui::GetCursorScreenPos();
 
         ImGui::GetWindowDrawList()->AddImage(
                 reinterpret_cast<ImTextureID>(m_texture),
                 cursor_pos,
-                ImVec2(cursor_pos.x + (float)m_width_viewer - 15, cursor_pos.y + (float)m_height_viewer - 35),
+                ImVec2(cursor_pos.x + (float) m_width_viewer - 15, cursor_pos.y + (float) m_height_viewer - 35),
                 ImVec2(0, 1), ImVec2(1, 0)
         );
     } else {
         std::string text = "No Camera Active";
         auto window_size = ImGui::GetWindowSize();
-        auto text_size   = ImGui::CalcTextSize(text.c_str());
-        ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f,(window_size.y - text_size.y) * 0.5f));
+        auto text_size = ImGui::CalcTextSize(text.c_str());
+        ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f, (window_size.y - text_size.y) * 0.5f));
         ImGui::Text("%s", text.c_str());
     }
 }
 
 void Scene::init_camera() {
     auto camera = get_active_camera();
-    if(camera != nullptr) {
+    if (camera != nullptr) {
         camera->set_capturing(true);
         m_camera_valid = true;
     }
@@ -372,10 +386,10 @@ void Scene::init_camera() {
 std::shared_ptr<Camera> Scene::get_active_camera() {
     auto cameras = Component::get_components<Camera>();
     std::shared_ptr<Camera> camera;
-    for(const auto& cam: cameras){
-        if(camera == nullptr || cam->is_capturing()){
+    for (const auto &cam: cameras) {
+        if (camera == nullptr || cam->is_capturing()) {
             auto node = Component::get_node(&*cam);
-            if(node->is_active_recursive()){
+            if (node->is_active_recursive()) {
                 camera = cam;
             }
         }

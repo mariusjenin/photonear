@@ -11,37 +11,33 @@
 #include "TextureColor.h"
 #include "VertFragShaders.h"
 #include "Light.h"
+#include "RayTraceHit.h"
+#include "SceneGraph.h"
 
 using namespace texture;
 using namespace shader_manager;
+using namespace ray_tracing;
+using namespace scene;
 
 namespace component {
+    enum MaterialType{
+        MaterialTypeEmissive,
+        MaterialTypeDiffuse,
+        MaterialTypeReflective,
+        MaterialTypeRefractive
+    };
+
     namespace material {
         class Material : public Component {
         protected:
-            // ALBEDO
             std::shared_ptr<Texture> m_albedo;
+            MaterialType m_type;
 
-            // EMISSIVE
-            bool m_emissive;
-
-            // METALLIC
-            bool m_metallic;
-            float m_metallic_glossiness;
-
-            // REFRACTIVE
-            bool m_refractive;
-            float m_refractive_index;
-
-            explicit Material(std::shared_ptr<Texture> albedo = std::make_shared<TextureColor>(1.0f),
-                              bool emissive = false, bool metallic = false, float metallic_glossiness = 0.f,
-                              bool refractive = false, float refractive_index = 1.000293f);
+            explicit Material(MaterialType type, std::shared_ptr<Texture> albedo = std::make_shared<TextureColor>(1.0f));
 
         public:
-            const static int MATERIAL_TYPE_COLOR = 0;
-            const static int MATERIAL_TYPE_TEXTURE = 1;
 
-            void load_in_shaders(const std::shared_ptr<Shaders> &shaders);
+            virtual void load_in_shaders(const std::shared_ptr<Shaders> &shaders);
 
             static std::shared_ptr<Material> get_default();
 
@@ -50,6 +46,9 @@ namespace component {
             ComponentType get_type() override;
 
             void generate_ui_component_editor() override;
+
+            virtual color resolve_ray(SceneGraph *scene_graph, RayTraceHit ray_hit,
+                                      int depth, void (*on_hit_callback)()) = 0;
         };
     }
 }

@@ -8,6 +8,7 @@
 #include "memory"
 #include "RootNode.h"
 #include "BoundingBox.h"
+#include "RayTraceHit.h"
 
 using namespace scene::node;
 
@@ -42,9 +43,9 @@ namespace scene {
 
         void compute_bounding_boxes();
 
-        bool raycast(Ray ray);
+        RayTraceHit raycast(Ray ray);
 
-        bool raycast_recursive(Ray ray, const std::shared_ptr<AbstractNode>& node);
+        void raycast_recursive(Ray ray, const std::shared_ptr<AbstractNode> &node, ray_tracing::RayTraceHit *pHit);
     };
 }
 

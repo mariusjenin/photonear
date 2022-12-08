@@ -10,8 +10,7 @@
 namespace scene {
     class CornellBox : public Scene {
     public:
-        CornellBox(GLFWwindow *window, const std::string &vertex_shader_path, const std::string &fragment_shader_path,
-                vec3 clear_color = {0, 0, 0});
+        CornellBox(GLFWwindow *window, const std::string &vertex_shader_path, const std::string &fragment_shader_path);
     private:
         void init_scene_graph() override;
     };

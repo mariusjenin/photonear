@@ -7,7 +7,7 @@
 
 using namespace texture;
 
-color TextureImage::value(float u, float v, point p) const  {
+color TextureImage::value(float u, float v) const  {
     // If we have no texture data, then return solid cyan as a debugging aid.
     if (m_data == nullptr)
         return {0, 1, 1};

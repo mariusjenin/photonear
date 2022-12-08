@@ -5,7 +5,7 @@
 #include "imgui.h"
 #include <utility>
 
-#include "PositionnedLightMaterial.h"
+#include "PositionnedEmissiveMaterial.h"
 #include "TransformComponent.h"
 #include "Photonear.h"
 
@@ -13,12 +13,12 @@
 using namespace component;
 using namespace component::material;
 
-PositionnedLightMaterial::PositionnedLightMaterial(std::shared_ptr<TextureColor> albedo, float l_att, float q_att) : LightMaterial(std::move(albedo)){
+PositionnedEmissiveMaterial::PositionnedEmissiveMaterial(std::shared_ptr<TextureColor> albedo, float l_att, float q_att) : EmissiveMaterial(std::move(albedo)){
     m_linear_attenuation = l_att;
     m_quadratic_attenuation = q_att;
 }
 
-Light PositionnedLightMaterial::generate_light() {
+Light PositionnedEmissiveMaterial::generate_light() {
     auto node = Component::get_node(this);
     auto trsf_comp = Component::get_nearest_component_upper<TransformComponent>(&*node);
     auto matrix = trsf_comp->get_matrix_as_end_node();
@@ -26,7 +26,7 @@ Light PositionnedLightMaterial::generate_light() {
     vec3 position = {0,0,0};
     position = trsf.apply_to_point(position);
 
-    Light light = LightMaterial::generate_light();
+    Light light = EmissiveMaterial::generate_light();
     light.set_type(LIGHT_TYPE_POINT);
     light.set_linear_attenuation(m_linear_attenuation);
     light.set_quadratic_attenuation(m_quadratic_attenuation);
@@ -34,7 +34,7 @@ Light PositionnedLightMaterial::generate_light() {
     return light;
 }
 
-void PositionnedLightMaterial::generate_ui_component_editor() {
+void PositionnedEmissiveMaterial::generate_ui_component_editor() {
     float linear_attenuation = m_linear_attenuation;
     float quadratic_attenuation = m_quadratic_attenuation;
     Material::generate_ui_component_editor();

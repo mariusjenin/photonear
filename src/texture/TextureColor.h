@@ -18,7 +18,7 @@ namespace texture {
 
         explicit TextureColor(float v);
 
-        color value(float u, float v, point p) const override;
+        color value(float u, float v) const override;
 
         void load_in_shaders(const std::shared_ptr<Shaders>& shaders) override;
 

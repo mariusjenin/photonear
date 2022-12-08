@@ -4,7 +4,6 @@
 
 #include "imgui.h"
 #include "BoundingBox.h"
-#include "Photonear.h"
 #include "ShadersBufferManager.h"
 
 using namespace component;
@@ -54,7 +53,6 @@ void BoundingBox::draw() {
             vertices[2], vertices[6],
             vertices[3], vertices[7],
     };
-
     ShadersBufferManager::draw_verticies_debug(GL_LINES, lines);
 }
 

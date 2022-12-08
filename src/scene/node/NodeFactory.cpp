@@ -6,7 +6,6 @@
 #include "AbstractNode.h"
 #include "RootNode.h"
 #include "Node.h"
-#include "BoundingBox.h"
 
 using namespace scene::node;
 

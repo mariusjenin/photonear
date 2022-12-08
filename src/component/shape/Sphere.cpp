@@ -2,8 +2,6 @@
 // Created by mariusjenin on 21/11/22.
 //
 
-#include <memory>
-
 #include "imgui.h"
 
 #include "Sphere.h"
@@ -77,7 +75,7 @@ void Sphere::generate_ui_component_editor() {
             Photonear::get_instance()->get_scene()->set_viewer_valid();
         }
         if(radius_changed){
-            Photonear::get_instance()->get_scene()->set_viewer_valid();
+            Photonear::get_instance()->get_scene()->set_scene_valid();
 
         }
     }
@@ -100,7 +98,8 @@ std::vector<point> Sphere::to_few_vertices() {
     };
 }
 
-bool Sphere::hit(Ray ray) {
+RayTraceHit Sphere::hit(Ray ray) {
+    RayTraceHit ray_hit = RayTraceHit();
     auto node = Component::get_node(this);
     auto matrix = Component::get_component<TransformComponent>(&*node)->get_matrix_as_end_node();
     auto center = vec3(matrix*vec4(m_center,1));
@@ -114,6 +113,40 @@ bool Sphere::hit(Ray ray) {
     auto c = sqr_length_oc - m_radius*m_radius;
 
     auto discriminant = half_b*half_b - a*c;
-    if (discriminant < 0) return false;
-    return true;
+    if (discriminant < 0) {
+        return ray_hit;
+    }
+
+    auto sqrt_d = sqrt(discriminant);
+    float t_min = ray.get_t_min();
+    float t_max = ray.get_t_max();
+
+    auto root = (-half_b - sqrt_d) / a;
+    if (root < t_min || t_max < root) {
+        root = (-half_b + sqrt_d) / a;
+        if (root < t_min || t_max < root)
+            return ray_hit;
+    }
+
+    ray_hit.hit = true;
+    ray_hit.t = root;
+    ray_hit.hit_point = ray_origin + ray_hit.t * ray_dir;
+    ray_hit.normal = (ray_hit.hit_point - center) / m_radius;
+
+    float pi = M_PI;
+    float theta = acos(-ray_hit.normal.y);
+    float phi = atan2(-ray_hit.normal.z, ray_hit.normal.x) + pi;
+    ray_hit.u = phi / (2.f*pi);
+    ray_hit.v = theta / pi;
+
+    if(dot(ray_dir, ray_hit.normal) >= 0){
+        if(m_both_face_visible){
+            ray_hit.normal *= -1;
+        } else {
+            ray_hit.hit = false;
+            return ray_hit;
+        }
+    }
+    ray_hit.shape = this;
+    return ray_hit;
 }

@@ -19,23 +19,20 @@ ComponentType Material::get_type() {
     return typeid(this);
 }
 
-Material::Material(std::shared_ptr<Texture> albedo, bool emissive, bool metallic, float metallic_glossiness, bool refractive, float refractive_index) {
+Material::Material(MaterialType type, std::shared_ptr<Texture> albedo) {
+    m_type = type;
     m_albedo = std::move(albedo);
-    m_emissive = emissive;
-    m_metallic = metallic;
-    m_metallic_glossiness = metallic_glossiness;
-    m_refractive = refractive;
-    m_refractive_index = refractive_index;
 }
 
 void Material::load_in_shaders(const std::shared_ptr<Shaders> &shaders) {
     ShadersDataManager *shader_data_manager = shaders->get_shader_data_manager();
     m_albedo->load_in_shaders(shaders);
-    glUniform1f(shader_data_manager->get_location(ShadersDataManager::MATERIAL_EMISSIVE_LOC_NAME), m_emissive);
+    glUniform1f(shader_data_manager->get_location(ShadersDataManager::MATERIAL_EMISSIVE_LOC_NAME), m_type == MaterialType::MaterialTypeEmissive);
+    glUniform1f(shader_data_manager->get_location(ShadersDataManager::MATERIAL_TRANSPARENCY_LOC_NAME), 1);
 }
 
 bool Material::is_emissive() const {
-    return m_emissive;
+    return m_type == MaterialType::MaterialTypeEmissive;
 }
 
 void Material::generate_ui_component_editor() {
