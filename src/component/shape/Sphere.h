@@ -34,7 +34,7 @@ namespace component {
 
             void generate_ui_component_editor() override;
 
-            RayTraceHit hit(Ray ray) override;
+            RayCastHit hit(Ray ray) override;
 
         };
     }

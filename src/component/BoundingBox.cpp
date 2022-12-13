@@ -32,7 +32,7 @@ void BoundingBox::merge(const std::vector<point> &vertices) {
             if (m_max[i] < vertex[i]) m_max[i] = vertex[i];
         }
     }
-    float bias = 0.001f;
+    float bias = 0.005f;
     m_min = {m_min[0] - bias, m_min[1] - bias, m_min[2] - bias};
     m_max = {m_max[0] + bias, m_max[1] + bias, m_max[2] + bias};
 }

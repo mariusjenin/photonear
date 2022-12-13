@@ -11,7 +11,7 @@
 #include "Component.h"
 #include "Shaders.h"
 #include "BoundingBox.h"
-#include "RayTraceHit.h"
+#include "RayCastHit.h"
 
 using namespace shader_manager;
 using namespace ray_tracing;
@@ -46,7 +46,7 @@ namespace component {
 
             virtual std::vector<point> to_few_vertices() =0;
 
-            virtual RayTraceHit hit(Ray ray)=0;
+            virtual RayCastHit hit(Ray ray)=0;
 
             ~Shape();
         };

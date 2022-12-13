@@ -303,7 +303,7 @@ CMake.
 
 GLFW no longer supports framebuffer transparency enabled via @ref
 GLFW_TRANSPARENT_FRAMEBUFFER on Windows 7 if DWM transparency is off
-(the Transparency setting under Personalization > Window Color).
+(the Transparency setting under Personalization > Window ColorType).
 
 
 @subsubsection emptyevents_33 Empty events on X11 no longer roundtrip to server

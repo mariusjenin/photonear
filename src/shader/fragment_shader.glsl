@@ -7,14 +7,13 @@ struct Material{
     int type_albedo;
     vec3 albedo;
     bool emissive;
-    float transparency;
     sampler2D albedo_texture;
 };
 
 struct Light {
     int type;
     vec3 albedo; float pad0;
-    //Positionned Light
+    //PointType Light
     vec3  position; float pad1;
     float linear_attenuation;
     float quadratic_attenuation;
@@ -63,7 +62,7 @@ uniform bool debug_rendering;
 uniform vec3 debug_rendering_color;
 
 ////////// OUT //////////
-out vec4 color;
+out vec3 color;
 
 vec3 compute_lambert(Light light, sampler2D shadow_map){
 
@@ -137,12 +136,12 @@ vec3 compute_lambert(Light light, sampler2D shadow_map){
 
 void main() {
     if(debug_rendering){
-        color = vec4(debug_rendering_color,1);
+        color = vec3(debug_rendering_color);
     } else {
-        color = vec4(0,0,0,material.transparency);
+        color = vec3(0,0,0);
         for(int i = 0 ; i < nb_lights ; i++) {
             Light light = lights_from_buffer[i];
-            color += vec4(compute_lambert(light, shadow_maps[light.index_shadow_map]),0);
+            color += compute_lambert(light, shadow_maps[light.index_shadow_map]);
         }
     }
 }

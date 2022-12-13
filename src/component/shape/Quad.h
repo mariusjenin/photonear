@@ -28,7 +28,7 @@ namespace component {
 
             std::vector<point> to_few_vertices() override;
 
-            RayTraceHit hit(Ray ray) override;
+            RayCastHit hit(Ray ray) override;
         };
     }
 }

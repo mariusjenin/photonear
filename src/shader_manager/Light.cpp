@@ -50,7 +50,7 @@ int Light::get_generate_depth_map() const {
     return m_generate_depth_map;
 }
 
-int Light::get_index_sampler_depth_map() const {
+GLuint Light::get_index_sampler_depth_map() const {
     return m_index_sampler_depth_map;
 }
 
@@ -66,7 +66,7 @@ std::shared_ptr<ShadowMap> Light::get_shadow_map() const {
     return m_shadow_map;
 }
 
-void Light::set_type(int type){
+void Light::set_type(LightType type){
     m_type = type;
 }
 
@@ -109,7 +109,7 @@ void Light::set_depth_vp_mat(mat4 depth_vp_mat){
     m_depth_vp_mat = depth_vp_mat;
 }
 
-void Light::set_index_sampler_depth_map(int index_sampler_depth_map) {
+void Light::set_index_sampler_depth_map(GLuint index_sampler_depth_map) {
     m_index_sampler_depth_map = index_sampler_depth_map;
 }
 
@@ -138,7 +138,7 @@ LightShader::LightShader(const Light& light) {
     outer_cut_off = light.get_outer_cut_off(); // if inner == outer then no smooth edge
     //Depth and Shadow Map
     generate_depth_map = light.get_generate_depth_map();
-    index_shadow_map = light.get_index_sampler_depth_map();
+    index_shadow_map = (int) light.get_index_sampler_depth_map();
     bias = light.get_bias();
     depth_vp_mat = glsl_mat4(light.get_depth_vp_mat());
 }

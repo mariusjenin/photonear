@@ -634,7 +634,7 @@ static void ShowDemoWindowWidgets()
         ImGui::RadioButton("radio b", &e, 1); ImGui::SameLine();
         ImGui::RadioButton("radio c", &e, 2);
 
-        // Color buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
+        // ColorType buttons, demonstrate using PushID() to add unique identifier in the ID stack, and changing style.
         IMGUI_DEMO_MARKER("Widgets/Basic/Buttons (Colored)");
         for (int i = 0; i < 7; i++)
         {
@@ -1788,8 +1788,8 @@ static void ShowDemoWindowWidgets()
         ImGui::TreePop();
     }
 
-    IMGUI_DEMO_MARKER("Widgets/Color");
-    if (ImGui::TreeNode("Color/Picker Widgets"))
+    IMGUI_DEMO_MARKER("Widgets/ColorType");
+    if (ImGui::TreeNode("ColorType/Picker Widgets"))
     {
         static ImVec4 color = ImVec4(114.0f / 255.0f, 144.0f / 255.0f, 154.0f / 255.0f, 200.0f / 255.0f);
 
@@ -1805,31 +1805,31 @@ static void ShowDemoWindowWidgets()
         ImGui::Checkbox("With HDR", &hdr); ImGui::SameLine(); HelpMarker("Currently all this does is to lift the 0..1 limits on dragging widgets.");
         ImGuiColorEditFlags misc_flags = (hdr ? ImGuiColorEditFlags_HDR : 0) | (drag_and_drop ? 0 : ImGuiColorEditFlags_NoDragDrop) | (alpha_half_preview ? ImGuiColorEditFlags_AlphaPreviewHalf : (alpha_preview ? ImGuiColorEditFlags_AlphaPreview : 0)) | (options_menu ? 0 : ImGuiColorEditFlags_NoOptions);
 
-        IMGUI_DEMO_MARKER("Widgets/Color/ColorEdit");
-        ImGui::Text("Color widget:");
+        IMGUI_DEMO_MARKER("Widgets/ColorType/ColorEdit");
+        ImGui::Text("ColorType widget:");
         ImGui::SameLine(); HelpMarker(
             "Click on the color square to open a color picker.\n"
             "CTRL+click on individual component to input value.\n");
         ImGui::ColorEdit3("MyColor##1", (float*)&color, misc_flags);
 
-        IMGUI_DEMO_MARKER("Widgets/Color/ColorEdit (HSV, with Alpha)");
-        ImGui::Text("Color widget HSV with Alpha:");
+        IMGUI_DEMO_MARKER("Widgets/ColorType/ColorEdit (HSV, with Alpha)");
+        ImGui::Text("ColorType widget HSV with Alpha:");
         ImGui::ColorEdit4("MyColor##2", (float*)&color, ImGuiColorEditFlags_DisplayHSV | misc_flags);
 
-        IMGUI_DEMO_MARKER("Widgets/Color/ColorEdit (float display)");
-        ImGui::Text("Color widget with Float Display:");
+        IMGUI_DEMO_MARKER("Widgets/ColorType/ColorEdit (float display)");
+        ImGui::Text("ColorType widget with Float Display:");
         ImGui::ColorEdit4("MyColor##2f", (float*)&color, ImGuiColorEditFlags_Float | misc_flags);
 
-        IMGUI_DEMO_MARKER("Widgets/Color/ColorButton (with Picker)");
-        ImGui::Text("Color button with Picker:");
+        IMGUI_DEMO_MARKER("Widgets/ColorType/ColorButton (with Picker)");
+        ImGui::Text("ColorType button with Picker:");
         ImGui::SameLine(); HelpMarker(
             "With the ImGuiColorEditFlags_NoInputs flag you can hide all the slider/text inputs.\n"
             "With the ImGuiColorEditFlags_NoLabel flag you can pass a non-empty label which will only "
             "be used for the tooltip and picker popup.");
         ImGui::ColorEdit4("MyColor##3", (float*)&color, ImGuiColorEditFlags_NoInputs | ImGuiColorEditFlags_NoLabel | misc_flags);
 
-        IMGUI_DEMO_MARKER("Widgets/Color/ColorButton (with custom Picker popup)");
-        ImGui::Text("Color button with Custom Picker Popup:");
+        IMGUI_DEMO_MARKER("Widgets/ColorType/ColorButton (with custom Picker popup)");
+        ImGui::Text("ColorType button with Custom Picker Popup:");
 
         // Generate a default palette. The palette will persist and can be edited.
         static bool saved_palette_init = true;
@@ -1896,14 +1896,14 @@ static void ShowDemoWindowWidgets()
             ImGui::EndPopup();
         }
 
-        IMGUI_DEMO_MARKER("Widgets/Color/ColorButton (simple)");
-        ImGui::Text("Color button only:");
+        IMGUI_DEMO_MARKER("Widgets/ColorType/ColorButton (simple)");
+        ImGui::Text("ColorType button only:");
         static bool no_border = false;
         ImGui::Checkbox("ImGuiColorEditFlags_NoBorder", &no_border);
         ImGui::ColorButton("MyColor##3c", *(ImVec4*)&color, misc_flags | (no_border ? ImGuiColorEditFlags_NoBorder : 0), ImVec2(80, 80));
 
-        IMGUI_DEMO_MARKER("Widgets/Color/ColorPicker");
-        ImGui::Text("Color picker:");
+        IMGUI_DEMO_MARKER("Widgets/ColorType/ColorPicker");
+        ImGui::Text("ColorType picker:");
         static bool alpha = true;
         static bool alpha_bar = true;
         static bool side_preview = true;
@@ -1917,7 +1917,7 @@ static void ShowDemoWindowWidgets()
         if (side_preview)
         {
             ImGui::SameLine();
-            ImGui::Checkbox("With Ref Color", &ref_color);
+            ImGui::Checkbox("With Ref ColorType", &ref_color);
             if (ref_color)
             {
                 ImGui::SameLine();
@@ -1970,7 +1970,7 @@ static void ShowDemoWindowWidgets()
             "By default, colors are given to ColorEdit and ColorPicker in RGB, but ImGuiColorEditFlags_InputHSV"
             "allows you to store colors as HSV and pass them to ColorEdit and ColorPicker as HSV. This comes with the"
             "added benefit that you can manipulate hue values with the picker even when saturation or value are zero.");
-        ImGui::Text("Color widget with InputHSV:");
+        ImGui::Text("ColorType widget with InputHSV:");
         ImGui::ColorEdit4("HSV shown as RGB##1", (float*)&color_hsv, ImGuiColorEditFlags_DisplayRGB | ImGuiColorEditFlags_InputHSV | ImGuiColorEditFlags_Float);
         ImGui::ColorEdit4("HSV shown as HSV##1", (float*)&color_hsv, ImGuiColorEditFlags_DisplayHSV | ImGuiColorEditFlags_InputHSV | ImGuiColorEditFlags_Float);
         ImGui::DragFloat4("Raw HSV values", (float*)&color_hsv, 0.01f, 0.0f, 1.0f);
@@ -2253,7 +2253,7 @@ static void ShowDemoWindowWidgets()
             // ColorEdit widgets automatically act as drag source and drag target.
             // They are using standardized payload strings IMGUI_PAYLOAD_TYPE_COLOR_3F and IMGUI_PAYLOAD_TYPE_COLOR_4F
             // to allow your own widgets to use colors in their drag and drop interaction.
-            // Also see 'Demo->Widgets->Color/Picker Widgets->Palette' demo.
+            // Also see 'Demo->Widgets->ColorType/Picker Widgets->Palette' demo.
             HelpMarker("You can drag from the color squares.");
             static float col1[3] = { 1.0f, 0.0f, 0.2f };
             static float col2[4] = { 0.4f, 0.7f, 0.0f, 0.5f };
@@ -7687,7 +7687,7 @@ static void ShowExampleAppCustomRendering(bool* p_open)
             ImGui::Checkbox("##curvessegmentoverride", &curve_segments_override);
             ImGui::SameLine(0.0f, ImGui::GetStyle().ItemInnerSpacing.x);
             curve_segments_override |= ImGui::SliderInt("Curves segments override", &curve_segments_override_v, 3, 40);
-            ImGui::ColorEdit4("Color", &colf.x);
+            ImGui::ColorEdit4("ColorType", &colf.x);
 
             const ImVec2 p = ImGui::GetCursorScreenPos();
             const ImU32 col = ImColor(colf);

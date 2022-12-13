@@ -31,7 +31,7 @@ TextureColor::TextureColor(float r, float g, float b) {
 void TextureColor::load_in_shaders(const std::shared_ptr<Shaders> &shaders) {
     ShadersDataManager *shader_data_manager = shaders->get_shader_data_manager();
     glUniform3fv(shader_data_manager->get_location(ShadersDataManager::MATERIAL_ALBEDO_COLOR_LOC_NAME), 1, &m_value[0]);
-    glUniform1f(shader_data_manager->get_location(ShadersDataManager::MATERIAL_TYPE_LOC_NAME), Texture::TEXTURE_TYPE_COLOR);
+    glUniform1f(shader_data_manager->get_location(ShadersDataManager::MATERIAL_TYPE_LOC_NAME), TextureType::ColorType);
 }
 
 void TextureColor::load_in_light_shaders(Light* light) {

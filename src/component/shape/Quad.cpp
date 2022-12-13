@@ -87,8 +87,8 @@ std::vector<point> Quad::to_few_vertices() {
     };
 }
 
-RayTraceHit Quad::hit(Ray ray) {
-    RayTraceHit ray_hit = RayTraceHit();
+RayCastHit Quad::hit(Ray ray) {
+    RayCastHit ray_hit = RayCastHit();
 
     auto half_length_x = m_length_x/2.f;
     auto half_length_z = m_length_z/2.f;
@@ -121,8 +121,10 @@ RayTraceHit Quad::hit(Ray ray) {
     float up_vector_norm = length(up_vector);
 
     float t = (dot(pt_quad,normal_quad) - dot(origin,normal_quad)) /  dot(direction,normal_quad);
+    if (t < ray.get_t_min() || ray.get_t_max() < t) {
+        return ray_hit;
+    }
     ray_hit.t = t;
-    if(t <= 0.001) return ray_hit;
 
     auto intersection = origin + t * direction;
 
@@ -130,13 +132,14 @@ RayTraceHit Quad::hit(Ray ray) {
     float right_val = dot(v,right_vector);
     float up_val = dot(v,up_vector);
 
-    if(right_val > 0 && up_val > 0 &&
-       right_val < right_vector_norm*right_vector_norm &&
-       up_val < up_vector_norm*up_vector_norm){
+    if(right_val >= 0 && up_val >= 0 &&
+       right_val <= right_vector_norm*right_vector_norm &&
+       up_val <= up_vector_norm*up_vector_norm){
         ray_hit.hit = true;
         ray_hit.normal = normal_quad;
         ray_hit.hit_point = intersection;
         ray_hit.shape = this;
+        ray_hit.inner_shape = false;
         ray_hit.u = (right_val / right_vector_norm) / right_vector_norm;
         ray_hit.v = (up_val / up_vector_norm) / up_vector_norm;
     }

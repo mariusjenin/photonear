@@ -70,7 +70,7 @@ typedef struct
 typedef struct
 {
     GLfloat s, t;         // Texture coordinates
-    GLuint  rgba;         // Color (four ubytes packed into an uint)
+    GLuint  rgba;         // ColorType (four ubytes packed into an uint)
     GLfloat x, y, z;      // Vertex coordinates
 } Vertex;
 
@@ -187,7 +187,7 @@ const unsigned char floor_texture[ F_TEX_WIDTH * F_TEX_HEIGHT ] = {
 typedef struct {
     float x,y,z;     // Position in space
     float vx,vy,vz;  // Velocity vector
-    float r,g,b;     // Color of particle
+    float r,g,b;     // ColorType of particle
     float life;      // Life of particle (1.0 = newborn, < 0.0 = dead)
     int   active;    // Tells if this particle is active
 } PARTICLE;
@@ -199,7 +199,7 @@ static PARTICLE particles[MAX_PARTICLES];
 // Global variable holding the age of the youngest particle
 static float min_age;
 
-// Color of latest born particle (used for fountain lighting)
+// ColorType of latest born particle (used for fountain lighting)
 static float glow_color[4];
 
 // Position of latest born particle (used for fountain lighting)
@@ -264,7 +264,7 @@ static void init_particle(PARTICLE *p, double t)
     p->vy *= velocity;
     p->vz *= velocity;
 
-    // Color is time-varying
+    // ColorType is time-varying
     p->r = 0.7f + 0.3f * (float) sin(0.34 * t + 0.1);
     p->g = 0.6f + 0.4f * (float) sin(0.63 * t + 1.1);
     p->b = 0.6f + 0.4f * (float) sin(0.91 * t + 2.1);

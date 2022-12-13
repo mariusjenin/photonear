@@ -42,7 +42,7 @@ Light SpotEmissiveMaterial::generate_light() {
     mat4 proj_mat = perspective<float>(2*radians(m_cut_off_angle),1.,1.f,100.f);
 
     Light light = PositionnedEmissiveMaterial::generate_light();
-    light.set_type(LIGHT_TYPE_SPOT);
+    light.set_type(LightType::SpotType);
     light.set_inner_cut_off(m_inner_cutoff_computed);
     light.set_outer_cut_off(m_outer_cutoff_computed);
     light.set_bias(m_bias);
@@ -82,4 +82,12 @@ void SpotEmissiveMaterial::generate_ui_component_editor() {
     m_bias = bias;
     m_resolution = resolution;
 
+}
+
+Ray SpotEmissiveMaterial::get_random_ray(glm::mat4 matrix) {
+    float half_flt_max = ((double)RAND_MAX*0.5f);
+    versor direction = normalize(versor((float)rand() - half_flt_max,(float)rand()-half_flt_max,(float)rand()-half_flt_max));
+    direction = vec3(matrix * vec4(direction,0));
+    point origin = vec3(matrix * vec4(vec3(0,0,0),1));
+    return {origin,direction};
 }

@@ -455,7 +455,7 @@ void DrawBoingBallBand( GLfloat long_lo,
          lat_deg += STEP_LATITUDE )
    {
      /*
-      * Color this polygon with red or white.
+      * ColorType this polygon with red or white.
       */
       if ( colorToggle )
          glColor3f( 0.8f, 0.1f, 0.1f );

@@ -720,13 +720,13 @@ bool    ImGui_ImplOpenGL3_CreateDeviceObjects()
         "uniform mat4 ProjMtx;\n"
         "attribute vec2 Position;\n"
         "attribute vec2 UV;\n"
-        "attribute vec4 Color;\n"
+        "attribute vec4 ColorType;\n"
         "varying vec2 Frag_UV;\n"
         "varying vec4 Frag_Color;\n"
         "void main()\n"
         "{\n"
         "    Frag_UV = UV;\n"
-        "    Frag_Color = Color;\n"
+        "    Frag_Color = ColorType;\n"
         "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
         "}\n";
 
@@ -734,13 +734,13 @@ bool    ImGui_ImplOpenGL3_CreateDeviceObjects()
         "uniform mat4 ProjMtx;\n"
         "in vec2 Position;\n"
         "in vec2 UV;\n"
-        "in vec4 Color;\n"
+        "in vec4 ColorType;\n"
         "out vec2 Frag_UV;\n"
         "out vec4 Frag_Color;\n"
         "void main()\n"
         "{\n"
         "    Frag_UV = UV;\n"
-        "    Frag_Color = Color;\n"
+        "    Frag_Color = ColorType;\n"
         "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
         "}\n";
 
@@ -748,28 +748,28 @@ bool    ImGui_ImplOpenGL3_CreateDeviceObjects()
         "precision highp float;\n"
         "layout (location = 0) in vec2 Position;\n"
         "layout (location = 1) in vec2 UV;\n"
-        "layout (location = 2) in vec4 Color;\n"
+        "layout (location = 2) in vec4 ColorType;\n"
         "uniform mat4 ProjMtx;\n"
         "out vec2 Frag_UV;\n"
         "out vec4 Frag_Color;\n"
         "void main()\n"
         "{\n"
         "    Frag_UV = UV;\n"
-        "    Frag_Color = Color;\n"
+        "    Frag_Color = ColorType;\n"
         "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
         "}\n";
 
     const GLchar* vertex_shader_glsl_410_core =
         "layout (location = 0) in vec2 Position;\n"
         "layout (location = 1) in vec2 UV;\n"
-        "layout (location = 2) in vec4 Color;\n"
+        "layout (location = 2) in vec4 ColorType;\n"
         "uniform mat4 ProjMtx;\n"
         "out vec2 Frag_UV;\n"
         "out vec4 Frag_Color;\n"
         "void main()\n"
         "{\n"
         "    Frag_UV = UV;\n"
-        "    Frag_Color = Color;\n"
+        "    Frag_Color = ColorType;\n"
         "    gl_Position = ProjMtx * vec4(Position.xy,0,1);\n"
         "}\n";
 
@@ -869,7 +869,7 @@ bool    ImGui_ImplOpenGL3_CreateDeviceObjects()
     bd->AttribLocationProjMtx = glGetUniformLocation(bd->ShaderHandle, "ProjMtx");
     bd->AttribLocationVtxPos = (GLuint)glGetAttribLocation(bd->ShaderHandle, "Position");
     bd->AttribLocationVtxUV = (GLuint)glGetAttribLocation(bd->ShaderHandle, "UV");
-    bd->AttribLocationVtxColor = (GLuint)glGetAttribLocation(bd->ShaderHandle, "Color");
+    bd->AttribLocationVtxColor = (GLuint)glGetAttribLocation(bd->ShaderHandle, "ColorType");
 
     // Create buffers
     glGenBuffers(1, &bd->VboHandle);

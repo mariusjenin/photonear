@@ -25255,7 +25255,7 @@ nk_tooltipfv(struct nk_context *ctx, const char *fmt, va_list args)
 /// - 2018/01/07 (3.00.1) - Started to change documentation style
 /// - 2018/01/05 (3.00.0) - BREAKING CHANGE: The previous color picker API was broken
 ///                        because of conversions between float and byte color representation.
-///                        Color pickers now use floating point values to represent
+///                        ColorType pickers now use floating point values to represent
 ///                        HSV values. To get back the old behavior I added some additional
 ///                        color conversion functions to cast between nk_color and
 ///                        nk_colorf.

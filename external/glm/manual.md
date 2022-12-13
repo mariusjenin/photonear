@@ -655,16 +655,16 @@ using namespace glm;
 
 void foo()
 {
-  vec4 Color = vec4(1.0f, 0.5f, 0.0f, 1.0f);
+  vec4 ColorType = vec4(1.0f, 0.5f, 0.0f, 1.0f);
 
-  // Generates compiler errors. Color.rgba is not a vector type.
-  vec4 ClampedA = clamp(Color.rgba, 0.f, 1.f); // ERROR
+  // Generates compiler errors. ColorType.rgba is not a vector type.
+  vec4 ClampedA = clamp(ColorType.rgba, 0.f, 1.f); // ERROR
 
   // Explicit conversion through a constructor
-  vec4 ClampedB = clamp(vec4(Color.rgba), 0.f, 1.f); // OK
+  vec4 ClampedB = clamp(vec4(ColorType.rgba), 0.f, 1.f); // OK
 
   // Explicit conversion through operator()
-  vec4 ClampedC = clamp(Color.rgba(), 0.f, 1.f); // OK
+  vec4 ClampedC = clamp(ColorType.rgba(), 0.f, 1.f); // OK
 }
 ```
 
@@ -2051,7 +2051,7 @@ glm::i32vec2 const PositionDataI32[VertexCount] =
 // vecRand3, generate a random and equiprobable normalized vec3
 glm::vec3 lighting(intersection const& Intersection, material const& Material, light const& Light, glm::vec3 const& View)
 {
-    glm::vec3 Color = glm::vec3(0.0f);
+    glm::vec3 ColorType = glm::vec3(0.0f);
     glm::vec3 LightVertor = glm::normalize(
         Light.position() - Intersection.globalPosition() +
         glm::ballRand(0.0f, Light.inaccuracy());
@@ -2060,10 +2060,10 @@ glm::vec3 lighting(intersection const& Intersection, material const& Material, l
     {
         float Diffuse = glm::dot(Intersection.normal(), LightVector);
         if(Diffuse &lt;= 0.0f)
-            return Color;
+            return ColorType;
 
         if(Material.isDiffuse())
-            Color += Light.color() * Material.diffuse() * Diffuse;
+            ColorType += Light.color() * Material.diffuse() * Diffuse;
 
         if(Material.isSpecular())
         {
@@ -2071,11 +2071,11 @@ glm::vec3 lighting(intersection const& Intersection, material const& Material, l
             float Dot = glm::dot(Reflect, View);
             float Base = Dot &gt; 0.0f ? Dot : 0.0f;
             float Specular = glm::pow(Base, Material.exponent());
-            Color += Material.specular() \* Specular;
+            ColorType += Material.specular() \* Specular;
         }
     }
 
-    return Color;
+    return ColorType;
 }
 ```
 

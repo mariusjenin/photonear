@@ -17,7 +17,7 @@ namespace ray_tracing {
     public:
         Ray() = default;
 
-        Ray(point origin, versor direction, float t_min, float t_max);
+        Ray(point origin, versor direction, float t_min = 0, float t_max = 10000);
 
         point get_origin() const;
 

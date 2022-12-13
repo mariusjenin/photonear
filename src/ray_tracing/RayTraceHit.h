@@ -1,33 +1,32 @@
 //
-// Created by mariusjenin on 07/12/22.
+// Created by mariusjenin on 12/12/22.
 //
 
 #ifndef PHOTONEAR_RAYTRACEHIT_H
 #define PHOTONEAR_RAYTRACEHIT_H
 
+#include "glm/glm.hpp"
 #include "vec3_type.h"
-
-namespace component{
-    namespace shape{
-        class Shape;
-    }
-}
-
-using namespace component::shape;
 
 namespace ray_tracing {
     struct RayTraceHit {
-        bool hit;
-        float t;
-        float u{},v{};
-        versor normal{};
+
+        int px_u{};
+        int px_v{};
+
         point hit_point{};
-        Shape* shape;
+        versor normal{};
+        versor direction{};
+        float weight{};
+        color attenuation{};
 
-        RayTraceHit();
+        color color_in_buffer{};
+        float radius;
+        int nb_photons;
 
-        void merge(RayTraceHit ray_hit);
+        RayTraceHit(int u, int v);
     };
 }
+
 
 #endif //PHOTONEAR_RAYTRACEHIT_H

@@ -115,10 +115,12 @@ add_executable(main main.cpp
         src/component/shape/Quad.cpp src/component/shape/Quad.h
         # material
         src/component/material/Material.cpp src/component/material/Material.h
-        src/component/material/EmissiveMaterial.cpp src/component/material/EmissiveMaterial.h
         src/component/material/DiffuseMaterial.cpp src/component/material/DiffuseMaterial.h
+        src/component/material/DielectricMaterial.cpp src/component/material/DielectricMaterial.h
+        src/component/material/ConductorMaterial.cpp src/component/material/ConductorMaterial.h
+        src/component/material/EmissiveMaterial.cpp src/component/material/EmissiveMaterial.h
         src/component/material/DirectedEmissiveMaterial.cpp src/component/material/DirectedEmissiveMaterial.h
-        src/component/material/PositionnedEmissiveMaterial.h.cpp src/component/material/PositionnedEmissiveMaterial.h
+        src/component/material/PositionnedEmissiveMaterial.cpp src/component/material/PositionnedEmissiveMaterial.h
         src/component/material/SpotEmissiveMaterial.cpp src/component/material/SpotEmissiveMaterial.h
         # scene
         src/scene/SceneGraph.cpp src/scene/SceneGraph.h
@@ -130,8 +132,8 @@ add_executable(main main.cpp
         src/ray_tracing/RayTracer.cpp src/ray_tracing/RayTracer.h
         src/ray_tracing/PhotonMapper.cpp src/ray_tracing/PhotonMapper.h
         src/ray_tracing/Photon.cpp src/ray_tracing/Photon.h
-        src/ray_tracing/RayTraceHit.cpp src/ray_tracing/RayTraceHit.h
-        src/component/material/DielectricMaterial.cpp src/component/material/DielectricMaterial.h src/component/material/ConductorMaterial.cpp src/component/material/ConductorMaterial.h)
+        src/ray_tracing/RayCastHit.cpp src/ray_tracing/RayCastHit.h
+        src/ray_tracing/RayTraceHit.cpp src/ray_tracing/RayTraceHit.h src/ray_tracing/PhotonMap.cpp src/ray_tracing/PhotonMap.h src/scene/example/PhotonMapTestScene.cpp src/scene/example/PhotonMapTestScene.h)
 
 target_link_libraries(main
         ${ALL_LIBS}

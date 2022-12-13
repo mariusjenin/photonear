@@ -16,6 +16,8 @@ namespace component{
             explicit DirectedEmissiveMaterial(std::shared_ptr<TextureColor> albedo = std::make_shared<TextureColor>(1.0f));
 
             Light generate_light() override;
+
+            Ray get_random_ray(glm::mat4 matrix) override;
         };
     }
 }

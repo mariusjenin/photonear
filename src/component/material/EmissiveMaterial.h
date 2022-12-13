@@ -8,6 +8,7 @@
 #include "Material.h"
 
 namespace component{
+
     namespace material{
         class EmissiveMaterial : public Material {
         protected:
@@ -15,12 +16,11 @@ namespace component{
 
         public:
             virtual Light generate_light();
-            const static int LIGHT_TYPE_DIRECTIONAL = 0;
-            const static int LIGHT_TYPE_POINT = 1;
-            const static int LIGHT_TYPE_SPOT = 2;
 
             color
-            resolve_ray(SceneGraph *scene_graph, RayTraceHit ray_hit, int depth, void (*on_hit_callback)()) override;
+            resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCastHit> ray_hit, int depth, color default_color, bool photon_mapping_pass) override;
+
+            virtual Ray get_random_ray(glm::mat4 matrix) = 0;
         };
     }
 }

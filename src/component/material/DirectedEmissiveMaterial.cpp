@@ -23,7 +23,15 @@ Light DirectedEmissiveMaterial::generate_light() {
     direction = trsf.apply_to_versor(direction);
 
     Light light = EmissiveMaterial::generate_light();
-    light.set_type(LIGHT_TYPE_DIRECTIONAL);
+    light.set_type(LightType::DirectionType);
     light.set_direction(direction);
     return light;
+}
+
+Ray DirectedEmissiveMaterial::get_random_ray(glm::mat4 matrix) {
+    float half_flt_max = ((double)RAND_MAX*0.5f);
+    versor direction = normalize(versor((float)rand() - half_flt_max,(float)rand()-half_flt_max,(float)rand()-half_flt_max));
+    direction = vec3(matrix * vec4(direction,0));
+    point origin = vec3(matrix * vec4(vec3(0,0,0),1));
+    return {origin,direction};
 }

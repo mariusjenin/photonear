@@ -626,7 +626,7 @@ static GLFWbool createNativeWindow(_GLFWwindow* window,
                                        0, 0,   // Position
                                        width, height,
                                        0,      // Border width
-                                       depth,  // Color depth
+                                       depth,  // ColorType depth
                                        InputOutput,
                                        visual,
                                        CWBorderPixel | CWColormap | CWEventMask,

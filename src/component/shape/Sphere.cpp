@@ -98,8 +98,8 @@ std::vector<point> Sphere::to_few_vertices() {
     };
 }
 
-RayTraceHit Sphere::hit(Ray ray) {
-    RayTraceHit ray_hit = RayTraceHit();
+RayCastHit Sphere::hit(Ray ray) {
+    RayCastHit ray_hit = RayCastHit();
     auto node = Component::get_node(this);
     auto matrix = Component::get_component<TransformComponent>(&*node)->get_matrix_as_end_node();
     auto center = vec3(matrix*vec4(m_center,1));
@@ -142,11 +142,13 @@ RayTraceHit Sphere::hit(Ray ray) {
     if(dot(ray_dir, ray_hit.normal) >= 0){
         if(m_both_face_visible){
             ray_hit.normal *= -1;
+            ray_hit.inner_shape = true;
         } else {
             ray_hit.hit = false;
             return ray_hit;
         }
     }
     ray_hit.shape = this;
+    ray_hit.inner_shape = false;
     return ray_hit;
 }

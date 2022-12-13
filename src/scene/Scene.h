@@ -8,16 +8,20 @@
 #include "memory"
 #include "SceneGraph.h"
 #include "VertFragShaders.h"
+#include "EmissiveMaterial.h"
 #include "Material.h"
 #include "Shape.h"
 #include "Camera.h"
 
 using namespace shader_manager;
 using namespace component;
+using namespace component::material;
 
 namespace scene {
     class Scene {
     private:
+        int m_nb_lights;
+
         void load_lights();
 
         void load_camera();
@@ -29,6 +33,7 @@ namespace scene {
         void resize_texture() const;
 
         virtual void init_scene_graph() = 0;
+
     protected:
         static const int NB_MAX_LIGHTS = 10;
         GLFWwindow *m_window;
@@ -73,6 +78,8 @@ namespace scene {
 
         void init_camera();
 
+        static std::vector<EmissiveMaterial*> get_lights();
+
         static std::shared_ptr<Camera> get_active_camera();
 
         void set_viewer_size(int width, int height);
@@ -86,6 +93,8 @@ namespace scene {
         void generate_ui_scene_settings();
 
         void generate_ui_viewer() const;
+
+        int get_nb_lights() const;
     };
 }
 #endif //PHOTONEAR_SCENE_H

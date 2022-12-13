@@ -24,7 +24,7 @@ namespace component {
             void generate_ui_component_editor() override;
 
             color
-            resolve_ray(SceneGraph *scene_graph, RayTraceHit ray_hit, int depth, void (*on_hit_callback)()) override;
+            resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCastHit> ray_hit, int depth, color default_color, bool photon_mapping_pass) override;
         };
     }
 }

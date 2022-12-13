@@ -20,6 +20,8 @@ namespace component {
             Light generate_light() override;
 
             void generate_ui_component_editor() override;
+
+            Ray get_random_ray(glm::mat4 matrix) override;
         };
     }
 }

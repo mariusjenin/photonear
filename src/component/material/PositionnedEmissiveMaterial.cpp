@@ -27,7 +27,7 @@ Light PositionnedEmissiveMaterial::generate_light() {
     position = trsf.apply_to_point(position);
 
     Light light = EmissiveMaterial::generate_light();
-    light.set_type(LIGHT_TYPE_POINT);
+    light.set_type(LightType::PointType);
     light.set_linear_attenuation(m_linear_attenuation);
     light.set_quadratic_attenuation(m_quadratic_attenuation);
     light.set_position(position);
@@ -46,4 +46,12 @@ void PositionnedEmissiveMaterial::generate_ui_component_editor() {
         Photonear::get_instance()->get_scene()->set_scene_valid();
     m_linear_attenuation = linear_attenuation;
     m_quadratic_attenuation = quadratic_attenuation;
+}
+
+Ray PositionnedEmissiveMaterial::get_random_ray(glm::mat4 matrix) {
+    float half_flt_max = ((double)RAND_MAX*0.5f);
+    versor direction = normalize(versor((float)rand() - half_flt_max,(float)rand()-half_flt_max,(float)rand()-half_flt_max));
+    direction = vec3(matrix * vec4(direction,0));
+    point origin = vec3(matrix * vec4(vec3(0,0,0),1));
+    return {origin,direction};
 }

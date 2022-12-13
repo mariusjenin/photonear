@@ -31,9 +31,6 @@ Scene::Scene(GLFWwindow *window,
     glEnable(GL_DEPTH_TEST);
     // Accept fragment if it closer to the camera than the former one
     glDepthFunc(GL_LESS);
-    // Enable Blend
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_BLEND);
 
     m_default_color = {0, 0, 0};
     m_debug_color = {0, 1, 0.5f};
@@ -154,9 +151,7 @@ void Scene::set_viewer_size(int width, int height) {
     }
 }
 
-void Scene::load_lights() {
-    // Retrieve all the lights
-    auto shadow_map_shaders = m_shaders->get_shadow_map_shaders();
+std::vector<EmissiveMaterial *> Scene::get_lights(){
     auto materials = Component::get_components<Material>();
     std::vector<EmissiveMaterial *> light_materials = {};
     for (const auto &material: materials) {
@@ -167,10 +162,17 @@ void Scene::load_lights() {
             }
         }
     }
-    size_t size_lights = light_materials.size();
+    return light_materials;
+}
+
+void Scene::load_lights() {
+    // Retrieve all the lights
+    auto shadow_map_shaders = m_shaders->get_shadow_map_shaders();
+    auto light_materials = get_lights();
+    m_nb_lights = (int)light_materials.size();
 
     // Init Data structure
-    LightShader lights_shader[size_lights];
+    LightShader lights_shader[m_nb_lights];
     GLint depth_maps[NB_MAX_LIGHTS];
     for (int &depth_map: depth_maps) { depth_map = 0; }
 
@@ -180,7 +182,7 @@ void Scene::load_lights() {
 
     // Use the depth shader
     shadow_map_shaders->use();
-    for (int i = 0; i < size_lights; i++) {
+    for (int i = 0; i < m_nb_lights; i++) {
         Light light = light_materials[i]->generate_light();
         lights_shader[i] = LightShader(light);
         // Generate the Shadow if it has to
@@ -198,7 +200,7 @@ void Scene::load_lights() {
             // Unbind the ShadowMap
             ShadowMap::unbind_bound_shadow_map();
             // Get the right shadow map index
-            int index_shadow_map = light.get_index_sampler_depth_map();
+            int index_shadow_map = (int)light.get_index_sampler_depth_map();
             depth_maps[count_index_depth_map] = index_shadow_map;
             lights_shader[i].index_shadow_map = count_index_depth_map;
             count_index_depth_map++;
@@ -212,7 +214,7 @@ void Scene::load_lights() {
     }
     glUniform1iv(m_shaders->get_shader_data_manager()->get_location(ShadersDataManager::SHADOW_MAP_ARRAY_LOC_NAME),
                  NB_MAX_LIGHTS, depth_maps);
-    m_shaders->get_shader_data_manager()->load_lights(m_shaders->get_program_id(), lights_shader, (int) size_lights);
+    m_shaders->get_shader_data_manager()->load_lights(m_shaders->get_program_id(), lights_shader, (int) m_nb_lights);
 
     glViewport(0, 0, m_width_viewer, m_height_viewer);
 }
@@ -330,7 +332,7 @@ void Scene::generate_ui_scene_settings() {
     }
     ImGui::Separator();
     color default_color = m_default_color;
-    ImGui::ColorEdit3("Default Color", &default_color[0]);
+    ImGui::ColorEdit3("Default ColorType", &default_color[0]);
 
     ImGui::Separator();
     color debug_color = m_debug_color;
@@ -338,8 +340,8 @@ void Scene::generate_ui_scene_settings() {
     bool debug_enabled = m_debug_enabled;
     int debug_depth = m_debug_depth;
     ImGui::Checkbox("Debugging", &debug_enabled);
-    ImGui::ColorEdit3("Debugging Color", &debug_color[0]);
-    ImGui::ColorEdit3("Debugging Color 2", &debug_color_2[0]);
+    ImGui::ColorEdit3("Debugging ColorType", &debug_color[0]);
+    ImGui::ColorEdit3("Debugging ColorType 2", &debug_color_2[0]);
     ImGui::DragInt("Debug Depth", &debug_depth, 0.01f, 0, INT_MAX);
     if (m_debug_color != debug_color ||
         m_debug_enabled != debug_enabled ||
@@ -395,4 +397,8 @@ std::shared_ptr<Camera> Scene::get_active_camera() {
         }
     }
     return camera;
+}
+
+int Scene::get_nb_lights() const {
+    return m_nb_lights;
 }

@@ -4,6 +4,8 @@
 
 #include "Photonear.h"
 #include "QuadScene.h"
+#include "CornellBox.h"
+#include "PhotonMapTestScene.h"
 
 Photonear *Photonear::PhotonearInstance = nullptr;
 
@@ -49,6 +51,10 @@ void Photonear::init() {
 
     m_ray_tracer = std::make_shared<RayTracer>();
     m_ray_tracer->init();
+
+    m_photon_mapper = std::make_shared<PhotonMapper>();
+    m_photon_mapper->init();
+
     m_scene->init();
 
     m_scene->set_viewer_valid();
@@ -67,11 +73,13 @@ void Photonear::update(float delta_time) {
 
     ImGui::Begin(OpenGLViewerName, nullptr, ImGuiWindowFlags_NoMove);
     auto window_size = ImGui::GetWindowSize();
-    m_scene->set_viewer_size((int) window_size.x, (int) window_size.y);
-    m_scene->update(delta_time);
     ImGui::End();
 
+    m_scene->set_viewer_size((int) window_size.x, (int) window_size.y);
+    m_scene->update(delta_time);
+
     m_ray_tracer->update();
+    m_photon_mapper->update();
 }
 
 void Photonear::draw() {
@@ -108,7 +116,7 @@ void Photonear::draw() {
 
     // Photon Mapping Settings
     ImGui::Begin(PhotonMappingSettingsName, nullptr, ImGuiWindowFlags_NoMove);
-    //TODO
+    m_photon_mapper->generate_ui_photon_mapping_settings();
     ImGui::End();
 
     // Photon Mapping Viewer
@@ -118,7 +126,9 @@ void Photonear::draw() {
 
     // Logs
     ImGui::Begin(LogsName, nullptr, ImGuiWindowFlags_NoMove);
-    m_ray_tracer->generate_ui_logs();
+    m_ray_tracer->generate_ui_ray_tracing_logs();
+    m_photon_mapper->generate_ui_logs();
+    m_ray_tracer->generate_ui_photon_splatting_logs();
     ImGui::End();
 }
 
@@ -144,12 +154,12 @@ void Photonear::dock_ui(){
                                                     &dock_id_3); // height 4 in 34
     ImGuiID dock_id_5 = ImGui::DockBuilderSplitNode(dock_id_2, ImGuiDir_Down, 0.75, nullptr,
                                                     &dock_id_2); // height 596 in 256789
-    ImGuiID dock_id_6 = ImGui::DockBuilderSplitNode(dock_id_5, ImGuiDir_Down, 0.33, nullptr,
+    ImGuiID dock_id_6 = ImGui::DockBuilderSplitNode(dock_id_5, ImGuiDir_Down, 0.22, nullptr,
                                                     &dock_id_5); // height 6 in 596
     ImGuiID dock_id_7 = ImGui::DockBuilderSplitNode(dock_id_2, ImGuiDir_Right, 0.7, nullptr,
                                                     &dock_id_2); // width 78 in 278
-    ImGuiID dock_id_8 = ImGui::DockBuilderSplitNode(dock_id_7, ImGuiDir_Right, 0.5, nullptr,
-                                                    &dock_id_7); // width 7 in 78
+    ImGuiID dock_id_8 = ImGui::DockBuilderSplitNode(dock_id_7, ImGuiDir_Right, 0.52, nullptr,
+                                                    &dock_id_7); // width 8 in 78
     ImGuiID dock_id_9 = ImGui::DockBuilderSplitNode(dock_id_5, ImGuiDir_Right, 0.5, nullptr,
                                                     &dock_id_5); // width 9 in 59
     ImGui::DockBuilderDockWindow(SceneGraphEditorName, dock_id_1);

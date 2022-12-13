@@ -12,11 +12,18 @@
 using namespace glm;
 
 namespace shader_manager{
+
+    enum LightType{
+        DirectionType = 0,
+        PointType = 1,
+        SpotType = 2
+    };
+
     class Light {
     private:
-        int m_type{};
+        LightType m_type{};
         vec3 m_albedo{};
-        //Positionned Light
+        //PointType Light
         vec3 m_position{};
         float m_linear_attenuation{};
         float m_quadratic_attenuation{};
@@ -56,7 +63,7 @@ namespace shader_manager{
 
         int get_generate_depth_map() const;
 
-        int get_index_sampler_depth_map() const;
+        GLuint get_index_sampler_depth_map() const;
 
         mat4 get_depth_vp_mat() const;
 
@@ -64,7 +71,7 @@ namespace shader_manager{
 
         std::shared_ptr<ShadowMap> get_shadow_map() const;
 
-        void set_type(int type);
+        void set_type(LightType type);
 
         void set_albedo(vec3 albedo);
 
@@ -86,7 +93,7 @@ namespace shader_manager{
 
         void set_depth_vp_mat(mat4 depth_vp_mat);
 
-        void set_index_sampler_depth_map(int index_sampler_depth_map);
+        void set_index_sampler_depth_map(GLuint index_sampler_depth_map);
 
         void set_resolution(int resolution);
 
@@ -103,7 +110,7 @@ namespace shader_manager{
     struct LightShader{
         int type{};
         glsl_vec3 m_albedo{};
-        //Positionned Light
+        //PointType Light
         glsl_vec3 position{};
         float linear_attenuation{};
         float quadratic_attenuation{};

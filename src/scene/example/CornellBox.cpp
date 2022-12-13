@@ -89,7 +89,8 @@ void CornellBox::init_scene_graph() {
 
     // Light
     auto spot_intensity = vec3(0.4,0.4,0.35);
-    auto ambient_spot_intensity = vec3(0.08,0.08,0.06);
+//    auto ambient_spot_intensity = vec3(0.08,0.08,0.06);
+    auto ambient_spot_intensity = vec3(0.8,0.8,0.75);
     auto sphere_light_1 = make_shared<Sphere>(0.1,30,30);
     auto sphere_light_2 = make_shared<Sphere>(0.1,30,30);
     auto sphere_light_3 = make_shared<Sphere>(0.1,30,30);
@@ -102,16 +103,17 @@ void CornellBox::init_scene_graph() {
     auto point_light2 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_intensity));
     auto point_light3 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_intensity));
     auto point_light4 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_intensity));
-    Component::add_component_to_node(spot_light1, light_1_node);
+//    Component::add_component_to_node(spot_light1, light_1_node);
     Component::add_component_to_node(point_light, light_1_node);
-    Component::add_component_to_node(spot_light2, light_2_node);
-    Component::add_component_to_node(point_light2, light_2_node);
-    Component::add_component_to_node(spot_light3, light_3_node);
-    Component::add_component_to_node(point_light3, light_3_node);
-    Component::add_component_to_node(spot_light4, light_4_node);
-    Component::add_component_to_node(point_light4, light_4_node);
+//    Component::add_component_to_node(spot_light2, light_2_node);
+//    Component::add_component_to_node(point_light2, light_2_node);
+//    Component::add_component_to_node(spot_light3, light_3_node);
+//    Component::add_component_to_node(point_light3, light_3_node);
+//    Component::add_component_to_node(spot_light4, light_4_node);
+//    Component::add_component_to_node(point_light4, light_4_node);
     auto trsf_light_1 = Component::get_component<TransformComponent>(&*light_1_node)->get_transform();
-    trsf_light_1->set_translation({-2.5,7.8,-2.5});
+//    trsf_light_1->set_translation({-2.5,7.8,-2.5});
+    trsf_light_1->set_translation({0,4,0});
     trsf_light_1->set_rotation({-90,0,0});
     auto trsf_light_2 = Component::get_component<TransformComponent>(&*light_2_node)->get_transform();
     trsf_light_2->set_translation({-2.5,7.8,2.5});
@@ -123,10 +125,10 @@ void CornellBox::init_scene_graph() {
     trsf_light_4->set_translation({2.5,7.8,2.5});
     trsf_light_4->set_rotation({-90,0,0});
 
-    Component::add_component_to_node(sphere_light_1, light_1_node);
-    Component::add_component_to_node(sphere_light_2, light_2_node);
-    Component::add_component_to_node(sphere_light_3, light_3_node);
-    Component::add_component_to_node(sphere_light_4, light_4_node);
+//    Component::add_component_to_node(sphere_light_1, light_1_node);
+//    Component::add_component_to_node(sphere_light_2, light_2_node);
+//    Component::add_component_to_node(sphere_light_3, light_3_node);
+//    Component::add_component_to_node(sphere_light_4, light_4_node);
 
 
     // Material
@@ -134,7 +136,8 @@ void CornellBox::init_scene_graph() {
     auto red_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,0.f));
     auto green_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f,1.f,0.f));
 //    auto cyan_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f,1.f,1.f));
-    auto cyan_material = make_shared<DielectricMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f,1.5f);
+//    auto cyan_material = make_shared<DielectricMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f,1.5f);
+    auto cyan_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f);
 //    auto magenta_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,1.f));
     auto magenta_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(1.f,0.f,1.f),0.f);
     Component::add_component_to_node(grey_material, wall_node);
@@ -151,11 +154,11 @@ void CornellBox::init_scene_graph() {
     Component::add_component_to_node(camera, camera_node);
     Component::add_component_to_node(camera2, camera_node_2);
     auto trsf_camera = Component::get_component<TransformComponent>(&*camera_node)->get_transform();
-    trsf_camera->set_translation({0,4,14});
+    trsf_camera->set_translation({0.001,4,14});
     trsf_camera->set_rotation({0,0,0});
     auto trsf_camera2 = Component::get_component<TransformComponent>(&*camera_node_2)->get_transform();
-    trsf_camera2->set_translation({-4,0,-3});
-    trsf_camera2->set_rotation({0,-25,0});
+    trsf_camera2->set_translation({-2.2,-2.6,-5});
+    trsf_camera2->set_rotation({10,-17,0});
 
     m_scene_graph = make_shared<SceneGraph>(root);
 }

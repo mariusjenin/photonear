@@ -17,7 +17,8 @@ namespace component{
 
             void generate_ui_component_editor() override;
 
-            virtual void load_in_shaders(const std::shared_ptr<Shaders> &shaders);
+            color
+            resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCastHit> ray_hit, int depth, color default_color, bool photon_mapping_pass) override;
         };
     }
 }

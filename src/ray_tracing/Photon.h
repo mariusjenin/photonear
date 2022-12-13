@@ -10,13 +10,11 @@
 
 namespace ray_tracing{
     struct Photon {
-        point hit_point;
+        point position;
+        versor direction;
         versor normal;
-        versor ray_direction;
-        point pixel_position;
-        float radius;
-        int amount;
         color color_photon;
+        float weight;
     };
 }
 

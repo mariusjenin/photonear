@@ -197,7 +197,7 @@ static void test_modes(GLFWmonitor* monitor)
             current.greenBits != mode->greenBits ||
             current.blueBits != mode->blueBits)
         {
-            printf("*** Color bit mismatch: (%i %i %i) instead of (%i %i %i)\n",
+            printf("*** ColorType bit mismatch: (%i %i %i) instead of (%i %i %i)\n",
                    current.redBits, current.greenBits, current.blueBits,
                    mode->redBits, mode->greenBits, mode->blueBits);
         }

@@ -10,7 +10,7 @@
 using namespace texture;
 using namespace component::material;
 
-EmissiveMaterial::EmissiveMaterial(std::shared_ptr<TextureColor> albedo): Material(MaterialType::MaterialTypeEmissive, std::move(albedo)) {}
+EmissiveMaterial::EmissiveMaterial(std::shared_ptr<TextureColor> albedo): Material(MaterialType::EmissiveType, std::move(albedo)) {}
 
 Light EmissiveMaterial::generate_light() {
     auto light = Light();
@@ -20,6 +20,6 @@ Light EmissiveMaterial::generate_light() {
 }
 
 color
-EmissiveMaterial::resolve_ray(SceneGraph *scene_graph, RayTraceHit ray_hit, int depth, void (*on_hit_callback)()) {
-    return m_albedo->value(ray_hit.u,ray_hit.v);
+EmissiveMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCastHit> ray_hit, int depth, color default_color, bool photon_mapping_pass) {
+    return m_albedo->value(ray_hit->u,ray_hit->v);
 }

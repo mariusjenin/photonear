@@ -32,8 +32,8 @@ void ShadersDataManager::load_lights_locations(GLuint program_id) {
 void ShadersDataManager::load_material_const(GLuint program_id) {
     m_locations[MATERIAL_TYPE_COLOR_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_TYPE_COLOR_LOC_NAME);
     m_locations[MATERIAL_TYPE_TEXTURE_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_TYPE_TEXTURE_LOC_NAME);
-    glUniform1i(m_locations[MATERIAL_TYPE_COLOR_LOC_NAME], Texture::TEXTURE_TYPE_COLOR);
-    glUniform1i(m_locations[MATERIAL_TYPE_TEXTURE_LOC_NAME], Texture::TEXTURE_TYPE_TEXTURE);
+    glUniform1i(m_locations[MATERIAL_TYPE_COLOR_LOC_NAME], TextureType::ColorType);
+    glUniform1i(m_locations[MATERIAL_TYPE_TEXTURE_LOC_NAME], TextureType::TextureType);
 }
 
 void ShadersDataManager::load_material_locations(GLuint program_id) {
@@ -41,16 +41,15 @@ void ShadersDataManager::load_material_locations(GLuint program_id) {
     m_locations[MATERIAL_ALBEDO_COLOR_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_ALBEDO_COLOR_LOC_NAME);
     m_locations[MATERIAL_ALBEDO_TEXTURE_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_ALBEDO_TEXTURE_LOC_NAME);
     m_locations[MATERIAL_EMISSIVE_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_EMISSIVE_LOC_NAME);
-    m_locations[MATERIAL_TRANSPARENCY_LOC_NAME] = glGetUniformLocation(program_id, MATERIAL_TRANSPARENCY_LOC_NAME);
 }
 
 void ShadersDataManager::load_lights_const(GLuint program_id) {
     m_locations[LIGHT_TYPE_DIRECTIONAL_LOC_NAME] = glGetUniformLocation(program_id, LIGHT_TYPE_DIRECTIONAL_LOC_NAME);
     m_locations[LIGHT_TYPE_POINT_LOC_NAME] = glGetUniformLocation(program_id, LIGHT_TYPE_POINT_LOC_NAME);
     m_locations[LIGHT_TYPE_SPOT_LOC_NAME] = glGetUniformLocation(program_id, LIGHT_TYPE_SPOT_LOC_NAME);
-    glUniform1i(m_locations[LIGHT_TYPE_DIRECTIONAL_LOC_NAME], EmissiveMaterial::LIGHT_TYPE_DIRECTIONAL);
-    glUniform1i(m_locations[LIGHT_TYPE_POINT_LOC_NAME], EmissiveMaterial::LIGHT_TYPE_POINT);
-    glUniform1i(m_locations[LIGHT_TYPE_SPOT_LOC_NAME], EmissiveMaterial::LIGHT_TYPE_SPOT);
+    glUniform1i(m_locations[LIGHT_TYPE_DIRECTIONAL_LOC_NAME], LightType::DirectionType);
+    glUniform1i(m_locations[LIGHT_TYPE_POINT_LOC_NAME], LightType::PointType);
+    glUniform1i(m_locations[LIGHT_TYPE_SPOT_LOC_NAME],LightType::SpotType);
 }
 
 void ShadersDataManager::load_custom_uniform_location(GLuint program_id, const std::string &name) {
