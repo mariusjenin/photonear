@@ -18,6 +18,10 @@ const vec3 &Light::get_albedo() const {
     return m_albedo;
 }
 
+float Light::get_intensity() const {
+    return m_intensity;
+}
+
 const vec3 &Light::get_position() const {
     return m_position;
 }
@@ -74,6 +78,10 @@ void Light::set_albedo(vec3 albedo){
     m_albedo = albedo; ;
 }
 
+void Light::set_intensity(float intensity) {
+    m_intensity = intensity;
+}
+
 void Light::set_position(vec3 position){
     m_position = position; ;
 }
@@ -128,6 +136,7 @@ void Light::load_depth_vp_matrix(Shaders *shaders) {
 LightShader::LightShader(const Light& light) {
     type = light.get_type();
     m_albedo = glsl_vec3(light.get_albedo());
+    m_intensity = light.get_intensity();
     position = glsl_vec3(light.get_position());
     linear_attenuation = light.get_linear_attenuation();
     quadratic_attenuation = light.get_quadratic_attenuation();

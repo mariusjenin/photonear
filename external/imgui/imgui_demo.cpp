@@ -893,8 +893,8 @@ static void ShowDemoWindowWidgets()
                     node_flags |= ImGuiTreeNodeFlags_Selected;
                 if (i < 3)
                 {
-                    // Items 0..2 are Tree Node
-                    bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, "Selectable Node %d", i);
+                    // Items 0..2 are Tree NodeKDTree
+                    bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)i, node_flags, "Selectable NodeKDTree %d", i);
                     if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen())
                         node_clicked = i;
                     if (test_drag_and_drop && ImGui::BeginDragDropSource())
@@ -2984,7 +2984,7 @@ static void ShowDemoWindowLayout()
             const float spacing = ImGui::GetStyle().ItemInnerSpacing.x;
             ImGui::Button("Button##1");
             ImGui::SameLine(0.0f, spacing);
-            if (ImGui::TreeNode("Node##1"))
+            if (ImGui::TreeNode("NodeKDTree##1"))
             {
                 // Placeholder tree data
                 for (int i = 0; i < 6; i++)
@@ -2998,7 +2998,7 @@ static void ShowDemoWindowLayout()
 
             // Common mistake to avoid: if we want to SameLine after TreeNode we need to do it before we add
             // other contents below the node.
-            bool node_open = ImGui::TreeNode("Node##2");
+            bool node_open = ImGui::TreeNode("NodeKDTree##2");
             ImGui::SameLine(0.0f, spacing); ImGui::Button("Button##2");
             if (node_open)
             {
@@ -3014,7 +3014,7 @@ static void ShowDemoWindowLayout()
             ImGui::BulletText("Bullet text");
 
             ImGui::AlignTextToFramePadding();
-            ImGui::BulletText("Node");
+            ImGui::BulletText("NodeKDTree");
             ImGui::SameLine(0.0f, spacing); ImGui::Button("Button##4");
             ImGui::Unindent();
         }
@@ -5721,17 +5721,17 @@ static void ShowDemoWindowColumns()
         ImGui::Columns(2, "tree", true);
         for (int x = 0; x < 3; x++)
         {
-            bool open1 = ImGui::TreeNode((void*)(intptr_t)x, "Node%d", x);
+            bool open1 = ImGui::TreeNode((void*)(intptr_t)x, "NodeKDTree%d", x);
             ImGui::NextColumn();
-            ImGui::Text("Node contents");
+            ImGui::Text("NodeKDTree contents");
             ImGui::NextColumn();
             if (open1)
             {
                 for (int y = 0; y < 3; y++)
                 {
-                    bool open2 = ImGui::TreeNode((void*)(intptr_t)y, "Node%d.%d", x, y);
+                    bool open2 = ImGui::TreeNode((void*)(intptr_t)y, "NodeKDTree%d.%d", x, y);
                     ImGui::NextColumn();
-                    ImGui::Text("Node contents");
+                    ImGui::Text("NodeKDTree contents");
                     if (open2)
                     {
                         ImGui::Text("Even more contents");

@@ -37,8 +37,3 @@ bool Material::is_emissive() const {
 void Material::generate_ui_component_editor() {
     m_albedo->generate_ui("Albedo");
 }
-
-void Material::attenuate(std::shared_ptr<RayCastHit> ray_hit) {
-    ray_hit->attenuation *= m_albedo->value(ray_hit->u,ray_hit->v);
-}
-

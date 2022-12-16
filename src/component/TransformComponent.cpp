@@ -13,7 +13,7 @@
 using namespace component;
 using namespace shader_manager;
 
-TransformComponent::TransformComponent() : Component() {
+TransformComponent::TransformComponent(bool displayable) : Component(displayable){
     m_transform = std::make_shared<Transform>();
     m_local_transform = std::make_shared<Transform>();
 }
@@ -21,6 +21,13 @@ TransformComponent::TransformComponent() : Component() {
 
 TransformComponent::TransformComponent(std::shared_ptr<Transform> trsf,
                                                   std::shared_ptr<Transform> local_trsf) : Component() {
+    m_transform = std::move(trsf);
+    m_local_transform = std::move(local_trsf);
+}
+
+
+TransformComponent::TransformComponent(bool displayable, std::shared_ptr<Transform> trsf,
+                                       std::shared_ptr<Transform> local_trsf) : Component(displayable) {
     m_transform = std::move(trsf);
     m_local_transform = std::move(local_trsf);
 }
@@ -113,6 +120,7 @@ void TransformComponent::load_in_shaders(const std::shared_ptr<Shaders>& shaders
 }
 
 void TransformComponent::generate_ui_component_editor() {
+    if(!m_displayable) return;
     //Init
     vec3 translation = m_transform->get_translation();
     vec3 rotation = m_transform->get_rotation();

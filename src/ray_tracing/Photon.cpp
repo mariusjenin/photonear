@@ -3,3 +3,13 @@
 //
 
 #include "Photon.h"
+using namespace ray_tracing;
+
+Photon::Photon(const std::shared_ptr<RayCastHit>& ray_hit) {
+    position = ray_hit->hit_point;
+    direction = ray_hit->direction;
+    normal = ray_hit->normal;
+    color_photon = ray_hit->attenuation;
+    brdf = ray_hit->brdf;
+    weight = ray_hit->weight;
+}

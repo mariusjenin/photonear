@@ -20,9 +20,11 @@ namespace component {
         static std::string order_to_string(OrderRotation order);
 
     public:
-        TransformComponent();
+        explicit TransformComponent(bool displayable = true);
 
         TransformComponent(std::shared_ptr<Transform> trsf, std::shared_ptr<Transform> local_trsf);
+
+        TransformComponent(bool displayable, std::shared_ptr<Transform> trsf, std::shared_ptr<Transform> local_trsf);
 
         std::shared_ptr<Transform> get_transform() const;
 

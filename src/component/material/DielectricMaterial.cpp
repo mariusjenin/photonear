@@ -28,12 +28,11 @@ DielectricMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCast
     ray_hit->attenuation *= m_albedo->value(ray_hit->u,ray_hit->v);
 
     if(depth == 1) {
-        ray_hit->diffuse = true;
+        ray_hit->brdf = this;
         return m_albedo->value(ray_hit->u,ray_hit->v);
     }
 
     auto ray_dir = -ray_hit->direction;
-    vec3 halfway_vector = (ray_hit->normal + ray_dir) / 2.f;
     float dot_direction_normal = dot(ray_dir, ray_hit->normal);
 
     //TODO Use roughness to reflect and refract pseudorandomly
@@ -44,13 +43,14 @@ DielectricMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCast
     float r0 = pow(((n2 - n1) / (n2 + n1)), 2.f);
     float fresnel_reflectance = r0 + (1.f - r0) * pow(1.f - dot_direction_normal, 5.f);
 
+    //TODO Russian Roulette
+
     //Reflect
     color color_reflected;
-    auto ray_reflected = Ray(ray_hit->hit_point,2.f * dot_direction_normal * ray_hit->normal - ray_dir,0.0001);
+    auto ray_reflected = Ray(ray_hit->hit_point, get_direction_reflection(ray_hit),0.0001);
     auto ray_hit_reflected = scene_graph->raycast(ray_reflected, ray_hit->refractive_index_of_medium);
     ray_hit_reflected->attenuation = ray_hit->attenuation;
     ray_hit_reflected->weight =  ray_hit->weight * fresnel_reflectance;
-    ray_hit_reflected->diffuse = false;
     if(ray_hit_reflected->hit){
         auto node = Component::get_node(ray_hit_reflected->shape);
         auto material = Component::get_nearest_component_upper<Material>(&*node);
@@ -70,7 +70,6 @@ DielectricMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCast
     auto ray_hit_refracted = scene_graph->raycast(ray_refracted, ray_hit->inner_shape?ray_hit->refractive_index_of_medium:m_refractive_index);
     ray_hit_refracted->attenuation = ray_hit->attenuation;
     ray_hit_refracted->weight =  ray_hit->weight * (1-fresnel_reflectance);
-    ray_hit_refracted->diffuse = false;
     if(ray_hit_refracted->hit){
         auto node = Component::get_node(ray_hit_refracted->shape);
         auto material = Component::get_nearest_component_upper<Material>(&*node);

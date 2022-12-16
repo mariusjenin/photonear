@@ -9,9 +9,8 @@
 
 namespace component{
     class RootTransformComponent : public TransformComponent{
-        void generate_ui_component_editor() override;
-
-        void generate_ui_node_editor_ui() override;
+    public:
+        RootTransformComponent();
     };
 }
 

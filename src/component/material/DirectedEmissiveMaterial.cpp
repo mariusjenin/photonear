@@ -10,8 +10,8 @@
 
 using namespace component::material;
 
-DirectedEmissiveMaterial::DirectedEmissiveMaterial(std::shared_ptr<TextureColor> albedo) : EmissiveMaterial(
-        std::move(albedo)) {}
+DirectedEmissiveMaterial::DirectedEmissiveMaterial(std::shared_ptr<TextureColor> albedo, float intensity) : EmissiveMaterial(
+        std::move(albedo),intensity) {}
 
 
 Light DirectedEmissiveMaterial::generate_light() {
@@ -33,5 +33,5 @@ Ray DirectedEmissiveMaterial::get_random_ray(glm::mat4 matrix) {
     versor direction = normalize(versor((float)rand() - half_flt_max,(float)rand()-half_flt_max,(float)rand()-half_flt_max));
     direction = vec3(matrix * vec4(direction,0));
     point origin = vec3(matrix * vec4(vec3(0,0,0),1));
-    return {origin,direction};
+    return {origin,direction,0.0001};
 }

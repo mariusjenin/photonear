@@ -12,8 +12,8 @@
 
 using namespace component::material;
 
-SpotEmissiveMaterial::SpotEmissiveMaterial(GLuint id_texture_shadow_map, std::shared_ptr<TextureColor> albedo, float in_co, float out_co, int resolution, float bias,
-                                           float l_att, float q_att) : PositionnedEmissiveMaterial(std::move(albedo), l_att, q_att) {
+SpotEmissiveMaterial::SpotEmissiveMaterial(GLuint id_texture_shadow_map, std::shared_ptr<TextureColor> albedo, float intensity, float in_co, float out_co, int resolution, float bias,
+                                           float l_att, float q_att) : PositionnedEmissiveMaterial(std::move(albedo), intensity,l_att, q_att) {
     m_resolution = resolution;
     m_bias = bias;
     m_inner_cutoff = in_co;
@@ -89,5 +89,5 @@ Ray SpotEmissiveMaterial::get_random_ray(glm::mat4 matrix) {
     versor direction = normalize(versor((float)rand() - half_flt_max,(float)rand()-half_flt_max,(float)rand()-half_flt_max));
     direction = vec3(matrix * vec4(direction,0));
     point origin = vec3(matrix * vec4(vec3(0,0,0),1));
-    return {origin,direction};
+    return {origin,direction,0.0001};
 }

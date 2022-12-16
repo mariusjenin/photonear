@@ -8,7 +8,7 @@
 
 using namespace component;
 
-BoundingBox::BoundingBox() {
+BoundingBox::BoundingBox() : Component(false) {
     init();
 }
 

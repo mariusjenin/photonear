@@ -88,21 +88,21 @@ void CornellBox::init_scene_graph() {
     trsf_sphere_2->set_translation({-1.7, 1.75, -1.7});
 
     // Light
-    auto spot_intensity = vec3(0.4,0.4,0.35);
-//    auto ambient_spot_intensity = vec3(0.08,0.08,0.06);
-    auto ambient_spot_intensity = vec3(0.8,0.8,0.75);
+    auto spot_color = vec3(0.4, 0.4, 0.35);
+//    auto ambient_spot_color = vec3(0.08,0.08,0.06);
+    auto ambient_spot_color = vec3(0.8, 0.8, 0.75);
     auto sphere_light_1 = make_shared<Sphere>(0.1,30,30);
     auto sphere_light_2 = make_shared<Sphere>(0.1,30,30);
     auto sphere_light_3 = make_shared<Sphere>(0.1,30,30);
     auto sphere_light_4 = make_shared<Sphere>(0.1,30,30);
-    auto spot_light1 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_intensity), 25, 45, 700, 0.02f, 0.f, 0.01f);
-    auto spot_light2 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_intensity), 25, 45, 700, 0.02f, 0.f, 0.01f);
-    auto spot_light3 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_intensity), 25, 45, 700, 0.02f, 0.f, 0.01f);
-    auto spot_light4 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_intensity), 25, 45, 700, 0.02f, 0.f, 0.01f);
-    auto point_light = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_intensity));
-    auto point_light2 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_intensity));
-    auto point_light3 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_intensity));
-    auto point_light4 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_intensity));
+    auto spot_light1 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_color), 1, 25, 45, 700, 0.02f, 0.f, 0.01f);
+    auto spot_light2 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_color), 1, 25, 45, 700, 0.02f, 0.f, 0.01f);
+    auto spot_light3 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_color), 1, 25, 45, 700, 0.02f, 0.f, 0.01f);
+    auto spot_light4 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_color), 1, 25, 45, 700, 0.02f, 0.f, 0.01f);
+    auto point_light = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_color));
+    auto point_light2 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_color));
+    auto point_light3 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_color));
+    auto point_light4 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_color));
 //    Component::add_component_to_node(spot_light1, light_1_node);
     Component::add_component_to_node(point_light, light_1_node);
 //    Component::add_component_to_node(spot_light2, light_2_node);
@@ -134,7 +134,7 @@ void CornellBox::init_scene_graph() {
     // Material
     auto grey_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.9f,0.9f,0.9f));
     auto red_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,0.f));
-    auto green_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f,1.f,0.f));
+    auto green_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f,1.f,0.f),0.5f);
 //    auto cyan_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f,1.f,1.f));
 //    auto cyan_material = make_shared<DielectricMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f,1.5f);
     auto cyan_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f);

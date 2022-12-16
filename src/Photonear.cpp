@@ -9,15 +9,15 @@
 
 Photonear *Photonear::PhotonearInstance = nullptr;
 
-const char * Photonear::SceneGraphEditorName = "Scene Graph Editor";
-const char * Photonear::NodeEditorName = "Node Editor";
-const char * Photonear::ComponentEditorName = "Component Editor";
-const char * Photonear::OpenGLViewerName = "OpenGL Viewer";
-const char * Photonear::PhotonMappingViewerName = "Photon Mapping Viewer";
-const char * Photonear::SceneSettingsName = "Scene Settings";
-const char * Photonear::RayTracingSettingsName = "Ray Tracing Settings";
-const char * Photonear::PhotonMappingSettingsName = "Photon Mapping Settings";
-const char * Photonear::LogsName = "Logs";
+const char *Photonear::SceneGraphEditorName = "Scene Graph Editor";
+const char *Photonear::NodeEditorName = "Node Editor";
+const char *Photonear::ComponentEditorName = "Component Editor";
+const char *Photonear::OpenGLViewerName = "OpenGL Viewer";
+const char *Photonear::PhotonMappingViewerName = "Photon Mapping Viewer";
+const char *Photonear::SceneSettingsName = "Scene Settings";
+const char *Photonear::RayTracingSettingsName = "Ray Tracing Settings";
+const char *Photonear::PhotonMappingSettingsName = "Photon Mapping Settings";
+const char *Photonear::LogsName = "Logs";
 
 Photonear *Photonear::get_instance() {
     if (PhotonearInstance == nullptr) {
@@ -117,6 +117,8 @@ void Photonear::draw() {
     // Photon Mapping Settings
     ImGui::Begin(PhotonMappingSettingsName, nullptr, ImGuiWindowFlags_NoMove);
     m_photon_mapper->generate_ui_photon_mapping_settings();
+    ImGui::Separator();
+    m_ray_tracer->generate_ui_photon_gathering_settings();
     ImGui::End();
 
     // Photon Mapping Viewer
@@ -128,11 +130,11 @@ void Photonear::draw() {
     ImGui::Begin(LogsName, nullptr, ImGuiWindowFlags_NoMove);
     m_ray_tracer->generate_ui_ray_tracing_logs();
     m_photon_mapper->generate_ui_logs();
-    m_ray_tracer->generate_ui_photon_splatting_logs();
+    m_ray_tracer->generate_ui_photon_gathering_logs();
     ImGui::End();
 }
 
-void Photonear::dock_ui(){
+void Photonear::dock_ui() {
     ImGuiIO &io = ImGui::GetIO();
     ImVec2 viewport_pos = ImGui::GetMainViewport()->Pos;
 
@@ -156,9 +158,9 @@ void Photonear::dock_ui(){
                                                     &dock_id_2); // height 596 in 256789
     ImGuiID dock_id_6 = ImGui::DockBuilderSplitNode(dock_id_5, ImGuiDir_Down, 0.22, nullptr,
                                                     &dock_id_5); // height 6 in 596
-    ImGuiID dock_id_7 = ImGui::DockBuilderSplitNode(dock_id_2, ImGuiDir_Right, 0.7, nullptr,
+    ImGuiID dock_id_7 = ImGui::DockBuilderSplitNode(dock_id_2, ImGuiDir_Right, 0.73, nullptr,
                                                     &dock_id_2); // width 78 in 278
-    ImGuiID dock_id_8 = ImGui::DockBuilderSplitNode(dock_id_7, ImGuiDir_Right, 0.52, nullptr,
+    ImGuiID dock_id_8 = ImGui::DockBuilderSplitNode(dock_id_7, ImGuiDir_Right, 0.51, nullptr,
                                                     &dock_id_7); // width 8 in 78
     ImGuiID dock_id_9 = ImGui::DockBuilderSplitNode(dock_id_5, ImGuiDir_Right, 0.5, nullptr,
                                                     &dock_id_5); // width 9 in 59
@@ -206,38 +208,43 @@ Component *Photonear::get_component_selected() {
 }
 
 void Photonear::generate_ui_node_editor() {
-    if(m_node_selected == nullptr){
+    if (m_node_selected == nullptr) {
         std::string text = "No Node selected";
         auto window_size = ImGui::GetWindowSize();
-        auto text_size   = ImGui::CalcTextSize(text.c_str());
-        ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f,(window_size.y - text_size.y) * 0.5f));
+        auto text_size = ImGui::CalcTextSize(text.c_str());
+        ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f, (window_size.y - text_size.y) * 0.5f));
         ImGui::Text("%s", text.c_str());
     } else {
         m_node_selected->generate_ui_node_editor();
         auto components = Component::get_components(m_node_selected);
-        for(const auto& component:components){
+        for (const auto &component: components) {
             component->generate_ui_node_editor_ui();
         }
     }
 }
 
 void Photonear::generate_ui_component_editor() {
-    if(m_component_selected == nullptr){
-        if(m_node_selected != nullptr) {
-            m_component_selected = &*Component::get_component<TransformComponent>(m_node_selected);
-            if(m_component_selected == nullptr) {
-                auto components = Component::get_components(m_node_selected);
-                if(!components.empty()){
-                    m_component_selected = &*components[0];
+    if (m_component_selected == nullptr && m_node_selected != nullptr) {
+        auto trsf_comp = &*Component::get_component<TransformComponent>(m_node_selected);
+        if (trsf_comp->is_displayable()) {
+            m_component_selected = trsf_comp;
+        } else {
+            auto components = Component::get_components(m_node_selected);
+            if (!components.empty()) {
+                for (const auto &component: components) {
+                    if (component->is_displayable()) {
+                        m_component_selected = &*component;
+                        break;
+                    }
                 }
             }
         }
     }
-    if(m_component_selected == nullptr){
+    if (m_component_selected == nullptr) {
         std::string text = "No Component selected";
         auto window_size = ImGui::GetWindowSize();
-        auto text_size   = ImGui::CalcTextSize(text.c_str());
-        ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f,(window_size.y - text_size.y) * 0.5f));
+        auto text_size = ImGui::CalcTextSize(text.c_str());
+        ImGui::SetCursorPos(ImVec2((window_size.x - text_size.x) * 0.5f, (window_size.y - text_size.y) * 0.5f));
         ImGui::Text("%s", text.c_str());
     } else {
         m_component_selected->generate_ui_component_editor();

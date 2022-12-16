@@ -5,13 +5,13 @@
 #ifndef PHOTONEAR_BOUNDINGBOX_H
 #define PHOTONEAR_BOUNDINGBOX_H
 
-#include "MaskedComponent.h"
+#include "Component.h"
 #include "Ray.h"
 
 using namespace ray_tracing;
 
 namespace component{
-    class BoundingBox : public MaskedComponent{
+    class BoundingBox : public Component{
     private:
         point m_max{};
         point m_min{};

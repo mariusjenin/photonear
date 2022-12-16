@@ -332,7 +332,7 @@ void Scene::generate_ui_scene_settings() {
     }
     ImGui::Separator();
     color default_color = m_default_color;
-    ImGui::ColorEdit3("Default ColorType", &default_color[0]);
+    ImGui::ColorEdit3("Default Color", &default_color[0]);
 
     ImGui::Separator();
     color debug_color = m_debug_color;
@@ -340,8 +340,8 @@ void Scene::generate_ui_scene_settings() {
     bool debug_enabled = m_debug_enabled;
     int debug_depth = m_debug_depth;
     ImGui::Checkbox("Debugging", &debug_enabled);
-    ImGui::ColorEdit3("Debugging ColorType", &debug_color[0]);
-    ImGui::ColorEdit3("Debugging ColorType 2", &debug_color_2[0]);
+    ImGui::ColorEdit3("Debugging Color", &debug_color[0]);
+    ImGui::ColorEdit3("Debugging Color 2", &debug_color_2[0]);
     ImGui::DragInt("Debug Depth", &debug_depth, 0.01f, 0, INT_MAX);
     if (m_debug_color != debug_color ||
         m_debug_enabled != debug_enabled ||

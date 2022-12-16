@@ -6,10 +6,11 @@
 
 using namespace ray_tracing;
 
-RayTraceHit::RayTraceHit(int u, int v) {
+RayTraceHit::RayTraceHit(int u, int v, float rad) {
     nb_photons = 0;
-    radius = 1;
+    radius = rad;
     color_in_buffer = {0,0,0};
     px_u = u;
     px_v = v;
+    hit = false;
 }

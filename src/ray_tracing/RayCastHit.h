@@ -13,9 +13,13 @@ namespace component{
     namespace shape{
         class Shape;
     }
+    namespace material{
+        class DiffuseMaterial;
+    }
 }
 
 using namespace component::shape;
+using namespace component::material;
 
 namespace ray_tracing {
     struct RayCastHit {
@@ -33,7 +37,7 @@ namespace ray_tracing {
         float weight;
 
         //Initialized on resolve ray or initilization of the first rays
-        bool diffuse;
+        DiffuseMaterial* brdf;
         color attenuation{};
         float refractive_index_of_medium{};
 

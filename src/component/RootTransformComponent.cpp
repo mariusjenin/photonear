@@ -4,10 +4,6 @@
 
 #include "RootTransformComponent.h"
 
-void component::RootTransformComponent::generate_ui_component_editor() {
-    //Nothing
-}
+using namespace component;
 
-void component::RootTransformComponent::generate_ui_node_editor_ui() {
-    //Nothing
-}
+RootTransformComponent::RootTransformComponent() : TransformComponent(false) {}

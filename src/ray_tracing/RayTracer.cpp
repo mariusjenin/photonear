@@ -21,16 +21,18 @@ RayTracer::RayTracer() {
     m_auto_recompute = false;
     m_ray_tracing_valid = false;
     m_image_valid = false;
-    m_photon_splatting_valid = true;
+    m_photon_gathering_valid = true;
     m_is_ray_tracing = false;
-    m_is_photon_splatting = false;
+    m_is_photon_gathering = false;
     m_px_ray_traced = 0;
-    m_ray_photon_splatted = 0;
-    m_total_ray_photon_splatted = 0;
+    m_ray_photon_gathered = 0;
+    m_total_ray_photon_splatted = 1;
     m_width = 125;
     m_height = 100;
     m_default_color = {0, 0, 0};
     m_max_depth = 3;
+    m_last_pass_ray_tracing = false;
+    m_radius_photon_gathering = 2;
 }
 
 
@@ -47,12 +49,10 @@ void RayTracer::init() {
 
 
 void RayTracer::generate_ui_ray_tracing_settings() {
-    bool width_changed;
-    bool height_changed;
-    bool sample_by_pixel_changed;
     int width = m_width;
     int height = m_height;
     int sample_by_pixel = m_sample_by_pixel;
+    int max_depth = m_max_depth;
 
 
     ImGui::Checkbox("Auto recompute Ray Tracing", &m_auto_recompute);
@@ -69,7 +69,6 @@ void RayTracer::generate_ui_ray_tracing_settings() {
 
 
     color default_color = m_default_color;
-    int max_depth = m_max_depth;
     ImGui::ColorEdit3("Default Color", &default_color[0]);
     ImGui::DragInt("Max Depth Ray Tracing", &max_depth, 0.1, 1, INT_MAX);
     bool default_color_changed = m_default_color != default_color;
@@ -94,10 +93,9 @@ void RayTracer::generate_ui_ray_tracing_settings() {
 
     ImGui::DragInt("Width Render", &width, 1, 1, INT_MAX, display_width.c_str());
     ImGui::DragInt("Height Render", &height, 1, 1, INT_MAX, display_height.c_str());
-    ImGui::DragInt("Sample by pixel", &sample_by_pixel, 0.1, 1, INT_MAX);
-    sample_by_pixel_changed = m_sample_by_pixel != sample_by_pixel;
-    m_sample_by_pixel = sample_by_pixel;
 
+    bool width_changed;
+    bool height_changed;
     m_ray_tracing_mutex.lock();
     if (m_auto_size) {
         ImGui::PopStyleVar();
@@ -112,10 +110,21 @@ void RayTracer::generate_ui_ray_tracing_settings() {
         m_height = height;
     }
 
+    ImGui::DragInt("Sample by pixel", &sample_by_pixel, 0.1, 1, INT_MAX);
+    bool sample_by_pixel_changed = m_sample_by_pixel != sample_by_pixel;
+    m_sample_by_pixel = sample_by_pixel;
     if (width_changed || height_changed || sample_by_pixel_changed || default_color_changed || max_depth_changed) {
         init_ray_tracing_data();
     }
     m_ray_tracing_mutex.unlock();
+}
+
+void RayTracer::generate_ui_photon_gathering_settings(){
+    float radius_photon_gathering = m_radius_photon_gathering;
+    ImGui::DragFloat("Radius Photon Gathering", &radius_photon_gathering, 0.01f, 0, FLT_MAX);
+    bool radius_photon_gathering_changed = m_radius_photon_gathering != radius_photon_gathering;
+    m_radius_photon_gathering = radius_photon_gathering;
+    if (radius_photon_gathering_changed) init_ray_tracing_data();
 }
 
 void RayTracer::init_ray_tracing_data() {
@@ -134,13 +143,13 @@ void RayTracer::update() {
         m_async_ray_tracing = std::async(&RayTracer::compute_ray_tracing_pass, this);
         #pragma clang diagnostic pop
     }
-    if (!m_photon_splatting_valid && m_ray_tracing_valid && !m_is_photon_splatting && !m_is_ray_tracing) {
+    if (!m_photon_gathering_valid && m_ray_tracing_valid && !m_is_photon_gathering && !m_is_ray_tracing) {
         #pragma clang diagnostic push
         #pragma ide diagnostic ignored "UnusedValue"
-        m_async_ray_tracing = std::async(&RayTracer::compute_photon_splatting, this);
+        m_async_ray_tracing = std::async(&RayTracer::compute_photon_gathering, this);
         #pragma clang diagnostic pop
     }
-    if(!m_image_valid && m_ray_tracing_valid && m_photon_splatting_valid && !m_is_ray_tracing && !m_is_photon_splatting){
+    if(!m_image_valid && m_ray_tracing_valid && m_photon_gathering_valid && !m_is_ray_tracing && !m_is_photon_gathering){
         compute_image();
     }
 }
@@ -187,8 +196,11 @@ void RayTracer::compute_ray_tracing_pass() {
     if (camera == nullptr) {
         return;
     }
+
     set_ray_tracing_valid(true);
-    Photonear::get_instance()->get_photon_mapper()->set_photon_mapping_valid(false);
+    auto photon_mapper = Photonear::get_instance()->get_photon_mapper();
+    photon_mapper->set_photon_mapping_valid(false);
+
     #pragma clang diagnostic push
     #pragma ide diagnostic ignored "UnusedValue"
     m_is_ray_tracing = true;
@@ -208,6 +220,7 @@ void RayTracer::compute_ray_tracing_pass() {
     point origin = vec3(matrix * vec4(CAMERA_POSITION, 1));
     versor forward = vec3(matrix * vec4(CAMERA_FORWARD, 0));
     versor up = vec3(matrix * vec4(CAMERA_UP, 0));
+
     for (int j = m_height - 1; j >= 0; j--) {
         for (int i = 0; i < m_width; i++) {
             if (!m_ray_tracing_valid) { //Cancel the execution
@@ -223,6 +236,7 @@ void RayTracer::compute_ray_tracing_pass() {
                        &*scene_graph, i, j, origin, direction, z_near, z_far);
         }
     }
+    m_last_pass_ray_tracing = true;
     m_is_ray_tracing = false;
     m_image_valid = true;
 }
@@ -257,13 +271,14 @@ void RayTracer::compute_ray_cast(SceneGraph* scene_graph, int u, int v, vec3 ori
 void RayTracer::compute_ray_trace(int u, int v, const std::shared_ptr<RayCastHit>& ray_hit){
     auto children_ray_hit = ray_hit->children;
     if(!ray_hit->hit) {
-        auto ray_trace_hit = std::make_shared<RayTraceHit>(u,v);
+        auto ray_trace_hit = std::make_shared<RayTraceHit>(u, v, m_radius_photon_gathering);
         ray_trace_hit->color_in_buffer = m_default_color * ray_hit->attenuation;
         m_ray_trace_data.push_back(ray_trace_hit);
         return;
     }
-    if(ray_hit->diffuse) {
-        auto ray_trace_hit = std::make_shared<RayTraceHit>(u,v);
+    if(ray_hit->brdf != nullptr) {
+        auto ray_trace_hit = std::make_shared<RayTraceHit>(u, v, m_radius_photon_gathering);
+        ray_trace_hit->hit = true;
         ray_trace_hit->weight = ray_hit->weight;
         ray_trace_hit->attenuation = ray_hit->attenuation;
         ray_trace_hit->normal = ray_hit->normal;
@@ -280,53 +295,98 @@ void RayTracer::compute_ray_trace(int u, int v, const std::shared_ptr<RayCastHit
 
 void RayTracer::compute_image() {
     for(const auto& ray_trace_hit: m_ray_trace_data){
-        if(ray_trace_hit->nb_photons == 0){
-            auto index = 4 * (ray_trace_hit->px_v * m_width + ray_trace_hit->px_u);
-            color px_color = ray_trace_hit->attenuation;
-            m_image[index] = (unsigned char) (px_color[0] * 255);
-            m_image[index + 1] = (unsigned char) (px_color[1] * 255);
-            m_image[index + 2] = (unsigned char) (px_color[2] * 255);
-            m_image[index + 3] = 255;
-        } else {
-            auto index = 4 * (ray_trace_hit->px_v * m_width + ray_trace_hit->px_u);
-            color px_color = ray_trace_hit->color_in_buffer;
-            m_image[index] = (unsigned char) (px_color[0] * 255);
-            m_image[index + 1] = (unsigned char) (px_color[1] * 255);
-            m_image[index + 2] = (unsigned char) (px_color[2] * 255);
-            m_image[index + 3] = 255;
-        }
+        auto index = 4 * (ray_trace_hit->px_v * m_width + ray_trace_hit->px_u);
+        color px_color = ray_trace_hit->color_in_buffer;
+        m_image[index] = (unsigned char) (px_color[0] * 255);
+        m_image[index + 1] = (unsigned char) (px_color[1] * 255);
+        m_image[index + 2] = (unsigned char) (px_color[2] * 255);
+        m_image[index + 3] = 255;
     }
     m_image_valid = true;
-    m_ray_photon_splatted = 0;
+    m_ray_photon_gathered = 0;
 }
 
-void RayTracer::compute_photon_splatting(){
+void RayTracer::compute_photon_gathering(){
     #pragma clang diagnostic push
     #pragma ide diagnostic ignored "UnusedValue"
-    m_is_photon_splatting = true;
+    m_is_photon_gathering = true;
     #pragma clang diagnostic pop
-    m_ray_photon_splatted = 0;
+    m_ray_photon_gathered = 0;
     m_total_ray_photon_splatted = (int)m_ray_trace_data.size();
     auto photon_map = Photonear::get_instance()->get_photon_mapper()->get_photon_map();
     for(const auto& ray_trace_hit: m_ray_trace_data){
-        photon_splatting(ray_trace_hit, photon_map);
-        m_ray_photon_splatted++;
+        if(m_last_pass_ray_tracing){
+            photon_gathering(ray_trace_hit, photon_map);
+        } else {
+            refine_photon_gathering(ray_trace_hit, photon_map);
+        }
+        m_ray_photon_gathered++;
     }
+    m_last_pass_ray_tracing = false;
     m_image_valid = false;
-    m_photon_splatting_valid = true;
+    m_photon_gathering_valid = true;
     Photonear::get_instance()->get_photon_mapper()->set_photon_mapping_valid(false);
 
-    m_is_photon_splatting = false;
+    m_is_photon_gathering = false;
 }
 
-void RayTracer::photon_splatting(const std::shared_ptr<RayTraceHit>& ray_trace_hit, const std::vector<std::shared_ptr<Photon>>& photon_map){
-    for(const auto& photon : photon_map) {
-        if (length(photon->position - ray_trace_hit->hit_point) <= ray_trace_hit->radius) {
+void RayTracer::photon_gathering(const std::shared_ptr<RayTraceHit>& ray_trace_hit, const std::shared_ptr<PhotonMap>& photon_map){
+    if(!ray_trace_hit->hit) return;
+    ray_trace_hit->color_in_buffer = {0,0,0};
+
+    auto photons_index = photon_map->neighbors_in_radius_search(ray_trace_hit->hit_point,ray_trace_hit->radius);
+    for(auto photon_index:photons_index){
+        auto photon = photon_map->get(photon_index);
+        float distance = length(photon->position - ray_trace_hit->hit_point);
+        if (photon->normal == ray_trace_hit->normal) {
             ray_trace_hit->nb_photons++;
-            ray_trace_hit->color_in_buffer += 0.002f*photon->weight * photon->color_photon * ray_trace_hit->attenuation
-                    * dot(photon->normal,ray_trace_hit->normal);
+            float brdf = photon->brdf->oren_nayar_brdf(ray_trace_hit,photon);
+            std::cout << brdf << std::endl;
+            ray_trace_hit->color_in_buffer += brdf * photon->weight * photon->color_photon * (1 - distance / ray_trace_hit->radius);
         }
     }
+
+    float pi_by_radius_squared = ((float)M_PI*ray_trace_hit->radius*ray_trace_hit->radius);
+
+    ray_trace_hit->color_in_buffer *= ray_trace_hit->attenuation / pi_by_radius_squared;
+
+    if(ray_trace_hit->color_in_buffer[0] > 1) ray_trace_hit->color_in_buffer[0] = 1;
+    if(ray_trace_hit->color_in_buffer[1] > 1) ray_trace_hit->color_in_buffer[1] = 1;
+    if(ray_trace_hit->color_in_buffer[2] > 1) ray_trace_hit->color_in_buffer[2] = 1;
+}
+
+void RayTracer::refine_photon_gathering(const std::shared_ptr<RayTraceHit>& ray_trace_hit, const std::shared_ptr<PhotonMap>&){
+//    if(!ray_trace_hit->hit) return;
+//    color m_flux = {0,0,0};
+//    float alpha = 0.6;
+//
+//    std::vector<std::pair<std::shared_ptr<Photon>,float>> photons_in_radius = {};
+//    for(const auto& photon : photon_map) {
+//        float distance = length(photon->position - ray_trace_hit->hit_point);
+//        if (distance <= ray_trace_hit->radius && photon->normal == ray_trace_hit->normal) {
+//            photons_in_radius.emplace_back(photon,distance);
+//        }
+//    }
+//    int m_photons = (int)photons_in_radius.size();
+//    float frac_pm = ((float)ray_trace_hit->nb_photons + alpha * (float)m_photons) / ((float)ray_trace_hit->nb_photons + (float)m_photons);
+//    ray_trace_hit->radius = ray_trace_hit->radius * sqrt(frac_pm);
+//    std::cout << ray_trace_hit->radius << std::endl;
+//    int m_alpha_photons = 0;
+//    for(const auto& photon_pair : photons_in_radius) {
+//        auto photon = photon_pair.first;
+//        auto distance = photon_pair.second;
+//        if (distance <= ray_trace_hit->radius && photon->normal == ray_trace_hit->normal) {
+//            m_alpha_photons++;
+//            m_flux += photon->weight * photon->color_photon * (1 - distance / ray_trace_hit->radius);
+//        }
+//    }
+//
+//    float radius = ray_trace_hit->radius;
+//    float pi_by_radius_squared = ((float)M_PI*radius*radius);
+//
+//    ray_trace_hit->nb_photons+=m_alpha_photons;
+//    ray_trace_hit->color_in_buffer = (ray_trace_hit->color_in_buffer + m_flux) * frac_pm;
+//    ray_trace_hit->color_in_buffer = ray_trace_hit->color_in_buffer * ray_trace_hit->attenuation / pi_by_radius_squared / 10.f;
 }
 
 void RayTracer::set_ray_tracing_valid(bool valid) {
@@ -344,10 +404,10 @@ void RayTracer::set_ray_tracing_valid(bool valid) {
         photon_mapper->set_pending_ray_tracing(!valid);
 }
 
-void RayTracer::set_photon_splatting_valid(bool valid) {
-    m_photon_splatting_valid = valid;
+void RayTracer::set_photon_gathering_valid(bool valid) {
+    m_photon_gathering_valid = valid;
     if(!valid){
-        m_ray_photon_splatted = 0;
+        m_ray_photon_gathered = 0;
     }
 }
 
@@ -359,9 +419,9 @@ void RayTracer::generate_ui_ray_tracing_logs() const {
 }
 
 
-void RayTracer::generate_ui_photon_splatting_logs() const {
-    ImGui::Text("Photon Splatting");
-    ImGui::ProgressBar((float)m_ray_photon_splatted / (float) m_total_ray_photon_splatted);
+void RayTracer::generate_ui_photon_gathering_logs() const {
+    ImGui::Text("Photon Gathering");
+    ImGui::ProgressBar((float)m_ray_photon_gathered / (float) m_total_ray_photon_splatted);
     ImGui::Separator();
 }
 

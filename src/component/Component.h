@@ -59,9 +59,11 @@ namespace component {
             return components;
         }
     protected:
+        bool m_displayable;
+
         static std::map<ComponentType, std::vector<std::pair<std::shared_ptr<Component>, std::shared_ptr<AbstractNode>>>> COMPONENTS;
 
-        Component() = default;
+        explicit Component(bool displayable = true);
 
     public:
 
@@ -69,9 +71,11 @@ namespace component {
 
         virtual void generate_ui_node_editor_ui();
 
-        virtual void generate_ui_component_editor() = 0;
+        virtual void generate_ui_component_editor();
 
         std::string get_ui_name();
+
+        bool is_displayable() const;
 
         virtual void draw(){};
 

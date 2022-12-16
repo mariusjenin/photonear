@@ -15,6 +15,10 @@ using namespace scene::node;
 std::map<ComponentType, std::vector<std::pair<std::shared_ptr<Component>, std::shared_ptr<AbstractNode>>>> Component::COMPONENTS = {};
 
 
+Component::Component(bool displayable) {
+    m_displayable = displayable;
+}
+
 void Component::add_component_to_node(const std::shared_ptr<Component>& component, const std::shared_ptr<AbstractNode>& node) {
     auto component_type = component->get_type();
     auto iter = COMPONENTS.find(component_type);
@@ -83,6 +87,7 @@ std::string Component::get_ui_name(){
 }
 
 void Component::generate_ui_node_editor_ui() {
+    if(!m_displayable) return;
     auto photonear = Photonear::get_instance();
     auto component_selected = photonear->get_component_selected();
     ImGui::PushID(this);
@@ -91,5 +96,13 @@ void Component::generate_ui_node_editor_ui() {
         photonear->get_scene()->set_viewer_valid();
     }
     ImGui::PopID();
+}
+
+void Component::generate_ui_component_editor() {
+    //Nothing
+}
+
+bool Component::is_displayable() const {
+    return m_displayable;
 }
 

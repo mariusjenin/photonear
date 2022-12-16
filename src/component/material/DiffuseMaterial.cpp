@@ -22,19 +22,12 @@ DiffuseMaterial::DiffuseMaterial(MaterialType type, std::shared_ptr<TextureColor
 
 color DiffuseMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCastHit> ray_hit, int depth, color default_color, bool photon_mapping_pass) {
     ray_hit->attenuation *= m_albedo->value(ray_hit->u,ray_hit->v);
-    ray_hit->diffuse = true;
+    ray_hit->brdf = this;
     if(photon_mapping_pass && depth > 1){
-        vec3 ray_dir = -ray_hit->direction;
-        vec3 halfway_vector = (ray_hit->normal + ray_dir) / 2.f;
-        float dot_direction_normal = dot(ray_dir, ray_hit->normal);
-
-        //TODO Use roughness to reflect pseudorandomly
-
-        auto ray_reflected = Ray(ray_hit->hit_point,2.f * dot_direction_normal * ray_hit->normal - ray_dir,0.0001);
+        auto ray_reflected = Ray(ray_hit->hit_point,get_direction_reflection(ray_hit),0.0001);
         auto ray_hit_reflection = scene_graph->raycast(ray_reflected, ray_hit->refractive_index_of_medium);
         ray_hit_reflection->attenuation = ray_hit->attenuation;
         ray_hit_reflection->weight = ray_hit->weight;
-        ray_hit->diffuse = false;
         if(ray_hit_reflection->hit){
             auto node = Component::get_node(ray_hit_reflection->shape);
             auto material = Component::get_nearest_component_upper<Material>(&*node);
@@ -42,8 +35,8 @@ color DiffuseMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayC
         }
         ray_hit->children.emplace_back(ray_hit_reflection);
     }
-    ray_hit->diffuse = true;
-    return ray_hit->attenuation * m_albedo->value(ray_hit->u,ray_hit->v);
+    ray_hit->brdf = this;
+    return ray_hit->attenuation;
 }
 
 void DiffuseMaterial::generate_ui_component_editor() {
@@ -54,5 +47,34 @@ void DiffuseMaterial::generate_ui_component_editor() {
     if(roughness != m_roughness)
         Photonear::get_instance()->get_scene()->set_scene_valid();
     m_roughness = roughness;
+}
+
+versor DiffuseMaterial::get_direction_reflection(const std::shared_ptr<RayCastHit>& ray_hit) {
+
+    //TODO Use roughness to reflect pseudorandomly
+
+    vec3 ray_dir = -ray_hit->direction;
+    float dot_direction_normal = dot(ray_dir, ray_hit->normal);
+    return 2.f * dot_direction_normal * ray_hit->normal - ray_dir;
+}
+
+float DiffuseMaterial::oren_nayar_brdf(const std::shared_ptr<RayTraceHit>& ray_trace_hit,const std::shared_ptr<Photon>& photon) const {
+    auto l = photon->direction;
+    auto v = ray_trace_hit->direction;
+    auto n = photon->normal;
+
+    float nl = dot(n, l);
+    float nv = dot(n, v);
+
+    float theta_i = acos(nl);
+    float theta_r = acos(nv);
+
+    float sigma_sqr = m_roughness * m_roughness;
+    float A = 1 - 0.5f * (sigma_sqr / (sigma_sqr + 0.33f));
+    float B = 0.45f * (sigma_sqr / (sigma_sqr + 0.09f));
+    float alpha = max(theta_i,theta_r);
+    float beta = min(theta_i,theta_r);
+
+    return (A + B * std::max(0.0f, cos(theta_i - theta_r)) * sin(alpha) * tan(beta));
 }
 

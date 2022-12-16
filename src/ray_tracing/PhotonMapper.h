@@ -29,8 +29,8 @@ namespace ray_tracing{
         bool m_is_computing;
         bool m_photon_mapping_valid;
 
-        std::vector<std::shared_ptr<Photon>> m_photon_map;
-//        std::shared_ptr<PhotonMap> m_photon_map; //TODO change to this
+        std::vector<std::shared_ptr<Photon>> m_photon_map_array;
+        std::shared_ptr<PhotonMap> m_photon_map; //TODO change to this
 
         std::future<void> m_async_photon_mapping;
         void init_photon_map();
@@ -55,7 +55,7 @@ namespace ray_tracing{
 
         void generate_ui_logs() const;
 
-        std::vector<std::shared_ptr<Photon>> get_photon_map();
+        std::shared_ptr<PhotonMap> get_photon_map();
 
         void reinit_count_pass();
     };

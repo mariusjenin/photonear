@@ -13,6 +13,7 @@ struct Material{
 struct Light {
     int type;
     vec3 albedo; float pad0;
+    float intensity;
     //PointType Light
     vec3  position; float pad1;
     float linear_attenuation;
@@ -131,7 +132,7 @@ vec3 compute_lambert(Light light, sampler2D shadow_map){
         }
     }
 
-    return (1.0f - shadow) * lambert;
+    return (1.0f - shadow) * lambert * light.intensity;
 }
 
 void main() {

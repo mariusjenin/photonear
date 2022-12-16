@@ -15,6 +15,7 @@ namespace ray_tracing {
         int px_v{};
 
         point hit_point{};
+        bool hit{};
         versor normal{};
         versor direction{};
         float weight{};
@@ -24,7 +25,7 @@ namespace ray_tracing {
         float radius;
         int nb_photons;
 
-        RayTraceHit(int u, int v);
+        RayTraceHit(int u, int v, float rad);
     };
 }
 

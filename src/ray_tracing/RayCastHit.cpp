@@ -13,7 +13,7 @@ RayCastHit::RayCastHit() {
     inner_shape = false;
     t = -FLT_MAX;
     weight = 1;
-    diffuse = false;
+    brdf = nullptr;
     shape = nullptr;
     children = {};
     attenuation = {1,1,1};

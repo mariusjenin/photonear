@@ -7,14 +7,24 @@
 
 #include "glm/glm.hpp"
 #include "vec3_type.h"
+#include "RayCastHit.h"
 
+namespace component{
+    namespace material{
+        class DiffuseMaterial;
+    }
+}
+using namespace component::material;
 namespace ray_tracing{
     struct Photon {
         point position;
         versor direction;
         versor normal;
         color color_photon;
+        DiffuseMaterial* brdf;
         float weight;
+
+        explicit Photon(const std::shared_ptr<RayCastHit>& ray_hit);
     };
 }
 

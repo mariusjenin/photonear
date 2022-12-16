@@ -133,7 +133,7 @@ add_executable(main main.cpp
         src/ray_tracing/PhotonMapper.cpp src/ray_tracing/PhotonMapper.h
         src/ray_tracing/Photon.cpp src/ray_tracing/Photon.h
         src/ray_tracing/RayCastHit.cpp src/ray_tracing/RayCastHit.h
-        src/ray_tracing/RayTraceHit.cpp src/ray_tracing/RayTraceHit.h src/ray_tracing/PhotonMap.cpp src/ray_tracing/PhotonMap.h src/scene/example/PhotonMapTestScene.cpp src/scene/example/PhotonMapTestScene.h)
+        src/ray_tracing/RayTraceHit.cpp src/ray_tracing/RayTraceHit.h src/ray_tracing/PhotonMap.cpp src/ray_tracing/PhotonMap.h src/scene/example/PhotonMapTestScene.cpp src/scene/example/PhotonMapTestScene.h src/common/KDTree.h)
 
 target_link_libraries(main
         ${ALL_LIBS}

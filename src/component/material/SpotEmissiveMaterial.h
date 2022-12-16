@@ -21,7 +21,7 @@ namespace component {
             GLuint m_id_texture_shadow_map{};
             std::shared_ptr<ShadowMap> m_shadow_map;
         public:
-            explicit SpotEmissiveMaterial(GLuint id_texture_shadow_map, std::shared_ptr<TextureColor> albedo = std::make_shared<TextureColor>(1.0f),
+            explicit SpotEmissiveMaterial(GLuint id_texture_shadow_map, std::shared_ptr<TextureColor> albedo = std::make_shared<TextureColor>(1.0f), float intensity = 1.f,
                                           float in_co=20.f, float out_co = 25.f, int resolution = 1000.f, float bias = 0.001f, float l_att=0.f, float q_att=0.f);
 
             Light generate_light() override;

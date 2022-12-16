@@ -2063,7 +2063,7 @@ glm::vec3 lighting(intersection const& Intersection, material const& Material, l
             return ColorType;
 
         if(Material.isDiffuse())
-            ColorType += Light.color() * Material.diffuse() * Diffuse;
+            ColorType += Light.color() * Material.brdf() * Diffuse;
 
         if(Material.isSpecular())
         {

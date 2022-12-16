@@ -14374,7 +14374,7 @@ struct ImGuiDockRequest
 {
     ImGuiDockRequestType    Type;
     ImGuiWindow*            DockTargetWindow;   // Destination/Target Window to dock into (may be a loose window or a DockNode, might be NULL in which case DockTargetNode cannot be NULL)
-    ImGuiDockNode*          DockTargetNode;     // Destination/Target Node to dock into
+    ImGuiDockNode*          DockTargetNode;     // Destination/Target NodeKDTree to dock into
     ImGuiWindow*            DockPayload;        // Source/Payload window to dock (may be a loose window or a DockNode), [Optional]
     ImGuiDir                DockSplitDir;
     float                   DockSplitRatio;
@@ -14929,7 +14929,7 @@ void ImGui::DockContextProcessDock(ImGuiContext* ctx, ImGuiDockRequest* req)
             next_selected_id = payload_window->TabId;
     }
 
-    // FIXME-DOCK: When we are trying to dock an existing single-window node into a loose window, transfer Node ID as well
+    // FIXME-DOCK: When we are trying to dock an existing single-window node into a loose window, transfer NodeKDTree ID as well
     // When processing an interactive split, usually LastFrameAlive will be < g.FrameCount. But DockBuilder operations can make it ==.
     if (node)
         IM_ASSERT(node->LastFrameAlive <= g.FrameCount);
@@ -15327,7 +15327,7 @@ static void ImGui::DockNodeRemoveWindow(ImGuiDockNode* node, ImGuiWindow* window
         if (node->HostWindow->ViewportOwned && node->IsRootNode())
         {
             // Transfer viewport back to the remaining loose window
-            IMGUI_DEBUG_LOG_VIEWPORT("[viewport] Node %08X transfer Viewport %08X=>%08X for Window '%s'\n", node->ID, node->HostWindow->Viewport->ID, remaining_window->ID, remaining_window->Name);
+            IMGUI_DEBUG_LOG_VIEWPORT("[viewport] NodeKDTree %08X transfer Viewport %08X=>%08X for Window '%s'\n", node->ID, node->HostWindow->Viewport->ID, remaining_window->ID, remaining_window->Name);
             IM_ASSERT(node->HostWindow->Viewport->Window == node->HostWindow);
             node->HostWindow->Viewport->Window = remaining_window;
             node->HostWindow->Viewport->ID = remaining_window->ID;
@@ -15855,7 +15855,7 @@ static void ImGui::DockNodeUpdate(ImGuiDockNode* node)
         DockNodeTreeUpdateSplitter(node);
     }
 
-    // Draw empty node background (currently can only be the Central Node)
+    // Draw empty node background (currently can only be the Central NodeKDTree)
     if (host_window && node->IsEmpty() && node->IsVisible)
     {
         host_window->DrawList->ChannelsSetCurrent(DOCKING_HOST_DRAW_CHANNEL_BG);
@@ -17086,7 +17086,7 @@ void ImGui::SetWindowDock(ImGuiWindow* window, ImGuiID dock_id, ImGuiCond cond)
 }
 
 // Create an explicit dockspace node within an existing window. Also expose dock node flags and creates a CentralNode by default.
-// The Central Node is always displayed even when empty and shrink/extend according to the requested size of its neighbors.
+// The Central NodeKDTree is always displayed even when empty and shrink/extend according to the requested size of its neighbors.
 // DockSpace() needs to be submitted _before_ any window they can host. If you use a dockspace, submit it early in your app.
 ImGuiID ImGui::DockSpace(ImGuiID id, const ImVec2& size_arg, ImGuiDockNodeFlags flags, const ImGuiWindowClass* window_class)
 {
@@ -17328,7 +17328,7 @@ void ImGui::DockBuilderRemoveNode(ImGuiID node_id)
         return;
     DockBuilderRemoveNodeDockedWindows(node_id, true);
     DockBuilderRemoveNodeChildNodes(node_id);
-    // Node may have moved or deleted if e.g. any merge happened
+    // NodeKDTree may have moved or deleted if e.g. any merge happened
     node = DockContextFindNodeByID(ctx, node_id);
     if (node == NULL)
         return;
@@ -18808,7 +18808,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
         for (int n = 0; n < dc->Nodes.Data.Size; n++)
             if (ImGuiDockNode* node = (ImGuiDockNode*)dc->Nodes.Data[n].val_p)
                 if (!root_nodes_only || node->IsRootNode())
-                    DebugNodeDockNode(node, "Node");
+                    DebugNodeDockNode(node, "NodeKDTree");
         TreePop();
     }
 #endif // #ifdef IMGUI_HAS_DOCK
@@ -18870,7 +18870,7 @@ void ImGui::ShowMetricsWindow(bool* p_open)
                     else if (ImGuiWindowSettings* window_settings = FindWindowSettings(settings->SelectedTabId))
                         selected_tab_name = window_settings->GetName();
                 }
-                BulletText("Node %08X, Parent %08X, SelectedTab %08X ('%s')", settings->ID, settings->ParentNodeId, settings->SelectedTabId, selected_tab_name ? selected_tab_name : settings->SelectedTabId ? "N/A" : "");
+                BulletText("NodeKDTree %08X, Parent %08X, SelectedTab %08X ('%s')", settings->ID, settings->ParentNodeId, settings->SelectedTabId, selected_tab_name ? selected_tab_name : settings->SelectedTabId ? "N/A" : "");
             }
             TreePop();
         }

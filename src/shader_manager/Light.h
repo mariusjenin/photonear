@@ -23,6 +23,7 @@ namespace shader_manager{
     private:
         LightType m_type{};
         vec3 m_albedo{};
+        float m_intensity{};
         //PointType Light
         vec3 m_position{};
         float m_linear_attenuation{};
@@ -46,6 +47,8 @@ namespace shader_manager{
         int get_type() const;
 
         const vec3 & get_albedo() const;
+
+        float get_intensity() const;
 
         const vec3 & get_position() const;
 
@@ -74,6 +77,8 @@ namespace shader_manager{
         void set_type(LightType type);
 
         void set_albedo(vec3 albedo);
+
+        void set_intensity(float intensity);
 
         void set_position(vec3 position);
 
@@ -110,6 +115,7 @@ namespace shader_manager{
     struct LightShader{
         int type{};
         glsl_vec3 m_albedo{};
+        float m_intensity{};
         //PointType Light
         glsl_vec3 position{};
         float linear_attenuation{};

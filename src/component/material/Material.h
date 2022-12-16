@@ -50,8 +50,6 @@ namespace component {
 
             virtual color resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCastHit> ray_hit,
                                       int depth, color default_color, bool photon_mapping_pass) = 0;
-
-            void attenuate(std::shared_ptr<RayCastHit> ray_hit);
         };
     }
 }

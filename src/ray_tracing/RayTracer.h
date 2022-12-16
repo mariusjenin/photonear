@@ -12,6 +12,7 @@
 #include "SceneGraph.h"
 #include "RayTraceHit.h"
 #include "Photon.h"
+#include "PhotonMap.h"
 
 using namespace scene;
 
@@ -24,6 +25,7 @@ namespace ray_tracing{
         int m_height{};
         int m_max_depth{};
         color m_default_color{};
+        float m_radius_photon_gathering;
 
         bool m_auto_recompute{};
         GLuint m_image_texture{};
@@ -34,14 +36,16 @@ namespace ray_tracing{
         std::mutex m_ray_tracing_mutex;
 
         bool m_image_valid{};
-        bool m_photon_splatting_valid{};
+        bool m_photon_gathering_valid{};
         bool m_ray_tracing_valid{};
 
         bool m_is_ray_tracing;
-        bool m_is_photon_splatting;
+        bool m_is_photon_gathering;
+
+        bool m_last_pass_ray_tracing;
 
         int m_px_ray_traced;
-        int m_ray_photon_splatted;
+        int m_ray_photon_gathered;
         int m_total_ray_photon_splatted;
 
         void compute_ray_tracing_pass();
@@ -54,9 +58,11 @@ namespace ray_tracing{
 
         void init_ray_tracing_data();
 
-        void compute_photon_splatting();
+        void compute_photon_gathering();
 
-        static void photon_splatting(const std::shared_ptr<RayTraceHit>& ray_trace_hit, const std::vector<std::shared_ptr<Photon>>& photon_map);
+        static void photon_gathering(const std::shared_ptr<RayTraceHit>& ray_trace_hit, const std::shared_ptr<PhotonMap>& );
+
+        static void refine_photon_gathering(const std::shared_ptr<RayTraceHit>& ray_trace_hit, const std::shared_ptr<PhotonMap>& );
     public:
         RayTracer();
 
@@ -66,15 +72,17 @@ namespace ray_tracing{
 
         void generate_ui_ray_tracing_settings();
 
+        void generate_ui_photon_gathering_settings();
+
         void generate_ui_viewer();
 
         void generate_ui_ray_tracing_logs() const;
 
-        void generate_ui_photon_splatting_logs() const;
+        void generate_ui_photon_gathering_logs() const;
 
         void set_ray_tracing_valid(bool valid);
 
-        void set_photon_splatting_valid(bool valid);
+        void set_photon_gathering_valid(bool valid);
 
         color get_default_color();
     };

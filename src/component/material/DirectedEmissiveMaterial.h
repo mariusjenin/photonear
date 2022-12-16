@@ -13,7 +13,7 @@ namespace component{
     namespace material{
         class DirectedEmissiveMaterial : public EmissiveMaterial {
         public:
-            explicit DirectedEmissiveMaterial(std::shared_ptr<TextureColor> albedo = std::make_shared<TextureColor>(1.0f));
+            explicit DirectedEmissiveMaterial(std::shared_ptr<TextureColor> albedo = std::make_shared<TextureColor>(1.0f), float intensity = 1.f);
 
             Light generate_light() override;
 
