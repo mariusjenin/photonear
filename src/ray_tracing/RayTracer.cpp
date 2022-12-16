@@ -229,16 +229,10 @@ void RayTracer::compute_ray_tracing_pass() {
                     m_is_ray_tracing = false;
                     return;
                 }
-
-                float x;
-                float y;
-                if (k == 0) {
-                    x = (2.0f * (float) i / (float) m_width) - 1.0f;
-                    y = (2.0f * (float) j / (float) m_height) - 1.0f;
-                } else {
-                    x = (2.0f * ((float) i - 0.5f + (float) k / (float)m_sample_by_pixel) / (float) m_width) - 1.0f;
-                    y = (2.0f * ((float) j - 0.5f + (float) k / (float)m_sample_by_pixel) / (float) m_height) - 1.0f;
-                }
+                float offset = (float) k / (float)m_sample_by_pixel / 2;
+                if(k%2 == 0) offset*=-1;
+                float x = (2.0f * ((float) i + offset) / (float) m_width) - 1.0f;
+                float y = (2.0f * ((float) j + offset) / (float) m_height) - 1.0f;
                 x *= aspect_ratio;
                 versor direction = glm::normalize(
                         forward + y * tan_half_fov * up + x * tan_half_fov * glm::cross(forward, up));
