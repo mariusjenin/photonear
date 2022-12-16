@@ -31,7 +31,6 @@ void Photonear::init() {
     m_scene = std::make_shared<CornellBox>(m_window, "../src/shader/vertex_shader.glsl",
                                            "../src/shader/fragment_shader.glsl");
 
-
     //Callback resize
     glfwSetWindowSizeCallback(m_window, Photonear::window_resize_callback);
 

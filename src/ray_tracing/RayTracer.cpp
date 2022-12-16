@@ -30,9 +30,9 @@ RayTracer::RayTracer() {
     m_width = 125;
     m_height = 100;
     m_default_color = {0, 0, 0};
-    m_max_depth = 3;
+    m_max_depth = 10;
     m_last_pass_ray_tracing = false;
-    m_radius_photon_gathering = 2;
+    m_radius_photon_gathering = 3;
 }
 
 
@@ -121,7 +121,7 @@ void RayTracer::generate_ui_ray_tracing_settings() {
 
 void RayTracer::generate_ui_photon_gathering_settings(){
     float radius_photon_gathering = m_radius_photon_gathering;
-    ImGui::DragFloat("Radius Photon Gathering", &radius_photon_gathering, 0.01f, 0, FLT_MAX);
+    ImGui::DragFloat("Radius Photon Gathering", &radius_photon_gathering, 0.001f, 0, FLT_MAX);
     bool radius_photon_gathering_changed = m_radius_photon_gathering != radius_photon_gathering;
     m_radius_photon_gathering = radius_photon_gathering;
     if (radius_photon_gathering_changed) init_ray_tracing_data();
@@ -269,7 +269,6 @@ void RayTracer::compute_ray_cast(SceneGraph* scene_graph, int u, int v, vec3 ori
 }
 
 void RayTracer::compute_ray_trace(int u, int v, const std::shared_ptr<RayCastHit>& ray_hit){
-    auto children_ray_hit = ray_hit->children;
     if(!ray_hit->hit) {
         auto ray_trace_hit = std::make_shared<RayTraceHit>(u, v, m_radius_photon_gathering);
         ray_trace_hit->color_in_buffer = m_default_color * ray_hit->attenuation;
@@ -286,10 +285,8 @@ void RayTracer::compute_ray_trace(int u, int v, const std::shared_ptr<RayCastHit
         ray_trace_hit->direction = ray_hit->direction;
         m_ray_trace_data.push_back(ray_trace_hit);
     }
-    if(!children_ray_hit.empty()){
-        for(const auto& child : children_ray_hit){
-            compute_ray_trace(u, v, child);
-        }
+    if(ray_hit->bounce_ray != nullptr){
+        compute_ray_trace(u, v, ray_hit->bounce_ray);
     }
 }
 

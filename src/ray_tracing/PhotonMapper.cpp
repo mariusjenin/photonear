@@ -124,16 +124,13 @@ void PhotonMapper::compute_ray_trace(SceneGraph* scene_graph, color default_colo
 }
 
 void PhotonMapper::compute_photon_trace(const std::shared_ptr<RayCastHit>& ray_hit){
-    auto children_ray_hit = ray_hit->children;
     if(ray_hit->brdf != nullptr){
         auto photon = std::make_shared<Photon>(ray_hit);
         photon->weight = photon->weight / (float)m_photon_by_light_by_pass * EmissiveMaterial::DefaultIntensityForPhotonEmission;
         m_photon_map_array.push_back(photon);
     }
-    if(!children_ray_hit.empty()) {
-        for(const auto& child : children_ray_hit){
-            compute_photon_trace(child);
-        }
+    if(ray_hit->bounce_ray != nullptr) {
+        compute_photon_trace(ray_hit->bounce_ray);
     }
 }
 

@@ -41,7 +41,7 @@ namespace ray_tracing {
         color attenuation{};
         float refractive_index_of_medium{};
 
-        std::vector<std::shared_ptr<RayCastHit>> children{};
+        std::shared_ptr<RayCastHit> bounce_ray;
 
         RayCastHit();
 

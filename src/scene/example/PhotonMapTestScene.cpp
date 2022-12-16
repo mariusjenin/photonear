@@ -25,8 +25,8 @@ using namespace component::shape;
 void PhotonMapTestScene::init_scene_graph() {
     //CREATE THE SCENE GRAPH
     auto root = NodeFactory::create_root_node();
-    auto quad_node = NodeFactory::create_node(root,"QuadNode");
     auto camera_node = NodeFactory::create_node(root,"CameraNode");
+    auto quad_node = NodeFactory::create_node(root,"QuadNode");
     auto light_node = NodeFactory::create_node(root,"LightNode");
     auto light_node_node = NodeFactory::create_node(light_node,"LightNodeNode");
 
@@ -45,8 +45,8 @@ void PhotonMapTestScene::init_scene_graph() {
     trsf_light_1->set_translation({0,7.8,0});
 
     // Material
-//    auto red_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,0.f));
-    auto red_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(1.f,0.f,0.f),0.f);
+    auto red_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,0.f));
+//    auto red_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(1.f,0.f,0.f),0.f);
     Component::add_component_to_node(red_material, quad_node);
 
     // Camera

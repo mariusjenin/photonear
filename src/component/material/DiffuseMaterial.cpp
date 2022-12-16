@@ -25,15 +25,14 @@ color DiffuseMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayC
     ray_hit->brdf = this;
     if(photon_mapping_pass && depth > 1){
         auto ray_reflected = Ray(ray_hit->hit_point,get_direction_reflection(ray_hit),0.0001);
-        auto ray_hit_reflection = scene_graph->raycast(ray_reflected, ray_hit->refractive_index_of_medium);
-        ray_hit_reflection->attenuation = ray_hit->attenuation;
-        ray_hit_reflection->weight = ray_hit->weight;
-        if(ray_hit_reflection->hit){
-            auto node = Component::get_node(ray_hit_reflection->shape);
+        ray_hit->bounce_ray = scene_graph->raycast(ray_reflected, ray_hit->refractive_index_of_medium);
+        ray_hit->bounce_ray->attenuation = ray_hit->attenuation;
+        ray_hit->bounce_ray->weight = ray_hit->weight;
+        if(ray_hit->bounce_ray->hit){
+            auto node = Component::get_node(ray_hit->bounce_ray->shape);
             auto material = Component::get_nearest_component_upper<Material>(&*node);
-            material->resolve_ray(scene_graph,ray_hit_reflection,depth-1, default_color, true);
+            material->resolve_ray(scene_graph,ray_hit->bounce_ray,depth-1, default_color, true);
         }
-        ray_hit->children.emplace_back(ray_hit_reflection);
     }
     ray_hit->brdf = this;
     return ray_hit->attenuation;

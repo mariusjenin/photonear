@@ -136,8 +136,8 @@ void CornellBox::init_scene_graph() {
     auto red_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,0.f));
     auto green_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f,1.f,0.f),0.5f);
 //    auto cyan_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f,1.f,1.f));
-//    auto cyan_material = make_shared<DielectricMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f,1.5f);
-    auto cyan_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f);
+    auto cyan_material = make_shared<DielectricMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f,1.5f);
+//    auto cyan_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f);
 //    auto magenta_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,1.f));
     auto magenta_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(1.f,0.f,1.f),0.f);
     Component::add_component_to_node(grey_material, wall_node);

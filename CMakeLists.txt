@@ -107,7 +107,6 @@ add_executable(main main.cpp
         src/component/TransformComponent.cpp src/component/TransformComponent.h
         src/component/RootTransformComponent.cpp src/component/RootTransformComponent.h
         src/component/Camera.cpp src/component/Camera.h
-        src/component/MaskedComponent.cpp src/component/MaskedComponent.h
         src/component/BoundingBox.cpp src/component/BoundingBox.h
         # shape
         src/component/shape/Shape.cpp src/component/shape/Shape.h
@@ -127,13 +126,16 @@ add_executable(main main.cpp
         src/scene/Scene.cpp src/scene/Scene.h
         src/scene/example/CornellBox.cpp src/scene/example/CornellBox.h
         src/scene/example/QuadScene.cpp src/scene/example/QuadScene.h
+        src/scene/example/PhotonMapTestScene.cpp src/scene/example/PhotonMapTestScene.h
         # ray_tracing
         src/ray_tracing/Ray.cpp src/ray_tracing/Ray.h
         src/ray_tracing/RayTracer.cpp src/ray_tracing/RayTracer.h
         src/ray_tracing/PhotonMapper.cpp src/ray_tracing/PhotonMapper.h
         src/ray_tracing/Photon.cpp src/ray_tracing/Photon.h
         src/ray_tracing/RayCastHit.cpp src/ray_tracing/RayCastHit.h
-        src/ray_tracing/RayTraceHit.cpp src/ray_tracing/RayTraceHit.h src/ray_tracing/PhotonMap.cpp src/ray_tracing/PhotonMap.h src/scene/example/PhotonMapTestScene.cpp src/scene/example/PhotonMapTestScene.h src/common/KDTree.h)
+        src/ray_tracing/RayTraceHit.cpp src/ray_tracing/RayTraceHit.h
+        src/ray_tracing/PhotonMap.cpp src/ray_tracing/PhotonMap.h
+        )
 
 target_link_libraries(main
         ${ALL_LIBS}

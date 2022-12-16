@@ -15,7 +15,7 @@ RayCastHit::RayCastHit() {
     weight = 1;
     brdf = nullptr;
     shape = nullptr;
-    children = {};
+    bounce_ray = nullptr;
     attenuation = {1,1,1};
 }
 
