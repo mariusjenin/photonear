@@ -50,7 +50,7 @@ namespace ray_tracing{
 
         void compute_ray_tracing_pass();
 
-        void compute_ray_cast(SceneGraph* scene_graph, int u, int v, vec3 origin, vec3 direction, float z_near, float z_far);
+        void compute_ray_cast(SceneGraph* scene_graph, int u, int v, Ray ray);
 
         void compute_ray_trace(int u, int v, const std::shared_ptr<RayCastHit>& ray_hit);
 
