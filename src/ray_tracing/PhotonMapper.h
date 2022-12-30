@@ -23,17 +23,22 @@ namespace ray_tracing{
         int m_num_pass;
         int m_photon_by_light_by_pass;
         int m_photon_computed;
+        int m_nb_total_photons;
         int m_max_depth;
         bool m_pending_ray_tracing;
         bool m_auto_recompute;
-        bool m_is_computing;
         bool m_photon_mapping_valid;
 
         std::vector<std::shared_ptr<Photon>> m_photon_map_array;
-        std::shared_ptr<PhotonMap> m_photon_map; //TODO change to this
+        std::shared_ptr<PhotonMap> m_photon_map;
 
         std::future<void> m_async_photon_mapping;
+
+        std::mutex m_photon_mapping_mutex;
+
         void init_photon_map();
+
+        void reinit();
     public:
         PhotonMapper();
 
@@ -57,7 +62,13 @@ namespace ray_tracing{
 
         std::shared_ptr<PhotonMap> get_photon_map();
 
+        int get_nb_total_photons() const;
+
         void reinit_count_pass();
+
+        void lock_photon_mapping();
+
+        void unlock_photon_mapping();
     };
 }
 

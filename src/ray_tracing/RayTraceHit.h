@@ -22,6 +22,7 @@ namespace ray_tracing {
         color attenuation{};
 
         color color_in_buffer{};
+        color flux{};
         float radius;
         int nb_photons;
 

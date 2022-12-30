@@ -33,16 +33,18 @@ namespace ray_tracing{
         std::vector<std::shared_ptr<RayTraceHit>> m_ray_trace_data;
 
         std::future<void> m_async_ray_tracing;
+        std::mutex m_image_mutex;
         std::mutex m_ray_tracing_mutex;
 
         bool m_image_valid{};
         bool m_photon_gathering_valid{};
         bool m_ray_tracing_valid{};
+        bool m_photon_map_available;
 
         bool m_is_ray_tracing;
         bool m_is_photon_gathering;
 
-        bool m_last_pass_ray_tracing;
+        bool m_first_photon_gathering;
 
         int m_px_ray_traced;
         int m_ray_photon_gathered;
@@ -58,11 +60,13 @@ namespace ray_tracing{
 
         void init_ray_tracing_data();
 
+        void on_radius_changed();
+
         void compute_photon_gathering();
 
-        static void photon_gathering(const std::shared_ptr<RayTraceHit>& ray_trace_hit, const std::shared_ptr<PhotonMap>& );
+        void photon_gathering(const std::shared_ptr<RayTraceHit>& ray_trace_hit, const std::shared_ptr<PhotonMap>& photon_map, int nb_total_photons);
 
-        static void refine_photon_gathering(const std::shared_ptr<RayTraceHit>& ray_trace_hit, const std::shared_ptr<PhotonMap>& );
+        void refine_photon_gathering(const std::shared_ptr<RayTraceHit>& ray_trace_hit, const std::shared_ptr<PhotonMap>& photon_map, int nb_total_photons);
     public:
         RayTracer();
 
@@ -83,6 +87,10 @@ namespace ray_tracing{
         void set_ray_tracing_valid(bool valid);
 
         void set_photon_gathering_valid(bool valid);
+
+        void set_photon_map_available(bool available);
+
+        void on_photon_mapping_reinit();
 
         color get_default_color();
     };
