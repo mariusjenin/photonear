@@ -26,6 +26,7 @@ namespace ray_tracing{
         int m_max_depth{};
         color m_default_color{};
         float m_radius_photon_gathering;
+        float m_reduce_proportion;
 
         bool m_auto_recompute{};
         GLuint m_image_texture{};

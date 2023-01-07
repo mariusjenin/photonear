@@ -11,6 +11,7 @@
 #include "Camera.h"
 #include "DiffuseMaterial.h"
 #include "ConductorMaterial.h"
+#include "DielectricMaterial.h"
 #include "PositionnedEmissiveMaterial.h"
 #include "TextureManager.h"
 #include "Sphere.h"
@@ -27,34 +28,62 @@ void PhotonMapTestScene::init_scene_graph() {
     auto root = NodeFactory::create_root_node();
     auto camera_node = NodeFactory::create_node(root,"CameraNode");
     auto quad_node = NodeFactory::create_node(root,"QuadNode");
+    auto back_quad_node = NodeFactory::create_node(quad_node,"BackQuadNode");
+    auto down_quad_node = NodeFactory::create_node(quad_node,"DownQuadNode");
+    auto left_quad_node = NodeFactory::create_node(quad_node,"LeftQuadNode");
+    auto right_quad_node = NodeFactory::create_node(quad_node,"RightQuadNode");
+    auto sphere_node = NodeFactory::create_node(root,"SphereNode");
     auto light_node = NodeFactory::create_node(root,"LightNode");
-    auto light_node_node = NodeFactory::create_node(light_node,"LightNodeNode");
 
     // Quad
-    auto quad = make_shared<Quad>(10,6);
-    Component::add_component_to_node(quad, quad_node);
-    auto trsf_wall_back = Component::get_component<TransformComponent>(&*quad_node)->get_transform();
-    trsf_wall_back->set_translation({0,4,0});
+    auto quad_down = make_shared<Quad>(15,15);
+    auto quad_back = make_shared<Quad>(15,15);
+    auto quad_right = make_shared<Quad>(15,15);
+    auto quad_left = make_shared<Quad>(15,15);
+    Component::add_component_to_node(quad_down, down_quad_node);
+    Component::add_component_to_node(quad_back, back_quad_node);
+    Component::add_component_to_node(quad_right, left_quad_node);
+    Component::add_component_to_node(quad_left, right_quad_node);
+    auto trsf_back_quad= Component::get_component<TransformComponent>(&*back_quad_node)->get_transform();
+    trsf_back_quad->set_translation({0,7.5,-7.5});
+    trsf_back_quad->set_rotation({90,0,0});
+    auto trsf_left_quad= Component::get_component<TransformComponent>(&*left_quad_node)->get_transform();
+    trsf_left_quad->set_translation({-7.5,7.5,0});
+    trsf_left_quad->set_rotation({0,0,-90});
+    auto trsf_right_quad= Component::get_component<TransformComponent>(&*right_quad_node)->get_transform();
+    trsf_right_quad->set_translation({7.5,7.5,0});
+    trsf_right_quad->set_rotation({0,0,90});
 
+    //Sphere
+    auto sphere = make_shared<Sphere>(1.75,40,20);
+    Component::add_component_to_node(sphere, sphere_node);
+    auto trsf_sphere_node = Component::get_component<TransformComponent>(&*sphere_node)->get_transform();
+    trsf_sphere_node->set_translation({0,5,0});
 
     // Light
-    auto ambient_spot_intensity = vec3(0.08,0.08,0.06);
-    auto point_light = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(vec3(0.8, 0.8, 0.75)));
-    Component::add_component_to_node(point_light, light_node_node);
+    auto point_light = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(vec3(1, 1, 1)),5.f);
+    Component::add_component_to_node(point_light, light_node);
     auto trsf_light_1 = Component::get_component<TransformComponent>(&*light_node)->get_transform();
-    trsf_light_1->set_translation({0,7.8,0});
+    trsf_light_1->set_translation({0,10,0});
 
     // Material
-    auto red_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,0.f));
-//    auto red_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(1.f,0.f,0.f),0.f);
-    Component::add_component_to_node(red_material, quad_node);
+    auto grey_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.8f, 0.8f, 0.8f),0.5f);
+    auto redish_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f, 0.f, 0.f),0.5f);
+    auto greenish_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f, 1.f, 0.f),0.5f);
+    auto blueish_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f, 0.f, 1.f),0.5f);
+    auto dielectric_material = make_shared<DielectricMaterial>(make_shared<TextureColor>(1.f,1.f,1.f),0.,1.33);
+    Component::add_component_to_node(grey_material, down_quad_node);
+    Component::add_component_to_node(redish_material, back_quad_node);
+    Component::add_component_to_node(greenish_material, left_quad_node);
+    Component::add_component_to_node(blueish_material, right_quad_node);
+    Component::add_component_to_node(dielectric_material, sphere_node);
 
     // Camera
     auto camera = make_shared<Camera>();
     Component::add_component_to_node(camera, camera_node);
     auto trsf_camera = Component::get_component<TransformComponent>(&*camera_node)->get_transform();
-    trsf_camera->set_translation({0,14,17});
-    trsf_camera->set_rotation({-30,0,0});
+    trsf_camera->set_translation({0,17,12});
+    trsf_camera->set_rotation({-50,0,0});
 
     m_scene_graph = make_shared<SceneGraph>(root);
 }

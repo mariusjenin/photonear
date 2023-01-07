@@ -93,7 +93,7 @@ void Component::generate_ui_node_editor_ui() {
     ImGui::PushID(this);
     if (ImGui::Selectable(get_ui_name().c_str(),component_selected == this)){
         photonear->set_component_selected(this);
-        photonear->get_scene()->set_viewer_valid();
+        photonear->get_scene()->set_viewer_valid(false);
     }
     ImGui::PopID();
 }

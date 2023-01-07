@@ -28,6 +28,7 @@ namespace ray_tracing{
         bool m_pending_ray_tracing;
         bool m_auto_recompute;
         bool m_photon_mapping_valid;
+        bool m_photon_mapping_computed;
 
         std::vector<std::shared_ptr<Photon>> m_photon_map_array;
         std::shared_ptr<PhotonMap> m_photon_map;

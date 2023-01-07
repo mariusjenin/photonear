@@ -10,6 +10,9 @@
 namespace component{
     namespace material{
         class DielectricMaterial : public DiffuseMaterial{
+        private:
+            color refract(SceneGraph *scene_graph,const std::shared_ptr<RayCastHit>& ray_hit, int depth,
+                          color default_color, bool photon_mapping_pass,float factor_weight = 1.0f);
         protected:
             float m_refractive_index;
         public:

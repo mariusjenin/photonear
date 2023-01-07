@@ -72,10 +72,10 @@ void Sphere::generate_ui_component_editor() {
         assign_mesh_sphere();
         load_mesh_in_vao();
         if(slices_changed || stacks_changed){
-            Photonear::get_instance()->get_scene()->set_viewer_valid();
+            Photonear::get_instance()->get_scene()->set_viewer_valid(false);
         }
         if(radius_changed){
-            Photonear::get_instance()->get_scene()->set_scene_valid();
+            Photonear::get_instance()->get_scene()->set_scene_valid(false);
 
         }
     }

@@ -10,6 +10,8 @@
 GLFWwindow *window_photonear;
 
 int main() {
+    srand((unsigned int) time(nullptr));
+
     // Initialise GLFW
     if (!glfwInit()) {
         fprintf(stderr, "Failed to initialize GLFW\n");

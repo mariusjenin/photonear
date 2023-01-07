@@ -90,7 +90,7 @@ void Shape::generate_ui_component_editor() {
     ImGui::Checkbox("Both Face Visible",&both_face_visible);
     ImGui::Separator();
     if(both_face_visible != m_both_face_visible){
-        Photonear::get_instance()->get_scene()->set_scene_valid();
+        Photonear::get_instance()->get_scene()->set_scene_valid(false);
         m_both_face_visible = both_face_visible;
     }
 }

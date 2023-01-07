@@ -34,6 +34,7 @@ RayTracer::RayTracer() {
     m_max_depth = 10;
     m_first_photon_gathering = false;
     m_radius_photon_gathering = 3;
+    m_reduce_proportion = 0.6;
 }
 
 
@@ -126,6 +127,15 @@ void RayTracer::generate_ui_photon_gathering_settings() {
     bool radius_photon_gathering_changed = m_radius_photon_gathering != radius_photon_gathering;
     m_radius_photon_gathering = radius_photon_gathering;
     if (radius_photon_gathering_changed) on_radius_changed();
+
+    bool reduce_proportion_editable = !m_is_photon_gathering;
+    if(!reduce_proportion_editable) ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+    float reduce_proportion = m_reduce_proportion;
+    ImGui::SliderFloat("Reduce proportion", &reduce_proportion, 0.01f, 0.990f);
+    bool reduce_proportion_changed = m_reduce_proportion != reduce_proportion;
+    if(reduce_proportion_editable) m_reduce_proportion = reduce_proportion;
+    if (reduce_proportion_changed) on_radius_changed();
+    if(!reduce_proportion_editable) ImGui::PopStyleVar();
 }
 
 void RayTracer::init_ray_tracing_data() {
@@ -140,6 +150,7 @@ void RayTracer::on_photon_mapping_reinit() {
     m_first_photon_gathering = true;
     for(const auto& ray_trace_hit : m_ray_trace_data){
         ray_trace_hit->flux = {0,0,0};
+        ray_trace_hit->radius = m_radius_photon_gathering;
     }
 }
 
@@ -147,8 +158,8 @@ void RayTracer::on_radius_changed() {
     m_ray_tracing_mutex.lock();
     auto photon_mapper = Photonear::get_instance()->get_photon_mapper();
     m_first_photon_gathering = true;
-    photon_mapper->reinit_count_pass();
     photon_mapper->set_photon_mapping_valid(false);
+    photon_mapper->reinit_count_pass();
     int ray_trace_size = (int) m_ray_trace_data.size();
     for (int i = 0; i < ray_trace_size; i++) {
         m_ray_trace_data[i]->radius = m_radius_photon_gathering;
@@ -291,8 +302,8 @@ void RayTracer::compute_ray_cast(SceneGraph *scene_graph, int u, int v, Ray ray)
     m_image[index + 2] += (unsigned char) (px_color[2] * 255);
     m_image[index + 3] += 255;
 
-    m_image_mutex.unlock();
     m_ray_tracing_mutex.unlock();
+    m_image_mutex.unlock();
     m_px_ray_traced++;
 }
 
@@ -303,7 +314,7 @@ void RayTracer::compute_ray_trace(int u, int v, const std::shared_ptr<RayCastHit
         m_ray_trace_data.push_back(ray_trace_hit);
         return;
     }
-    if (ray_hit->brdf != nullptr) {
+    if (ray_hit->contribute) {
         auto ray_trace_hit = std::make_shared<RayTraceHit>(u, v, m_radius_photon_gathering);
         ray_trace_hit->hit = true;
         ray_trace_hit->weight = ray_hit->weight;
@@ -313,23 +324,25 @@ void RayTracer::compute_ray_trace(int u, int v, const std::shared_ptr<RayCastHit
         ray_trace_hit->direction = ray_hit->direction;
         m_ray_trace_data.push_back(ray_trace_hit);
     }
-    if (ray_hit->bounce_ray != nullptr) {
-        compute_ray_trace(u, v, ray_hit->bounce_ray);
+    for(const auto& bounce_ray : ray_hit->bounce_rays){
+        compute_ray_trace(u, v, bounce_ray);
     }
 }
 
 void RayTracer::compute_image() {
-    m_ray_tracing_mutex.lock();
+    m_image_mutex.lock();
+    m_image.clear();
+    m_image.resize(m_width * m_height * 4, 0);
     for (const auto &ray_trace_hit: m_ray_trace_data) {
         auto index = 4 * (ray_trace_hit->px_v * m_width + ray_trace_hit->px_u);
-        color px_color = ray_trace_hit->color_in_buffer;
-        m_image[index] = (unsigned char) (px_color[0] * 255);
-        m_image[index + 1] = (unsigned char) (px_color[1] * 255);
-        m_image[index + 2] = (unsigned char) (px_color[2] * 255);
-        m_image[index + 3] = 255;
+        color px_color = ray_trace_hit->color_in_buffer * ray_trace_hit->weight;
+        m_image[index] += (unsigned char) (px_color[0] * 255);
+        m_image[index + 1] += (unsigned char) (px_color[1] * 255);
+        m_image[index + 2] += (unsigned char) (px_color[2] * 255);
+        m_image[index + 3] += 255;
     }
     m_image_valid = true;
-    m_ray_tracing_mutex.unlock();
+    m_image_mutex.unlock();
 }
 
 void RayTracer::compute_photon_gathering() {
@@ -349,13 +362,15 @@ void RayTracer::compute_photon_gathering() {
             m_ray_photon_gathered = 0;
             return;
         }
-        photon_mapper->lock_photon_mapping();
-        if (m_first_photon_gathering) {
-            photon_gathering(ray_trace_hit, photon_map,nb_total_photons);
-        } else {
-            refine_photon_gathering(ray_trace_hit, photon_map,nb_total_photons);
+        if(ray_trace_hit->hit){
+            photon_mapper->lock_photon_mapping();
+            if (m_first_photon_gathering) {
+                photon_gathering(ray_trace_hit, photon_map,nb_total_photons);
+            } else {
+                refine_photon_gathering(ray_trace_hit, photon_map,nb_total_photons);
+            }
+            photon_mapper->unlock_photon_mapping();
         }
-        photon_mapper->unlock_photon_mapping();
         m_ray_photon_gathered++;
     }
     m_first_photon_gathering = false;
@@ -368,10 +383,6 @@ void RayTracer::compute_photon_gathering() {
 void RayTracer::photon_gathering(const std::shared_ptr<RayTraceHit> &ray_trace_hit,
                                  const std::shared_ptr<PhotonMap> &photon_map, int nb_total_photons) {
     m_ray_tracing_mutex.lock();
-    if (!ray_trace_hit->hit){
-        m_ray_tracing_mutex.unlock();
-        return;
-    }
     ray_trace_hit->color_in_buffer = {0, 0, 0};
 
     auto photons_index = photon_map->neighbors_in_radius_search(ray_trace_hit->hit_point, ray_trace_hit->radius);
@@ -380,9 +391,7 @@ void RayTracer::photon_gathering(const std::shared_ptr<RayTraceHit> &ray_trace_h
         float distance = length(photon->position - ray_trace_hit->hit_point);
         if (photon->normal == ray_trace_hit->normal) {
             ray_trace_hit->nb_photons++;
-            float brdf = photon->brdf->oren_nayar_brdf(ray_trace_hit, photon); //TODO check if correct
-            ray_trace_hit->flux +=
-                    brdf * photon->weight * photon->color_photon * (1 - distance / ray_trace_hit->radius);
+            ray_trace_hit->flux += photon->weight * photon->color_photon * (1 - distance / ray_trace_hit->radius);
         }
     }
 
@@ -400,12 +409,7 @@ void RayTracer::photon_gathering(const std::shared_ptr<RayTraceHit> &ray_trace_h
 void RayTracer::refine_photon_gathering(const std::shared_ptr<RayTraceHit> &ray_trace_hit,
                                         const std::shared_ptr<PhotonMap> &photon_map, int nb_total_photons) {
     m_ray_tracing_mutex.lock();
-    if(!ray_trace_hit->hit){
-        m_ray_tracing_mutex.unlock();
-        return;
-    }
     color new_flux = {0, 0, 0};
-    float alpha = 0.6; //TODO make a variable in UI
 
     std::vector<std::pair<std::shared_ptr<Photon>,float>> new_photons = {};
     auto photons_index = photon_map->neighbors_in_radius_search(ray_trace_hit->hit_point, ray_trace_hit->radius);
@@ -420,18 +424,17 @@ void RayTracer::refine_photon_gathering(const std::shared_ptr<RayTraceHit> &ray_
     for(const auto& photon_pair : new_photons) {
         auto photon = photon_pair.first;
         auto distance = photon_pair.second;
-        float brdf = photon->brdf->oren_nayar_brdf(ray_trace_hit, photon); //TODO check if correct
-        new_flux += brdf * photon->weight * photon->color_photon * (1 - distance / ray_trace_hit->radius);
+        new_flux += photon->weight * photon->color_photon * (1 - distance / ray_trace_hit->radius);
     }
 
 
     int new_photons_size = (int)new_photons.size();
-    float frac_pm = ((float)ray_trace_hit->nb_photons + alpha * (float)new_photons_size) / ((float)ray_trace_hit->nb_photons + (float)new_photons_size);
+    float frac_pm = ((float)ray_trace_hit->nb_photons + m_reduce_proportion * (float)new_photons_size) / ((float)ray_trace_hit->nb_photons + (float)new_photons_size);
     float pi_radius_squared = ((float)M_PI*ray_trace_hit->radius*ray_trace_hit->radius);
 
     ray_trace_hit->nb_photons+=new_photons_size;
     ray_trace_hit->flux = (ray_trace_hit->flux + new_flux) * frac_pm;
-    ray_trace_hit->color_in_buffer = ray_trace_hit->flux * ray_trace_hit->attenuation / pi_radius_squared/ (float)nb_total_photons;
+    ray_trace_hit->color_in_buffer = ray_trace_hit->flux *  ray_trace_hit->attenuation / pi_radius_squared/ (float)nb_total_photons;
     ray_trace_hit->radius = ray_trace_hit->radius * sqrt(frac_pm);
 
     if (ray_trace_hit->color_in_buffer[0] > 1) ray_trace_hit->color_in_buffer[0] = 1;

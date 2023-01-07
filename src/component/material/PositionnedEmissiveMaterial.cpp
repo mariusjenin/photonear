@@ -42,16 +42,16 @@ void PositionnedEmissiveMaterial::generate_ui_component_editor() {
     ImGui::SliderFloat("Quadratic Attenuation", &quadratic_attenuation, 0, 1, "%.3f", ImGuiSliderFlags_Logarithmic);
 
     if (m_linear_attenuation != linear_attenuation || m_quadratic_attenuation != quadratic_attenuation)
-        Photonear::get_instance()->get_scene()->set_scene_valid();
+        Photonear::get_instance()->get_scene()->set_scene_valid(false);
     m_linear_attenuation = linear_attenuation;
     m_quadratic_attenuation = quadratic_attenuation;
 }
 
 Ray PositionnedEmissiveMaterial::get_random_ray(glm::mat4 matrix) {
     float half_flt_max = ((double) RAND_MAX * 0.5f);
-    versor direction = normalize(
-            versor((float) rand() - half_flt_max, (float) rand() - half_flt_max, (float) rand() - half_flt_max));
-    direction = vec3(matrix * vec4(direction, 0));
+    versor direction =
+            normalize(versor((float) rand() - half_flt_max, (float) rand() - half_flt_max, (float) rand() - half_flt_max));
+    direction = normalize(vec3(matrix * vec4(direction, 0)));
     point origin = vec3(matrix * vec4(vec3(0, 0, 0), 1));
     return {origin, direction, 0.0001};
 }

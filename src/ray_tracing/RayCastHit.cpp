@@ -13,9 +13,9 @@ RayCastHit::RayCastHit() {
     inner_shape = false;
     t = -FLT_MAX;
     weight = 1;
-    brdf = nullptr;
+    contribute = false;
     shape = nullptr;
-    bounce_ray = nullptr;
+    bounce_rays = {};
     attenuation = {1,1,1};
 }
 

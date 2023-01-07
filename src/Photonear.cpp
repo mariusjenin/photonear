@@ -56,7 +56,7 @@ void Photonear::init() {
 
     m_scene->init();
 
-    m_scene->set_viewer_valid();
+    m_scene->set_viewer_valid(false);
     m_node_selected = &*m_scene->get_scene_graph()->get_root_node();
 }
 

@@ -70,7 +70,7 @@ void Camera::generate_ui_component_editor() {
     ImGui::DragFloat("Z Far", &z_far, 1.f, 0, FLT_MAX);
 
     if (m_fovy != fovy || m_z_near != z_near || m_z_far != z_far) {
-        Photonear::get_instance()->get_scene()->set_scene_valid();
+        Photonear::get_instance()->get_scene()->set_scene_valid(false);
     }
     if (m_fovy != fovy)m_fovy = fovy;
     if (m_z_near != z_near)m_z_near = z_near;
@@ -83,7 +83,7 @@ int Camera::is_capturing() const {
 
 void Camera::set_capturing(bool capturing) {
     if (m_capturing != capturing)
-        Photonear::get_instance()->get_scene()->set_scene_valid();
+        Photonear::get_instance()->get_scene()->set_scene_valid(false);
     if (capturing) {
         auto cameras = Component::get_components<Camera>();
         for (const auto &camera: cameras) {

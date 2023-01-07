@@ -17,11 +17,10 @@ namespace component{
 using namespace component::material;
 namespace ray_tracing{
     struct Photon {
-        point position;
-        versor direction;
-        versor normal;
-        color color_photon;
-        DiffuseMaterial* brdf;
+        point position{};
+        versor direction{}; //away from surface
+        versor normal{};
+        color color_photon{};
         float weight;
 
         explicit Photon(const std::shared_ptr<RayCastHit>& ray_hit);

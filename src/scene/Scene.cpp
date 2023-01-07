@@ -97,6 +97,7 @@ void Scene::draw(bool force) {
 
         if (!m_scene_valid) {
             Photonear::get_instance()->get_ray_tracer()->set_ray_tracing_valid(false);
+            Photonear::get_instance()->get_photon_mapper()->set_photon_mapping_valid(false);
         }
         m_scene_valid = true;
         m_viewer_valid = true;

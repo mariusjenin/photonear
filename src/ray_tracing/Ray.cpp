@@ -15,7 +15,7 @@ versor Ray::get_direction() const{
 }
 
 Ray::Ray(point origin, versor direction, float t_min, float t_max){
-    m_origin=origin;
+    m_origin = origin;
     m_direction = direction;
     m_t_min = t_min;
     m_t_max = t_max;

@@ -64,7 +64,7 @@ void Quad::generate_ui_component_editor() {
     if(length_x_changed || length_z_changed){
         assign_mesh_plane();
         load_mesh_in_vao();
-        Photonear::get_instance()->get_scene()->set_scene_valid();
+        Photonear::get_instance()->get_scene()->set_scene_valid(false);
     }
 }
 

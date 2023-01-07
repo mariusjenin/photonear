@@ -88,7 +88,7 @@ void CornellBox::init_scene_graph() {
     trsf_sphere_2->set_translation({-1.7, 1.75, -1.7});
 
     // Light
-    auto spot_color = vec3(0.4, 0.4, 0.35);
+    auto spot_color = vec3(0.4, 0.4, 0.38);
 //    auto ambient_spot_color = vec3(0.08,0.08,0.06);
     auto ambient_spot_color = vec3(0.8, 0.8, 0.75);
     auto sphere_light_1 = make_shared<Sphere>(0.1,30,30);
@@ -132,19 +132,16 @@ void CornellBox::init_scene_graph() {
 
 
     // Material
-    auto grey_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.9f,0.9f,0.9f));
-    auto red_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,0.f));
-    auto green_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f,1.f,0.f),0.5f);
-//    auto cyan_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f,1.f,1.f));
-    auto cyan_material = make_shared<DielectricMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f,1.5f);
-//    auto cyan_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(0.f,1.f,1.f),0.f);
-//    auto magenta_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,1.f));
-    auto magenta_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(1.f,0.f,1.f),0.f);
+    auto grey_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.9f,0.9f,0.9f),1.f);
+    auto red_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.5f,0.5f),1.f);
+    auto green_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.5f,1.f,0.5f),1.f);
+    auto dielectric_material = make_shared<DielectricMaterial>(make_shared<TextureColor>(1.f, 1.f, 1.f), 0.f, 1.5f);
+    auto conductor_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(1.f, 1.f, 1.f), 0.f);
     Component::add_component_to_node(grey_material, wall_node);
     Component::add_component_to_node(red_material, wall_left_node);
     Component::add_component_to_node(green_material, wall_right_node);
-    Component::add_component_to_node(cyan_material, sphere_1_node);
-    Component::add_component_to_node(magenta_material, sphere_2_node);
+    Component::add_component_to_node(dielectric_material, sphere_1_node);
+    Component::add_component_to_node(conductor_material, sphere_2_node);
 
 
     // Camera

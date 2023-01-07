@@ -15,21 +15,8 @@ ConductorMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCastH
     ray_hit->attenuation *= m_albedo->value(ray_hit->u,ray_hit->v);
 
     if(depth == 1) {
-        ray_hit->brdf = this;
-        return m_albedo->value(ray_hit->u,ray_hit->v);
+        return DiffuseMaterial::resolve_ray(scene_graph,ray_hit,depth,default_color,photon_mapping_pass);
     }
-
-    color reflected_color;
-    auto ray_reflected = Ray(ray_hit->hit_point,get_direction_reflection(ray_hit),0.001);
-    ray_hit->bounce_ray = scene_graph->raycast(ray_reflected, ray_hit->refractive_index_of_medium);
-    ray_hit->bounce_ray->attenuation = ray_hit->attenuation;
-    ray_hit->bounce_ray->weight = ray_hit->weight;
-    if(ray_hit->bounce_ray->hit){
-        auto node = Component::get_node(ray_hit->bounce_ray->shape);
-        auto material = Component::get_nearest_component_upper<Material>(&*node);
-        reflected_color = material->resolve_ray(scene_graph,ray_hit->bounce_ray,depth-1, default_color,false);
-    } else {
-        reflected_color = default_color;
-    }
+    color reflected_color = reflect(scene_graph,ray_hit,depth,get_direction_reflection(ray_hit),default_color,photon_mapping_pass);
     return reflected_color * ray_hit->attenuation;
 }

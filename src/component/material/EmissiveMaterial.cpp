@@ -41,6 +41,6 @@ void EmissiveMaterial::generate_ui_component_editor() {
     ImGui::DragFloat("Intensity", &intensity,0.001f, 0);
 
     if (m_intensity != intensity)
-        Photonear::get_instance()->get_scene()->set_scene_valid();
+        Photonear::get_instance()->get_scene()->set_scene_valid(false);
     m_intensity = intensity;
 }

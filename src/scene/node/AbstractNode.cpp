@@ -58,7 +58,7 @@ void AbstractNode::generate_ui_scene_graph() {
         ImGui::PushID(this);
         if (ImGui::Selectable(m_name.c_str(),node_selected == this,flags_leaf)){
             photonear->set_node_selected(this);
-            photonear->get_scene()->set_viewer_valid();
+            photonear->get_scene()->set_viewer_valid(false);
         }
         ImGui::PopID();
         if (tree_node_open){
@@ -71,7 +71,7 @@ void AbstractNode::generate_ui_scene_graph() {
         ImGui::PushID(this);
         if (ImGui::Selectable(m_name.c_str(),node_selected == this,flags_leaf)){
             photonear->set_node_selected(this);
-            photonear->get_scene()->set_viewer_valid();
+            photonear->get_scene()->set_viewer_valid(false);
         }
         ImGui::PopID();
     }
@@ -86,7 +86,7 @@ void AbstractNode::generate_ui_node_editor() {
     bool active = m_active;
     ImGui::Checkbox("Active",&active);
     if(m_active != active){
-        Photonear::get_instance()->get_scene()->set_scene_valid();
+        Photonear::get_instance()->get_scene()->set_scene_valid(false);
         m_active=active;
     }
     ImGui::Separator();

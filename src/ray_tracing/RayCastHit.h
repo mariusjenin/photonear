@@ -37,11 +37,11 @@ namespace ray_tracing {
         float weight;
 
         //Initialized on resolve ray or initilization of the first rays
-        DiffuseMaterial* brdf;
+        bool contribute;
         color attenuation{};
         float refractive_index_of_medium{};
 
-        std::shared_ptr<RayCastHit> bounce_ray;
+        std::vector<std::shared_ptr<RayCastHit>> bounce_rays;
 
         RayCastHit();
 

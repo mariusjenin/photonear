@@ -84,9 +84,9 @@ namespace scene {
 
         void set_viewer_size(int width, int height);
 
-        void set_scene_valid(bool valid = false);
+        void set_scene_valid(bool valid);
 
-        void set_viewer_valid(bool valid = false);
+        void set_viewer_valid(bool valid);
 
         std::shared_ptr<SceneGraph> get_scene_graph();
 

@@ -17,6 +17,7 @@ PhotonMapper::PhotonMapper() {
     m_pending_ray_tracing = true;
     m_auto_recompute = false;
     m_photon_mapping_valid = false;
+    m_photon_mapping_computed = false;
     m_num_pass = 0;
     m_photon_map = std::make_shared<PhotonMap>();
 }
@@ -27,17 +28,19 @@ void PhotonMapper::init() {
 
 void PhotonMapper::reinit() {
     m_photon_mapping_valid = false;
+    m_photon_mapping_computed = false;
     m_nb_total_photons = 0;
     m_photon_computed = 0;
     Photonear::get_instance()->get_ray_tracer()->on_photon_mapping_reinit();
     Photonear::get_instance()->get_ray_tracer()->set_photon_gathering_valid(false);
+    Photonear::get_instance()->get_ray_tracer()->set_photon_map_available(false);
     reinit_count_pass();
     init_photon_map();
 }
 
 void PhotonMapper::update() {
     if (m_auto_recompute && !m_photon_mapping_valid) {
-        if (!m_pending_ray_tracing){
+        if (!m_pending_ray_tracing) {
             Photonear::get_instance()->get_ray_tracer()->set_photon_gathering_valid(false);
             init_photon_map();
         } else {
@@ -58,41 +61,43 @@ void PhotonMapper::generate_ui_photon_mapping_settings() {
     ImGui::Checkbox("Auto compute Photon Mapping", &m_auto_recompute);
 
     if (ImGui::Button("Recompute First Pass")) {
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnusedValue"
+        if (m_async_photon_mapping.valid()) m_async_photon_mapping.wait();
         reinit();
-        if (m_async_photon_mapping.valid())
-            m_async_photon_mapping.wait();
         m_async_photon_mapping = std::async(&PhotonMapper::compute_photon_mapping_pass, this);
-#pragma clang diagnostic pop
     }
 
     ImGui::SameLine();
 
-    bool compute_button_enable = !m_pending_ray_tracing && !m_photon_mapping_valid;
-    if (!compute_button_enable) ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+    bool pm_invalid = !m_photon_mapping_valid;
+    if (!pm_invalid) ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
     if (ImGui::Button("Compute a Pass")) {
-        if (compute_button_enable) {
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "UnusedValue"
+        if (pm_invalid) {
+            if (m_async_photon_mapping.valid()) m_async_photon_mapping.wait();
             Photonear::get_instance()->get_ray_tracer()->set_photon_gathering_valid(false);
             init_photon_map();
-            if (m_async_photon_mapping.valid())
-                m_async_photon_mapping.wait();
             m_async_photon_mapping = std::async(&PhotonMapper::compute_photon_mapping_pass, this);
-#pragma clang diagnostic pop
         }
     }
-    if (!compute_button_enable) ImGui::PopStyleVar();
+    if (!pm_invalid) ImGui::PopStyleVar();
+
+    ImGui::SameLine();
+
+    if (pm_invalid) ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+    if (ImGui::Button("Stop and Reinit")) {
+        if (!pm_invalid) {
+            if (m_async_photon_mapping.valid()) m_async_photon_mapping.wait();
+            reinit();
+            Photonear::get_instance()->get_ray_tracer()->set_photon_gathering_valid(false);
+            Photonear::get_instance()->get_ray_tracer()->set_photon_map_available(false);
+        }
+    }
+    if (pm_invalid) ImGui::PopStyleVar();
 
     ImGui::Separator();
-
-    bool enable_settings = !m_photon_mapping_valid;
-
-    if (!enable_settings) ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
+    if (!pm_invalid) ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
     ImGui::DragInt("Max Depth Photon Mapping", &max_depth, 0.1, 1, INT_MAX);
     ImGui::DragInt("Photon by Lights by Pass", &photon_by_light_by_pass, 1, 1, INT_MAX);
-    if (enable_settings) {
+    if (pm_invalid) {
         m_max_depth = max_depth;
         m_photon_by_light_by_pass = photon_by_light_by_pass;
     } else ImGui::PopStyleVar();
@@ -102,7 +107,7 @@ void PhotonMapper::compute_photon_mapping_pass() {
     m_num_pass++;
     m_photon_mapping_valid = true;
     m_photon_computed = 0;
-
+    m_photon_mapping_computed = false;
     auto photonear = Photonear::get_instance();
     auto scene = photonear->get_scene();
     auto scene_graph = scene->get_scene_graph();
@@ -131,6 +136,7 @@ void PhotonMapper::compute_photon_mapping_pass() {
     lock_photon_mapping();
     m_photon_map->build(m_photon_map_array);
     unlock_photon_mapping();
+    m_photon_mapping_computed = true;
     ray_tracer->set_photon_map_available(true);
     photonear->get_ray_tracer()->set_photon_gathering_valid(false);
 }
@@ -150,13 +156,13 @@ void PhotonMapper::compute_ray_trace(SceneGraph *scene_graph, color default_colo
 }
 
 void PhotonMapper::compute_photon_trace(const std::shared_ptr<RayCastHit> &ray_hit) {
-    if (ray_hit->brdf != nullptr) {
+    if (ray_hit->contribute) {
         auto photon = std::make_shared<Photon>(ray_hit);
         photon->weight = photon->weight * EmissiveMaterial::DefaultIntensityForPhotonEmission;
         m_photon_map_array.push_back(photon);
     }
-    if (ray_hit->bounce_ray != nullptr) {
-        compute_photon_trace(ray_hit->bounce_ray);
+    for(const auto& bounce_ray : ray_hit->bounce_rays){
+        compute_photon_trace(bounce_ray);
     }
 }
 
@@ -175,8 +181,12 @@ void PhotonMapper::generate_ui_logs() const {
         ImGui::SameLine();
         ImGui::Text("Pass %d", m_num_pass);
     }
-    ImGui::ProgressBar((float) m_photon_computed / ((float) m_photon_by_light_by_pass *
-                                                    (float) Photonear::get_instance()->get_scene()->get_nb_lights()));
+    if (m_photon_mapping_computed) {
+        ImGui::ProgressBar(1);
+    } else {
+        ImGui::ProgressBar((float) m_photon_computed / ((float) m_photon_by_light_by_pass *
+                                                        (float) Photonear::get_instance()->get_scene()->get_nb_lights()));
+    }
     ImGui::Separator();
 }
 
@@ -184,7 +194,7 @@ std::shared_ptr<PhotonMap> PhotonMapper::get_photon_map() {
     return m_photon_map;
 }
 
-int PhotonMapper::get_nb_total_photons() const{
+int PhotonMapper::get_nb_total_photons() const {
     return m_nb_total_photons;
 }
 
@@ -193,7 +203,7 @@ void PhotonMapper::set_pending_ray_tracing(bool pending) {
 }
 
 void PhotonMapper::reinit_count_pass() {
-    if(m_photon_mapping_valid){
+    if (m_photon_mapping_valid) {
         m_num_pass = 1;
     } else {
         m_num_pass = 0;
