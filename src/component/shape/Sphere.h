@@ -36,6 +36,7 @@ namespace component {
 
             RayCastHit hit(Ray ray) override;
 
+            bool normal_test(std::shared_ptr<RayTraceHit> ray_hit, std::shared_ptr<Photon> photon) override;
         };
     }
 }

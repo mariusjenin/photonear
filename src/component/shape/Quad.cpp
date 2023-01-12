@@ -9,12 +9,13 @@
 
 using namespace component::shape;
 
-Quad::Quad(float length_x, float length_z, bool both_face_visible) : Shape(both_face_visible){
+Quad::Quad(float length_x, float length_z, bool both_face_visible,float accepted_normal_angle) : Shape(both_face_visible){
     m_normal = {0,1,0};
     m_length_x = length_x;
     m_length_z = length_z;
     assign_mesh_plane();
     load_mesh_in_vao();
+    m_accepted_normal_angle = accepted_normal_angle;
 }
 
 void Quad::assign_mesh_plane() {
@@ -55,13 +56,17 @@ void Quad::generate_ui_component_editor() {
     Shape::generate_ui_component_editor();
     float length_x = m_length_x;
     float length_z = m_length_z;
+    float accepted_normal_angle = m_accepted_normal_angle;
     ImGui::DragFloat("Length X",&length_x,0.01f,0,FLT_MAX);
     ImGui::DragFloat("Length Z",&length_z,0.01f,0,FLT_MAX);
+    ImGui::DragFloat("Accepted angle normal",&accepted_normal_angle,0.1f,0,180);
     auto length_x_changed = length_x != m_length_x;
     auto length_z_changed = length_z != m_length_z;
+    auto accepted_normal_angle_changed = accepted_normal_angle != m_accepted_normal_angle;
     if(length_x_changed) m_length_x = length_x;
     if(length_z_changed) m_length_z = length_z;
-    if(length_x_changed || length_z_changed){
+    if(accepted_normal_angle_changed) m_accepted_normal_angle = accepted_normal_angle;
+    if(length_x_changed || length_z_changed || accepted_normal_angle_changed){
         assign_mesh_plane();
         load_mesh_in_vao();
         Photonear::get_instance()->get_scene()->set_scene_valid(false);
@@ -144,4 +149,9 @@ RayCastHit Quad::hit(Ray ray) {
         ray_hit.v = (up_val / up_vector_norm) / up_vector_norm;
     }
     return ray_hit;
+}
+
+bool Quad::normal_test(std::shared_ptr<RayTraceHit> ray_hit, std::shared_ptr<Photon> photon) {
+    if(m_accepted_normal_angle == 0) return photon->normal == ray_hit->normal;
+    return dot(photon->normal, ray_hit->normal) > cos(m_accepted_normal_angle * M_PI / 180.f);
 }

@@ -13,7 +13,7 @@
 #include "Shape.h"
 #include "Photonear.h"
 #include "RayCastHit.h"
-#include "DielectricMaterial.h"
+#include "RefractiveMaterial.h"
 
 using namespace scene;
 using namespace component;

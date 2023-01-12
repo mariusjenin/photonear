@@ -2,19 +2,19 @@
 // Created by mariusjenin on 08/12/22.
 //
 
-#include "DielectricMaterial.h"
+#include "RefractiveMaterial.h"
 #include "imgui.h"
 #include "Photonear.h"
 
 using namespace material;
 
-DielectricMaterial::DielectricMaterial(std::shared_ptr<TextureColor> albedo, float roughness, float refractive_index) :
-        DiffuseMaterial(MaterialType::RefractiveType, std::move(albedo), roughness) {
+RefractiveMaterial::RefractiveMaterial(std::shared_ptr<TextureColor> albedo, float refractive_index) :
+        Material(std::move(albedo)) {
     m_refractive_index = refractive_index;
 }
 
-void DielectricMaterial::generate_ui_component_editor() {
-    DiffuseMaterial::generate_ui_component_editor();
+void RefractiveMaterial::generate_ui_component_editor() {
+    Material::generate_ui_component_editor();
 
     float refractive_index = m_refractive_index;
     ImGui::SliderFloat("Refractive Index", &refractive_index, 1, 2.4);
@@ -24,13 +24,14 @@ void DielectricMaterial::generate_ui_component_editor() {
 }
 
 color
-DielectricMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCastHit> ray_hit, int depth,
+RefractiveMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCastHit> ray_hit, int depth,
                                 color default_color, bool photon_mapping_pass) {
-    if (depth == 1) {
-        return DiffuseMaterial::resolve_ray(scene_graph,ray_hit,depth,default_color,photon_mapping_pass);
-    }
-
     ray_hit->attenuation *= m_albedo->value(ray_hit->u, ray_hit->v);
+
+    if (depth == 1 || discard_ray(ray_hit)) {
+        ray_hit->contribute = true;
+        return m_albedo->value(ray_hit->u,ray_hit->v);
+    }
 
     auto ray_dir = -ray_hit->direction;
     float dot_direction_normal = dot(ray_dir, ray_hit->normal);
@@ -47,23 +48,23 @@ DielectricMaterial::resolve_ray(SceneGraph *scene_graph, std::shared_ptr<RayCast
         float russian_roulette = (float) random() / (float) RAND_MAX;
         if (russian_roulette < fresnel_reflectance) {
             //Reflect
-            color_bounce = reflect(scene_graph,ray_hit,depth,get_direction_reflection(ray_hit),default_color,true);
+            color_bounce = reflect(scene_graph,ray_hit,depth, get_direction_reflection(ray_hit),default_color,true);
         } else {
             //Refract
-            color_bounce = refract(scene_graph,ray_hit,depth,default_color,true);
+            color_bounce = refract(scene_graph,ray_hit,depth, default_color,true);
         }
     } else {
         //Reflect
-        color_bounce += reflect(scene_graph,ray_hit,depth,get_direction_reflection(ray_hit),default_color,false,fresnel_reflectance);
+        color_bounce += reflect(scene_graph,ray_hit,depth, get_direction_reflection(ray_hit),default_color,false,fresnel_reflectance);
         //Refract
-        color_bounce += refract(scene_graph,ray_hit,depth,default_color,false,1-fresnel_reflectance);
+        color_bounce += refract(scene_graph,ray_hit,depth, default_color,false,1-fresnel_reflectance);
     }
 
     return color_bounce * ray_hit->attenuation;
 }
 
-color DielectricMaterial::refract(SceneGraph *scene_graph,const std::shared_ptr<RayCastHit>& ray_hit, int depth,
-                               color default_color, bool photon_mapping_pass,float factor_weight){
+color RefractiveMaterial::refract(SceneGraph *scene_graph, const std::shared_ptr<RayCastHit>& ray_hit, int depth,
+                                  color default_color, bool photon_mapping_pass, float factor_weight){
     auto ray_dir = -ray_hit->direction;
     float n1 = ray_hit->refractive_index_of_medium;
     float n2 = m_refractive_index;

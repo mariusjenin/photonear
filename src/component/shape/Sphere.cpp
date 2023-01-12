@@ -152,3 +152,7 @@ RayCastHit Sphere::hit(Ray ray) {
     ray_hit.inner_shape = false;
     return ray_hit;
 }
+
+bool Sphere::normal_test(std::shared_ptr<RayTraceHit> ray_hit, std::shared_ptr<Photon> photon) {
+    return ray_hit->shape == photon->shape && dot(photon->normal, ray_hit->normal) > cos(ray_hit->radius/2 * ray_hit->radius/2 / m_radius);
+}

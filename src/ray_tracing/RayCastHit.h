@@ -8,18 +8,15 @@
 #include <vector>
 #include "memory"
 #include "vec3_type.h"
+#include "Shape.h"
 
 namespace component{
     namespace shape{
         class Shape;
     }
-    namespace material{
-        class DiffuseMaterial;
-    }
 }
 
 using namespace component::shape;
-using namespace component::material;
 
 namespace ray_tracing {
     struct RayCastHit {

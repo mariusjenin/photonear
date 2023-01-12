@@ -12,6 +12,15 @@
 #include "Shaders.h"
 #include "BoundingBox.h"
 #include "RayCastHit.h"
+#include "RayTraceHit.h"
+#include "Photon.h"
+
+
+namespace ray_tracing{
+    class RayCastHit;
+    class RayTraceHit;
+    class Photon;
+}
 
 using namespace shader_manager;
 using namespace ray_tracing;
@@ -47,6 +56,8 @@ namespace component {
             virtual std::vector<point> to_few_vertices() =0;
 
             virtual RayCastHit hit(Ray ray)=0;
+
+            virtual bool normal_test(std::shared_ptr<RayTraceHit> ray_hit, std::shared_ptr<Photon> photon) = 0;
 
             ~Shape();
         };

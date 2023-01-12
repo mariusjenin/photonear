@@ -85,9 +85,14 @@ void SpotEmissiveMaterial::generate_ui_component_editor() {
 }
 
 Ray SpotEmissiveMaterial::get_random_ray(glm::mat4 matrix) {
-    float half_flt_max = ((double)RAND_MAX*0.5f);
-    versor direction = normalize(versor((float)rand() - half_flt_max,(float)rand()-half_flt_max,(float)rand()-half_flt_max));
-    direction = vec3(matrix * vec4(direction,0));
+    float l, x, y;
+    do{
+        l = tan(radians(m_inner_cutoff));
+        x = 2*l * ((float)rand() / (float)RAND_MAX) - l;
+        y = 2*l * ((float)rand() / (float)RAND_MAX) - l;
+    } while (x*x+y*y > l*l);
+
+    versor direction = vec3(matrix * vec4(x,y,-1,0));
     point origin = vec3(matrix * vec4(vec3(0,0,0),1));
     return {origin,direction,0.0001};
 }

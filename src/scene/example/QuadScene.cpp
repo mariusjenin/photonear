@@ -24,9 +24,9 @@ void QuadScene::init_scene_graph() {
     //CREATE THE SCENE GRAPH
     auto root = NodeFactory::create_root_node();
     auto quad_node = NodeFactory::create_node(root,"QuadNode");
+    auto sphere_node = NodeFactory::create_node(root,"SphereNode");
     auto camera_node = NodeFactory::create_node(root,"CameraNode");
     auto light_node = NodeFactory::create_node(root,"LightNode");
-    auto light_node_node = NodeFactory::create_node(light_node,"LightNodeNode");
 
     // Quad
     auto quad = make_shared<Quad>(10,6);
@@ -34,18 +34,23 @@ void QuadScene::init_scene_graph() {
     auto trsf_wall_back = Component::get_component<TransformComponent>(&*quad_node)->get_transform();
     trsf_wall_back->set_translation({0,4,0});
 
+    //Sphere
+    auto sphere = make_shared<Sphere>(1,50,50);
+    Component::add_component_to_node(sphere, sphere_node);
+    auto trsf_sphere = Component::get_component<TransformComponent>(&*sphere_node)->get_transform();
+    trsf_sphere->set_translation({0,6,0});
 
     // Light
     auto ambient_spot_intensity = vec3(0.08,0.08,0.06);
-    auto sphere_light = make_shared<Sphere>(0.1,30,30);
+//    auto sphere_light = make_shared<Sphere>(0.1,30,30);
     auto point_light = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(vec3(0.8, 0.8, 0.75)));
-    Component::add_component_to_node(point_light, light_node_node);
+    Component::add_component_to_node(point_light, light_node);
     auto trsf_light_1 = Component::get_component<TransformComponent>(&*light_node)->get_transform();
-    trsf_light_1->set_translation({0,7.8,0});
-    Component::add_component_to_node(sphere_light, light_node_node);
+    trsf_light_1->set_translation({0,8,0});
+//    Component::add_component_to_node(sphere_light, light_node);
 
     // Material
-    auto red_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.f,0.f));
+    auto red_material = make_shared<DiffuseMaterial>(DiffuseMaterialType::Plastic,make_shared<TextureColor>(1.f, 0.f, 0.f));
     Component::add_component_to_node(red_material, quad_node);
 
     // Camera

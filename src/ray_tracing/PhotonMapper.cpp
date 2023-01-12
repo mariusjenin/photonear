@@ -5,7 +5,7 @@
 #include "imgui.h"
 #include "PhotonMapper.h"
 #include "Photonear.h"
-#include "DielectricMaterial.h"
+#include "RefractiveMaterial.h"
 
 using namespace ray_tracing;
 
@@ -31,9 +31,10 @@ void PhotonMapper::reinit() {
     m_photon_mapping_computed = false;
     m_nb_total_photons = 0;
     m_photon_computed = 0;
-    Photonear::get_instance()->get_ray_tracer()->on_photon_mapping_reinit();
-    Photonear::get_instance()->get_ray_tracer()->set_photon_gathering_valid(false);
-    Photonear::get_instance()->get_ray_tracer()->set_photon_map_available(false);
+    auto ray_tracer = Photonear::get_instance()->get_ray_tracer();
+    ray_tracer->on_photon_mapping_reinit();
+    ray_tracer->set_photon_gathering_valid(false);
+    ray_tracer->set_photon_map_available(false);
     reinit_count_pass();
     init_photon_map();
 }
@@ -147,7 +148,8 @@ void PhotonMapper::compute_ray_trace(SceneGraph *scene_graph, color default_colo
     light_material->alterate(ray_hit);
     if (ray_hit->hit) {
         auto node = Component::get_node(ray_hit->shape);
-        auto material = Component::get_nearest_component_upper<Material>(&*node);
+        auto material = &*Component::get_nearest_component_upper<Material>(&*node);
+        if(material == nullptr) material = Material::get_default();
         material->resolve_ray(scene_graph, ray_hit, m_max_depth, default_color, true);
         compute_photon_trace(ray_hit);
     }
@@ -159,7 +161,9 @@ void PhotonMapper::compute_photon_trace(const std::shared_ptr<RayCastHit> &ray_h
     if (ray_hit->contribute) {
         auto photon = std::make_shared<Photon>(ray_hit);
         photon->weight = photon->weight * EmissiveMaterial::DefaultIntensityForPhotonEmission;
+        lock_photon_mapping();
         m_photon_map_array.push_back(photon);
+        unlock_photon_mapping();
     }
     for(const auto& bounce_ray : ray_hit->bounce_rays){
         compute_photon_trace(bounce_ray);
@@ -175,7 +179,7 @@ void PhotonMapper::set_photon_mapping_valid(bool valid) {
     m_photon_mapping_valid = valid;
 }
 
-void PhotonMapper::generate_ui_logs() const {
+void PhotonMapper::generate_ui_running_tasks() const {
     ImGui::Text("Photon Mapping");
     if (m_num_pass > 0) {
         ImGui::SameLine();
@@ -188,6 +192,18 @@ void PhotonMapper::generate_ui_logs() const {
                                                         (float) Photonear::get_instance()->get_scene()->get_nb_lights()));
     }
     ImGui::Separator();
+}
+
+
+void PhotonMapper::generate_ui_logs() const {
+    ImGui::Text("Photon Mapping");
+    std::string photon_gathered = "Photon computed :   ";
+    int nb_photon_total = m_photon_by_light_by_pass * Photonear::get_instance()->get_scene()->get_nb_lights();
+    photon_gathered.append(std::to_string(m_photon_computed)+"/"+std::to_string(nb_photon_total));
+    ImGui::Text("%s", photon_gathered.c_str());
+    std::string photon_stored = "Photon stored :     ";
+    photon_stored.append(std::to_string(m_nb_total_photons));
+    ImGui::Text("%s", photon_stored.c_str());
 }
 
 std::shared_ptr<PhotonMap> PhotonMapper::get_photon_map() {

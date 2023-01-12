@@ -8,14 +8,13 @@
 #include "NodeFactory.h"
 #include "Node.h"
 #include "Camera.h"
-#include "DiffuseMaterial.h"
 #include "PositionnedEmissiveMaterial.h"
 #include "SpotEmissiveMaterial.h"
 #include "TextureManager.h"
 #include "Sphere.h"
 #include "Quad.h"
-#include "DielectricMaterial.h"
-#include "ConductorMaterial.h"
+#include "RefractiveMaterial.h"
+#include "DiffuseMaterial.h"
 
 using namespace std;
 using namespace scene;
@@ -44,14 +43,14 @@ void CornellBox::init_scene_graph() {
     auto wall_bottom_node = NodeFactory::create_node(wall_node,"WallBottomNode");
 
     // Sphere Node
-    auto sphere_1_node = NodeFactory::create_node(content_node);
-    auto sphere_2_node = NodeFactory::create_node(content_node);
+    auto sphere_1_node = NodeFactory::create_node(content_node, "Sphere1");
+    auto sphere_2_node = NodeFactory::create_node(content_node, "Sphere2");
 
     // Light Node
-    auto light_1_node  = NodeFactory::create_node(light_node);
-    auto light_2_node  = NodeFactory::create_node(light_node);
-    auto light_3_node  = NodeFactory::create_node(light_node);
-    auto light_4_node  = NodeFactory::create_node(light_node);
+    auto light_1_node  = NodeFactory::create_node(light_node, "SpotLightNode1");
+    auto light_2_node  = NodeFactory::create_node(light_node, "SpotLightNode2");
+    auto light_3_node  = NodeFactory::create_node(light_node, "SpotLightNode3");
+    auto light_4_node  = NodeFactory::create_node(light_node, "SpotLightNode4");
 
     // Wall
     auto wall_back = make_shared<Quad>(8, 8);
@@ -78,51 +77,44 @@ void CornellBox::init_scene_graph() {
     trsf_wall_top->set_translation({0,8,0}); trsf_wall_top->set_rotation({180,0,0});
 
     //Sphere
-    auto sphere_1 = make_shared<Sphere>(1,40,20);
-    auto sphere_2 = make_shared<Sphere>(1.75,80,80);
+    auto sphere_2 = make_shared<Sphere>(1, 40, 20);
+    auto sphere_1 = make_shared<Sphere>(1.75, 80, 80);
     Component::add_component_to_node(sphere_1, sphere_1_node);
     Component::add_component_to_node(sphere_2, sphere_2_node);
     auto trsf_sphere_1 = Component::get_component<TransformComponent>(&*sphere_1_node)->get_transform();
     auto trsf_sphere_2 = Component::get_component<TransformComponent>(&*sphere_2_node)->get_transform();
-    trsf_sphere_1->set_translation({1.8, 1, 2.8});
-    trsf_sphere_2->set_translation({-1.7, 1.75, -1.7});
+    trsf_sphere_1->set_translation({-1.7, 1.75, -1.7});
+    trsf_sphere_2->set_translation({1.8, 1, 2.8});
 
     // Light
-    auto spot_color = vec3(0.4, 0.4, 0.38);
-//    auto ambient_spot_color = vec3(0.08,0.08,0.06);
-    auto ambient_spot_color = vec3(0.8, 0.8, 0.75);
+    auto light_color = vec3(1.f,1.f,0.98f);
+    auto spot_intensity = 0.3f;
+    auto inner_cutoff_spot = 45;
+    auto outer_cutoff_spot = 50;
     auto sphere_light_1 = make_shared<Sphere>(0.1,30,30);
     auto sphere_light_2 = make_shared<Sphere>(0.1,30,30);
     auto sphere_light_3 = make_shared<Sphere>(0.1,30,30);
     auto sphere_light_4 = make_shared<Sphere>(0.1,30,30);
-    auto spot_light1 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_color), 1, 25, 45, 700, 0.02f, 0.f, 0.01f);
-    auto spot_light2 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_color), 1, 25, 45, 700, 0.02f, 0.f, 0.01f);
-    auto spot_light3 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_color), 1, 25, 45, 700, 0.02f, 0.f, 0.01f);
-    auto spot_light4 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(spot_color), 1, 25, 45, 700, 0.02f, 0.f, 0.01f);
-    auto point_light = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_color));
-    auto point_light2 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_color));
-    auto point_light3 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_color));
-    auto point_light4 = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(ambient_spot_color));
-//    Component::add_component_to_node(spot_light1, light_1_node);
-    Component::add_component_to_node(point_light, light_1_node);
-//    Component::add_component_to_node(spot_light2, light_2_node);
-//    Component::add_component_to_node(point_light2, light_2_node);
-//    Component::add_component_to_node(spot_light3, light_3_node);
-//    Component::add_component_to_node(point_light3, light_3_node);
-//    Component::add_component_to_node(spot_light4, light_4_node);
-//    Component::add_component_to_node(point_light4, light_4_node);
+    auto spot_light1 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(light_color), spot_intensity, inner_cutoff_spot, outer_cutoff_spot, 700, 0.02f, 0.f, 0.f);
+    auto spot_light2 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(light_color), spot_intensity, inner_cutoff_spot, outer_cutoff_spot, 700, 0.02f, 0.f, 0.f);
+    auto spot_light3 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(light_color), spot_intensity, inner_cutoff_spot, outer_cutoff_spot, 700, 0.02f, 0.f, 0.f);
+    auto spot_light4 = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(light_color), spot_intensity, inner_cutoff_spot, outer_cutoff_spot, 700, 0.02f, 0.f, 0.f);
+    Component::add_component_to_node(spot_light1, light_1_node);
+    Component::add_component_to_node(spot_light2, light_2_node);
+    Component::add_component_to_node(spot_light3, light_3_node);
+    Component::add_component_to_node(spot_light4, light_4_node);
     auto trsf_light_1 = Component::get_component<TransformComponent>(&*light_1_node)->get_transform();
-//    trsf_light_1->set_translation({-2.5,7.8,-2.5});
-    trsf_light_1->set_translation({0,4,0});
+    trsf_light_1->set_translation({-2.5,7.95,-2.5});
+//    trsf_light_1->set_translation({0,4,0});
     trsf_light_1->set_rotation({-90,0,0});
     auto trsf_light_2 = Component::get_component<TransformComponent>(&*light_2_node)->get_transform();
-    trsf_light_2->set_translation({-2.5,7.8,2.5});
+    trsf_light_2->set_translation({-2.5,7.95,2.5});
     trsf_light_2->set_rotation({-90,0,0});
     auto trsf_light_3 = Component::get_component<TransformComponent>(&*light_3_node)->get_transform();
-    trsf_light_3->set_translation({2.5,7.8,-2.5});
+    trsf_light_3->set_translation({2.5,7.95,-2.5});
     trsf_light_3->set_rotation({-90,0,0});
     auto trsf_light_4 = Component::get_component<TransformComponent>(&*light_4_node)->get_transform();
-    trsf_light_4->set_translation({2.5,7.8,2.5});
+    trsf_light_4->set_translation({2.5,7.95,2.5});
     trsf_light_4->set_rotation({-90,0,0});
 
 //    Component::add_component_to_node(sphere_light_1, light_1_node);
@@ -132,16 +124,18 @@ void CornellBox::init_scene_graph() {
 
 
     // Material
-    auto grey_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.9f,0.9f,0.9f),1.f);
-    auto red_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f,0.5f,0.5f),1.f);
-    auto green_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.5f,1.f,0.5f),1.f);
-    auto dielectric_material = make_shared<DielectricMaterial>(make_shared<TextureColor>(1.f, 1.f, 1.f), 0.f, 1.5f);
-    auto conductor_material = make_shared<ConductorMaterial>(make_shared<TextureColor>(1.f, 1.f, 1.f), 0.f);
+    auto grey_material = make_shared<DiffuseMaterial>(DiffuseMaterialType::Plastic,make_shared<TextureColor>(0.9f, 0.9f, 0.9f), 1.f);
+//    auto red_material = make_shared<DiffMaterial>(make_shared<TextureColor>(1.f, 0.5f, 0.5f), 1.f);
+//    auto green_material = make_shared<DiffMaterial>(make_shared<TextureColor>(0.5f, 1.f, 0.5f), 1.f);
+    auto red_material = make_shared<DiffuseMaterial>(DiffuseMaterialType::Metal,make_shared<TextureColor>(1.f, 0.5f, 0.5f), 1.f);
+    auto green_material = make_shared<DiffuseMaterial>(DiffuseMaterialType::Plastic,make_shared<TextureColor>(0.5f, 1.f, 0.5f), 1.f);
+    auto dielectric_material = make_shared<RefractiveMaterial>(make_shared<TextureColor>(1.f, 1.f, 1.f), 1.5f);
+    auto conductor_material = make_shared<DiffuseMaterial>(DiffuseMaterialType::Metal,make_shared<TextureColor>(1.f, 1.f, 1.f), 0.f);
     Component::add_component_to_node(grey_material, wall_node);
     Component::add_component_to_node(red_material, wall_left_node);
     Component::add_component_to_node(green_material, wall_right_node);
-    Component::add_component_to_node(dielectric_material, sphere_1_node);
-    Component::add_component_to_node(conductor_material, sphere_2_node);
+    Component::add_component_to_node(conductor_material, sphere_1_node);
+    Component::add_component_to_node(dielectric_material, sphere_2_node);
 
 
     // Camera

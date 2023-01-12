@@ -14,7 +14,7 @@ using namespace component::material;
 
 float EmissiveMaterial::DefaultIntensityForPhotonEmission = 500.f;
 
-EmissiveMaterial::EmissiveMaterial(std::shared_ptr<TextureColor> albedo, float intensity): Material(MaterialType::EmissiveType, std::move(albedo)), m_intensity(intensity) {}
+EmissiveMaterial::EmissiveMaterial(std::shared_ptr<TextureColor> albedo, float intensity): Material(std::move(albedo), true), m_intensity(intensity) {}
 
 Light EmissiveMaterial::generate_light() {
     auto light = Light();

@@ -1,6 +1,7 @@
 //
 // Created by mariusjenin on 29/11/22.
 //
+#include <iostream>
 #include <string>
 #include <climits>
 #include "imgui.h"
@@ -8,7 +9,7 @@
 #include "RayTracer.h"
 #include "Photonear.h"
 #include "Camera.h"
-#include "DielectricMaterial.h"
+#include "RefractiveMaterial.h"
 
 using namespace ray_tracing;
 using namespace component::material;
@@ -27,14 +28,14 @@ RayTracer::RayTracer() {
     m_photon_map_available = false;
     m_px_ray_traced = 0;
     m_ray_photon_gathered = 0;
-    m_total_ray_photon_splatted = 1;
+    m_total_ray_photon_gathered = 0;
     m_width = 125;
     m_height = 100;
     m_default_color = {0, 0, 0};
     m_max_depth = 10;
     m_first_photon_gathering = false;
-    m_radius_photon_gathering = 3;
-    m_reduce_proportion = 0.6;
+    m_radius_photon_gathering = 2.5;
+    m_radius_reduce_proportion = 0.5;
 }
 
 
@@ -62,8 +63,8 @@ void RayTracer::generate_ui_ray_tracing_settings() {
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "UnusedValue"
         init_ray_tracing_data();
-        if (m_async_ray_tracing.valid())
-            m_async_ray_tracing.wait();
+//        Photonear::get_instance()->get_photon_mapper()->reinit();
+        if (m_async_ray_tracing.valid()) m_async_ray_tracing.wait();
         m_async_ray_tracing = std::async(&RayTracer::compute_ray_tracing_pass, this);
 #pragma clang diagnostic pop
     }
@@ -77,6 +78,7 @@ void RayTracer::generate_ui_ray_tracing_settings() {
     bool max_depth_changed = m_max_depth != max_depth;
     m_default_color = default_color;
     m_max_depth = max_depth;
+
     ImGui::Separator();
 
 
@@ -130,20 +132,22 @@ void RayTracer::generate_ui_photon_gathering_settings() {
 
     bool reduce_proportion_editable = !m_is_photon_gathering;
     if(!reduce_proportion_editable) ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.5f);
-    float reduce_proportion = m_reduce_proportion;
-    ImGui::SliderFloat("Reduce proportion", &reduce_proportion, 0.01f, 0.990f);
-    bool reduce_proportion_changed = m_reduce_proportion != reduce_proportion;
-    if(reduce_proportion_editable) m_reduce_proportion = reduce_proportion;
+    float reduce_proportion = m_radius_reduce_proportion;
+    ImGui::SliderFloat("Radius reduce proportion", &reduce_proportion, 0.01f, 0.990f);
+    bool reduce_proportion_changed = m_radius_reduce_proportion != reduce_proportion;
+    if(reduce_proportion_editable) m_radius_reduce_proportion = reduce_proportion;
     if (reduce_proportion_changed) on_radius_changed();
     if(!reduce_proportion_editable) ImGui::PopStyleVar();
 }
 
 void RayTracer::init_ray_tracing_data() {
     set_ray_tracing_valid(false);
+    m_ray_tracing_mutex.lock();
     int size_data = m_width * m_height * 4;
     m_ray_trace_data.clear();
     m_image.clear();
     m_image.resize(size_data, 0);
+    m_ray_tracing_mutex.unlock();
 }
 
 void RayTracer::on_photon_mapping_reinit() {
@@ -290,7 +294,8 @@ void RayTracer::compute_ray_cast(SceneGraph *scene_graph, int u, int v, Ray ray)
     ray_hit->weight = 1.f / (float) m_sample_by_pixel;
     if (ray_hit->hit) {
         auto node = Component::get_node(ray_hit->shape);
-        auto material = Component::get_nearest_component_upper<Material>(&*node);
+        auto material = &*Component::get_nearest_component_upper<Material>(&*node);
+        if(material == nullptr) material = Material::get_default();
         px_color = material->resolve_ray(scene_graph, ray_hit, m_max_depth, m_default_color, false) /
                    (float) m_sample_by_pixel;
         compute_ray_trace(u, v, ray_hit);
@@ -317,6 +322,7 @@ void RayTracer::compute_ray_trace(int u, int v, const std::shared_ptr<RayCastHit
     if (ray_hit->contribute) {
         auto ray_trace_hit = std::make_shared<RayTraceHit>(u, v, m_radius_photon_gathering);
         ray_trace_hit->hit = true;
+        ray_trace_hit->shape = ray_hit->shape;
         ray_trace_hit->weight = ray_hit->weight;
         ray_trace_hit->attenuation = ray_hit->attenuation;
         ray_trace_hit->normal = ray_hit->normal;
@@ -352,7 +358,7 @@ void RayTracer::compute_photon_gathering() {
 #pragma clang diagnostic pop
     m_ray_photon_gathered = 0;
     m_photon_gathering_valid = true;
-    m_total_ray_photon_splatted = (int) m_ray_trace_data.size();
+    m_total_ray_photon_gathered = (int) m_ray_trace_data.size();
     auto photon_mapper = Photonear::get_instance()->get_photon_mapper();
     auto photon_map = photon_mapper->get_photon_map();
     int nb_total_photons =photon_mapper->get_nb_total_photons();
@@ -389,9 +395,9 @@ void RayTracer::photon_gathering(const std::shared_ptr<RayTraceHit> &ray_trace_h
     for (auto photon_index: photons_index) {
         auto photon = photon_map->get(photon_index);
         float distance = length(photon->position - ray_trace_hit->hit_point);
-        if (photon->normal == ray_trace_hit->normal) {
+        if (ray_trace_hit->shape->normal_test(ray_trace_hit,photon)) {
             ray_trace_hit->nb_photons++;
-            ray_trace_hit->flux += photon->weight * photon->color_photon * (1 - distance / ray_trace_hit->radius);
+            ray_trace_hit->flux += photon->weight * photon->color_photon * (1 - distance / (1.1f * ray_trace_hit->radius));
         }
     }
 
@@ -416,7 +422,7 @@ void RayTracer::refine_photon_gathering(const std::shared_ptr<RayTraceHit> &ray_
     for(auto photon_index : photons_index) {
         auto photon = photon_map->get(photon_index);
         float distance = length(photon->position - ray_trace_hit->hit_point);
-        if (photon->normal == ray_trace_hit->normal) {
+        if (ray_trace_hit->shape->normal_test(ray_trace_hit,photon)) {
             new_photons.emplace_back(photon, distance);
         }
     }
@@ -429,7 +435,7 @@ void RayTracer::refine_photon_gathering(const std::shared_ptr<RayTraceHit> &ray_
 
 
     int new_photons_size = (int)new_photons.size();
-    float frac_pm = ((float)ray_trace_hit->nb_photons + m_reduce_proportion * (float)new_photons_size) / ((float)ray_trace_hit->nb_photons + (float)new_photons_size);
+    float frac_pm = ((float)ray_trace_hit->nb_photons + m_radius_reduce_proportion * (float)new_photons_size) / ((float)ray_trace_hit->nb_photons + (float)new_photons_size);
     float pi_radius_squared = ((float)M_PI*ray_trace_hit->radius*ray_trace_hit->radius);
 
     ray_trace_hit->nb_photons+=new_photons_size;
@@ -454,8 +460,9 @@ void RayTracer::set_ray_tracing_valid(bool valid) {
         }
         m_px_ray_traced = 0;
         m_ray_photon_gathered = 0;
-        if (photon_mapper != nullptr)
+        if (photon_mapper != nullptr){
             photon_mapper->reinit_count_pass();
+        }
     }
     if (photon_mapper != nullptr)
         photon_mapper->set_pending_ray_tracing(!valid);
@@ -471,16 +478,39 @@ void RayTracer::set_photon_gathering_valid(bool valid) {
 }
 
 
-void RayTracer::generate_ui_ray_tracing_logs() const {
+void RayTracer::generate_ui_ray_tracing_running_tasks() const {
     ImGui::Text("Ray Tracing");
     ImGui::ProgressBar((float) m_px_ray_traced / ((float) m_width * (float) m_height * (float) m_sample_by_pixel));
     ImGui::Separator();
 }
 
+void RayTracer::generate_ui_ray_tracing_logs() const {
+    ImGui::Text("Ray Tracing");
+    std::string ray_sent = "Ray sent :          ";
+    int px_total = m_width * m_height * m_sample_by_pixel;
+    ray_sent.append(std::to_string(m_px_ray_traced)+"/"+std::to_string(px_total));
+    ImGui::Text("%s", ray_sent.c_str());
+    std::string ray_saved = "Ray saved :         ";
+    ray_saved.append(std::to_string(m_ray_trace_data.size()));
+    ImGui::Text("%s", ray_saved.c_str());
+}
+
 
 void RayTracer::generate_ui_photon_gathering_logs() const {
     ImGui::Text("Photon Gathering");
-    ImGui::ProgressBar((float) m_ray_photon_gathered / ((float) m_total_ray_photon_splatted));
+    std::string photon_gathered = "Photon gathered :   ";
+    photon_gathered.append(std::to_string(m_ray_photon_gathered)+"/"+std::to_string(m_total_ray_photon_gathered));
+    ImGui::Text("%s", photon_gathered.c_str());
+}
+
+
+void RayTracer::generate_ui_photon_gathering_running_tasks() const {
+    ImGui::Text("Photon Gathering");
+    if(m_total_ray_photon_gathered == 0){
+        ImGui::ProgressBar(0);
+    } else{
+        ImGui::ProgressBar((float) m_ray_photon_gathered / ((float) m_total_ray_photon_gathered));
+    }
     ImGui::Separator();
 }
 

@@ -39,11 +39,12 @@ namespace ray_tracing{
 
         void init_photon_map();
 
-        void reinit();
     public:
         PhotonMapper();
 
         void init();
+
+        void reinit();
 
         void update();
 
@@ -58,6 +59,8 @@ namespace ray_tracing{
         void set_photon_mapping_valid(bool valid);
 
         void set_pending_ray_tracing(bool pending);
+
+        void generate_ui_running_tasks() const;
 
         void generate_ui_logs() const;
 

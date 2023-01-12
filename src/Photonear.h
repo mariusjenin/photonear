@@ -51,6 +51,7 @@ public:
     static const char * SceneSettingsName;
     static const char * RayTracingSettingsName;
     static const char * PhotonMappingSettingsName;
+    static const char * RunningTasksName;
     static const char * LogsName;
 
     static Photonear* get_instance();

@@ -9,17 +9,16 @@
 #include "vec3_type.h"
 #include "RayCastHit.h"
 
-namespace component{
-    namespace material{
-        class DiffuseMaterial;
-    }
+namespace ray_tracing{
+    class RayCastHit;
 }
-using namespace component::material;
+
 namespace ray_tracing{
     struct Photon {
         point position{};
         versor direction{}; //away from surface
         versor normal{};
+        Shape* shape{};
         color color_photon{};
         float weight;
 

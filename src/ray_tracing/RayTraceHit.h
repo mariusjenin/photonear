@@ -7,6 +7,15 @@
 
 #include "glm/glm.hpp"
 #include "vec3_type.h"
+#include "Shape.h"
+
+namespace component{
+    namespace shape{
+        class Shape;
+    }
+}
+
+using namespace component::shape;
 
 namespace ray_tracing {
     struct RayTraceHit {
@@ -16,6 +25,7 @@ namespace ray_tracing {
 
         point hit_point{};
         bool hit{};
+        Shape* shape{};
         versor normal{};
         versor direction{};
         float weight{};

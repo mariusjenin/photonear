@@ -75,7 +75,7 @@ void Shape::draw(const std::shared_ptr<Shaders>& shaders) {
         glEnable(GL_CULL_FACE);
     }
 
-    auto material = Component::get_nearest_component_upper<Material>(&*node);
+    auto material = &*Component::get_nearest_component_upper<Material>(&*node);
     if(material == nullptr){
         material = Material::get_default();
     }

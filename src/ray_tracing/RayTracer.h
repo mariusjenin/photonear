@@ -26,7 +26,7 @@ namespace ray_tracing{
         int m_max_depth{};
         color m_default_color{};
         float m_radius_photon_gathering;
-        float m_reduce_proportion;
+        float m_radius_reduce_proportion;
 
         bool m_auto_recompute{};
         GLuint m_image_texture{};
@@ -49,7 +49,7 @@ namespace ray_tracing{
 
         int m_px_ray_traced;
         int m_ray_photon_gathered;
-        int m_total_ray_photon_splatted;
+        int m_total_ray_photon_gathered;
 
         void compute_ray_tracing_pass();
 
@@ -80,6 +80,10 @@ namespace ray_tracing{
         void generate_ui_photon_gathering_settings();
 
         void generate_ui_viewer();
+
+        void generate_ui_ray_tracing_running_tasks() const;
+
+        void generate_ui_photon_gathering_running_tasks() const;
 
         void generate_ui_ray_tracing_logs() const;
 

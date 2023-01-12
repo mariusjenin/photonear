@@ -11,4 +11,5 @@ Photon::Photon(const std::shared_ptr<RayCastHit>& ray_hit) {
     normal = ray_hit->normal;
     color_photon = ray_hit->attenuation;
     weight = ray_hit->weight;
+    shape = ray_hit->shape;
 }

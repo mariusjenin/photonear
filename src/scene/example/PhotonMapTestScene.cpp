@@ -10,9 +10,9 @@
 #include "Node.h"
 #include "Camera.h"
 #include "DiffuseMaterial.h"
-#include "ConductorMaterial.h"
-#include "DielectricMaterial.h"
+#include "RefractiveMaterial.h"
 #include "PositionnedEmissiveMaterial.h"
+#include "SpotEmissiveMaterial.h"
 #include "TextureManager.h"
 #include "Sphere.h"
 #include "Quad.h"
@@ -24,6 +24,8 @@ using namespace component::material;
 using namespace component::shape;
 
 void PhotonMapTestScene::init_scene_graph() {
+    auto texture_manager = m_shaders->get_texture_manager();
+
     //CREATE THE SCENE GRAPH
     auto root = NodeFactory::create_root_node();
     auto camera_node = NodeFactory::create_node(root,"CameraNode");
@@ -62,16 +64,20 @@ void PhotonMapTestScene::init_scene_graph() {
 
     // Light
     auto point_light = make_shared<PositionnedEmissiveMaterial>(make_shared<TextureColor>(vec3(1, 1, 1)),5.f);
-    Component::add_component_to_node(point_light, light_node);
+    auto spot_light = make_shared<SpotEmissiveMaterial>(texture_manager->get_and_increment_id_texture(), make_shared<TextureColor>(vec3(1,1,1)), 1, 50, 50, 700, 0.02f, 0.f, 0.01f);
+
+//    Component::add_component_to_node(point_light, light_node);
+    Component::add_component_to_node(spot_light, light_node);
     auto trsf_light_1 = Component::get_component<TransformComponent>(&*light_node)->get_transform();
     trsf_light_1->set_translation({0,10,0});
+    trsf_light_1->set_rotation({-90,0,0});
 
     // Material
-    auto grey_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.8f, 0.8f, 0.8f),0.5f);
-    auto redish_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(1.f, 0.f, 0.f),0.5f);
-    auto greenish_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f, 1.f, 0.f),0.5f);
-    auto blueish_material = make_shared<DiffuseMaterial>(make_shared<TextureColor>(0.f, 0.f, 1.f),0.5f);
-    auto dielectric_material = make_shared<DielectricMaterial>(make_shared<TextureColor>(1.f,1.f,1.f),0.,1.33);
+    auto grey_material = make_shared<DiffuseMaterial>(DiffuseMaterialType::Plastic,make_shared<TextureColor>(0.8f, 0.8f, 0.8f), 0.95f);
+    auto redish_material = make_shared<DiffuseMaterial>(DiffuseMaterialType::Plastic,make_shared<TextureColor>(1.f, 0.f, 0.f), 0.8f);
+    auto greenish_material = make_shared<DiffuseMaterial>(DiffuseMaterialType::Plastic,make_shared<TextureColor>(0.f, 1.f, 0.f), 0.8f);
+    auto blueish_material = make_shared<DiffuseMaterial>(DiffuseMaterialType::Plastic,make_shared<TextureColor>(0.f, 0.f, 1.f), 0.8f);
+    auto dielectric_material = make_shared<RefractiveMaterial>(make_shared<TextureColor>(1.f, 1.f, 1.f), 1.33);
     Component::add_component_to_node(grey_material, down_quad_node);
     Component::add_component_to_node(redish_material, back_quad_node);
     Component::add_component_to_node(greenish_material, left_quad_node);
